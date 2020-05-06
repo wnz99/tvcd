@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`makeCandlesRestApiUrl function throws error on unsupported exhange success 1`] = `"Exchange not supported"`;
