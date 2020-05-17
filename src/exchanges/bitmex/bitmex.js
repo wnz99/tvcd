@@ -126,7 +126,7 @@ const bitmex = (function bitmex() {
     fetchCandles: async (pair, interV, start, end, limit) => {
       const makeCandlesUrlFn = (symbols, interval, startT, endT) =>
         makeCandlesRestApiUrl(status.exchange.name, status.restRootUrl, {
-          symbol: symbols[0],
+          symbol: `${symbols[0]}${symbols[1]}`,
           binSize: interval,
           columns: 'open,close,high,low,volume',
           startTime: moment(startT).toISOString(),
