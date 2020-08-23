@@ -7,9 +7,11 @@ const sortByTime = (candles) => {
     if (a.time) {
       return new Date(a.time) - new Date(b.time);
     }
+
     if (a.date) {
       return new Date(a.date) - new Date(b.date);
     }
+
     return new Date(a.timestamp) - new Date(b.timestamp);
   });
 };

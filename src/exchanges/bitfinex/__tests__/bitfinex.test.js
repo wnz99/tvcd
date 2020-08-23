@@ -51,6 +51,7 @@ describe('bitfinex connector', () => {
     const expectedTragingPairs = {
       '1m:ETHUSD': {
         interval: '1m',
+        intervalApi: '1m',
         symbols: ['ETH', 'USD'],
         ticker: 'ETHUSD',
       },
@@ -132,6 +133,7 @@ describe('bitfinex connector', () => {
     expect(makeDataStream).toHaveBeenCalledWith(WS_ROOT_URL, {
       initSubs: makeSubs(tradingPairs),
       wsInstance$,
+      debug: true,
     });
 
     const data$ = bitfinex.data$();
@@ -162,6 +164,8 @@ describe('bitfinex connector', () => {
   it('should add trading pair before run success', () => {
     jest.useFakeTimers();
     const interval = '1m';
+    const intervalApi = '1m';
+
     bitfinex.addTradingPair(['ETH', 'USD'], { interval });
     let tradingPairs = bitfinex.getTradingPairs();
     expect(subPairs).not.toHaveBeenCalled();
@@ -181,8 +185,18 @@ describe('bitfinex connector', () => {
     tradingPairs = bitfinex.getTradingPairs();
     expect(subPairs).toHaveBeenCalledTimes(2);
     expect(tradingPairs).toEqual({
-      '1m:ETHUSD': { interval, symbols: ['ETH', 'USD'], ticker: 'ETHUSD' },
-      '1m:ZRXUSD': { interval, symbols: ['ZRX', 'USD'], ticker: 'ZRXUSD' },
+      '1m:ETHUSD': {
+        interval,
+        intervalApi,
+        symbols: ['ETH', 'USD'],
+        ticker: 'ETHUSD',
+      },
+      '1m:ZRXUSD': {
+        interval,
+        intervalApi,
+        symbols: ['ZRX', 'USD'],
+        ticker: 'ZRXUSD',
+      },
     });
     jest.clearAllTimers();
     bitfinex.stop();
@@ -191,6 +205,8 @@ describe('bitfinex connector', () => {
   it('should add and remove trading pair after run success', () => {
     jest.useFakeTimers();
     const interval = '1m';
+    const intervalApi = '1m';
+
     bitfinex.setDebug(false);
     bitfinex.addTradingPair(['ETH', 'USD'], { interval });
     bitfinex.start();
@@ -206,15 +222,30 @@ describe('bitfinex connector', () => {
     let tradingPairs = bitfinex.getTradingPairs();
     expect(subPairs).toHaveBeenCalledTimes(1);
     expect(tradingPairs).toEqual({
-      '1m:ETHUSD': { interval, symbols: ['ETH', 'USD'], ticker: 'ETHUSD' },
+      '1m:ETHUSD': {
+        interval,
+        intervalApi: '1m',
+        symbols: ['ETH', 'USD'],
+        ticker: 'ETHUSD',
+      },
     });
 
     bitfinex.addTradingPair(['ZRX', 'USD'], { interval });
     tradingPairs = bitfinex.getTradingPairs();
     expect(subPairs).toHaveBeenCalledTimes(2);
     expect(tradingPairs).toEqual({
-      '1m:ETHUSD': { interval, symbols: ['ETH', 'USD'], ticker: 'ETHUSD' },
-      '1m:ZRXUSD': { interval, symbols: ['ZRX', 'USD'], ticker: 'ZRXUSD' },
+      '1m:ETHUSD': {
+        interval,
+        intervalApi: '1m',
+        symbols: ['ETH', 'USD'],
+        ticker: 'ETHUSD',
+      },
+      '1m:ZRXUSD': {
+        interval,
+        intervalApi: '1m',
+        symbols: ['ZRX', 'USD'],
+        ticker: 'ZRXUSD',
+      },
     });
 
     ws.subs = {
@@ -225,7 +256,12 @@ describe('bitfinex connector', () => {
     tradingPairs = bitfinex.getTradingPairs();
     expect(unsubPairs).toHaveBeenCalledTimes(1);
     expect(tradingPairs).toEqual({
-      '1m:ETHUSD': { interval, symbols: ['ETH', 'USD'], ticker: 'ETHUSD' },
+      '1m:ETHUSD': {
+        interval,
+        intervalApi: '1m',
+        symbols: ['ETH', 'USD'],
+        ticker: 'ETHUSD',
+      },
     });
 
     bitfinex.removeTradingPair(['ETH', 'USD'], interval);
@@ -237,6 +273,7 @@ describe('bitfinex connector', () => {
   });
 
   it('gets status success', () => {
+    bitfinex.setDebug(false);
     expect(bitfinex.getStatus()).toEqual({
       isRunning: false,
       exchange: {

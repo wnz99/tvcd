@@ -19,13 +19,7 @@ export const fetchCandles$ = (restApiUrl, requestOptions = {}) => {
 
       throw new Error(`Error ${response.status}`);
     }),
-    retryWhen((errors) =>
-      errors.pipe(
-        // eslint-disable-next-line no-console
-        tap(() => console.log('Retrying...')),
-        delayWhen(() => timer(5000))
-      )
-    )
+    retryWhen((errors) => errors.pipe(delayWhen(() => timer(5000))))
   );
 };
 

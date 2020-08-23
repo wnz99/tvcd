@@ -6,12 +6,12 @@ const makeSubs = (pairs) => {
   const subscriptions = [];
 
   for (const channel in pairs) {
-    const { interval, symbols } = pairs[channel];
+    const { intervalApi, symbols } = pairs[channel];
 
     subscriptions.push({
       event: 'subscribe',
       channel: 'candles',
-      key: `trade:${interval}:t${makePair(symbols[0], symbols[1])}`,
+      key: `trade:${intervalApi}:t${makePair(symbols[0], symbols[1])}`,
     });
   }
 

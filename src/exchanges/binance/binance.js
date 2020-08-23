@@ -2,19 +2,21 @@ import { Subject } from 'rxjs';
 import { map, multicast, takeUntil, repeatWhen } from 'rxjs/operators';
 import {
   debugError,
-  makeCandlesWsApiUrl,
   makeCandlesRestApiUrl,
   fetchCandles,
   updateCandles,
+  makePairConfig,
+  mapToStandardInterval,
 } from '../../utils';
 import {
   ERROR,
   WS_ROOT_URL,
   REST_ROOT_URL,
-  INTERVALS,
+  API_RESOLUTIONS_MAP,
   makeCustomApiUrl,
 } from './const';
 import {
+  makeCandlesWsApiUrl,
   addTradingPair,
   makeOptions,
   removeTradingPair,
@@ -68,13 +70,14 @@ const binance = (function binance() {
       }
 
       options = makeOptions(opts);
+
       if (Object.keys(pairs).length === 0) {
         return debugError(ERROR.NO_INIT_PAIRS_DEFINED, status.debug);
       }
 
-      const wsUrl = () =>
-        makeCandlesWsApiUrl(status.exchange.name, status.wsRootUrl, pairs);
-      dataSource$ = makeDataStream(wsUrl, { wsInstance$ });
+      const wsUrl = () => makeCandlesWsApiUrl(status.wsRootUrl, pairs);
+
+      dataSource$ = makeDataStream(wsUrl, { wsInstance$, debug: status.debug });
 
       wsInstance$.subscribe((instance) => {
         ws = instance;
@@ -83,6 +86,9 @@ const binance = (function binance() {
       dataSource$
         .pipe(
           map((streamEvent) => processStreamEvent(streamEvent)),
+          map((streamData) =>
+            mapToStandardInterval(streamData, API_RESOLUTIONS_MAP)
+          ),
           map((streamData) => {
             candlesData = addChannelToCandlesData(candlesData, streamData);
             return streamData;
@@ -115,15 +121,16 @@ const binance = (function binance() {
       setStatus({ isRunning: false });
     },
 
-    fetchCandles: async (pair, interV, start, end, limit) => {
-      const makeCandlesUrlFn = (symbols, interval, startTime, endTime) =>
+    fetchCandles: async (pair, interval, start, end, limit) => {
+      const makeCandlesUrlFn = (symbols, timeInterval, startTime, endTime) =>
         makeCandlesRestApiUrl(status.exchange.name, status.restRootUrl, {
           symbol: `${symbols[0]}${symbols[1]}`,
-          interval,
+          interval: API_RESOLUTIONS_MAP[timeInterval],
           startTime,
           endTime,
         });
-      return fetchCandles(pair, interV, start, end, limit, {
+
+      return fetchCandles(pair, interval, start, end, limit, {
         status,
         options: { ...options, makeChunkCalls: true },
         makeCandlesUrlFn,
@@ -142,16 +149,21 @@ const binance = (function binance() {
       status.restRootUrl = makeCustomApiUrl(apiUrl);
     },
 
-    addTradingPair(pair, conf) {
-      if (!conf) {
+    addTradingPair(pair, pairConf) {
+      if (!pairConf) {
         return debugError(ERROR.NO_CONFIGURATION_PROVIDED, status.debug);
       }
-      if (conf && !conf.interval) {
+      if (pairConf && !pairConf.interval) {
         return debugError(ERROR.NO_TIME_FRAME_PROVIDED, status.debug);
       }
       if (!Array.isArray(pair)) {
         return debugError(ERROR.PAIR_IS_NOT_ARRAY, status.debug);
       }
+      if (!Object.keys(API_RESOLUTIONS_MAP).includes(pairConf.interval)) {
+        return debugError(ERROR.INTERVAL_NOT_SUPPORTED, status.debug);
+      }
+
+      const conf = makePairConfig(pairConf, API_RESOLUTIONS_MAP);
       const ticker = `${pair[0]}${pair[1]}`;
       const channel = `${conf.interval}:${ticker}`;
       const config = { ...conf, symbols: [...pair], ticker };
@@ -163,7 +175,10 @@ const binance = (function binance() {
       pairs = addTradingPair(pairs, channel, config);
 
       if (status.isRunning) {
-        closeStream$.next();
+        if (ws.readyState === 1) {
+          closeStream$.next();
+        }
+
         addTradingPairToStream$.next();
       }
 
@@ -185,7 +200,7 @@ const binance = (function binance() {
         return debugError(ERROR.PAIR_NOT_DEFINED, status.debug);
       }
 
-      [pairs, candlesData] = removeTradingPair(ws, pairs, channel, candlesData);
+      [pairs, candlesData] = removeTradingPair(pairs, channel, candlesData);
 
       return pairs;
     },
@@ -196,7 +211,7 @@ const binance = (function binance() {
 
 binance.options = {
   debug: false,
-  intervals: INTERVALS,
+  intervals: API_RESOLUTIONS_MAP,
 };
 
 export default binance;

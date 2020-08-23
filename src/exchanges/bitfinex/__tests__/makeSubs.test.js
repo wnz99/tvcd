@@ -1,10 +1,10 @@
 import makeSubs from '../utils/makeSubs';
 
 describe('makeSubs bitfinex function', () => {
-  it('returns subscribtion array succes', () => {
+  it('returns subscription array succes', () => {
     const pairs = {
-      ETHUSD: { interval: '1m', symbols: ['ETH', 'USD'] },
-      ZRXUSD: { interval: '1d', symbols: ['ZRX', 'USD'] },
+      ETHUSD: { intervalApi: '1m', symbols: ['ETH', 'USD'] },
+      ZRXUSD: { intervalApi: '1d', symbols: ['ZRX', 'USD'] },
     };
     const subArray = makeSubs(pairs);
     const expectedSubArray = [

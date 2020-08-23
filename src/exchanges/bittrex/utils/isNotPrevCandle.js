@@ -9,6 +9,7 @@ const isNotPastCandle = (availableDataForThePeriod, streamData) => {
   ) {
     return true;
   }
+
   return false;
 };
 
