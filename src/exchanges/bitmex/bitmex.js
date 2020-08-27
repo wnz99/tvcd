@@ -108,7 +108,8 @@ const bitmex = (function bitmex() {
             candlesData = updateCandles(
               streamData,
               candlesData,
-              options.format
+              options.format,
+              status.debug
             );
             dataStream$.next(candlesData);
 
