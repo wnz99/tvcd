@@ -21,7 +21,7 @@ const makeDataStream = (wsUrl, options = {}) => {
     },
     onOpenCb: () => {
       if (debug) {
-        console.warn('Bitfinex WS opened');
+        console.log('tvcd => Bitfinex WS opened');
       }
       wsInstance$.next(ws);
     },
@@ -39,11 +39,11 @@ const makeDataStream = (wsUrl, options = {}) => {
         ws.close(1000, 'Close handle was called');
 
         if (debug) {
-          console.warn('Bitfinex WS closed');
+          console.log('tvcd => Bitfinex WS closed');
         }
       }
       if (debug) {
-        console.warn('Bitfinex dataFeed$ closed');
+        console.log('tvcd => Bitfinex dataFeed$ closed');
       }
     };
   }).pipe(
