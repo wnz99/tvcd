@@ -3,9 +3,7 @@ import debugError from '../debugError';
 let spyFn;
 
 beforeEach(() => {
-  spyFn = jest
-    .spyOn(global.console, 'warn')
-    .mockImplementation(() => jest.fn());
+  spyFn = jest.spyOn(global.console, 'log').mockImplementation(() => jest.fn());
 });
 
 afterEach(() => {
