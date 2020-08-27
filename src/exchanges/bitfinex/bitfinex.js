@@ -99,7 +99,8 @@ const bitfinex = (function bitfinex() {
             candlesData = updateCandles(
               streamData,
               candlesData,
-              options.format
+              options.format,
+              status.debug
             );
             dataStream$.next(candlesData);
             return candlesData;

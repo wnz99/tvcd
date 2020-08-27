@@ -11,7 +11,7 @@ export const isLastNthDataPoint = (points, candles, entry) => {
   return [isNew ? 0 : i, isNew];
 };
 
-const updateCandles = (update, candlesData, formatFn, debug = true) => {
+const updateCandles = (update, candlesData, formatFn, debug = false) => {
   try {
     const [pair, data, interval] = update;
     const channel = `${interval}:${pair}`;
