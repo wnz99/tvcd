@@ -20,8 +20,8 @@ const makeDataStream = (wsUrl, options) => {
       reconnect$.next();
     },
     onOpenCb: () => {
-      if (process.env.NODE_ENV === 'development') {
-        console.warn('Bitmex WS opened');
+      if (debug) {
+        console.log('tvcd => Bitmex WS opened');
       }
       wsInstance$.next(ws);
     },
@@ -38,11 +38,11 @@ const makeDataStream = (wsUrl, options) => {
       if (ws.readyState === 1) {
         ws.close();
         if (debug) {
-          console.warn('Bitmex WS closed');
+          console.log('tvcd => Bitmex WS closed');
         }
       }
       if (debug) {
-        console.warn('Bitmex dataFeed$ closed');
+        console.log('tvcd => Bitmex dataFeed$ closed');
       }
     };
   }).pipe(

@@ -10,8 +10,8 @@ const makeDataStream = (wsUrlFn, options = {}) => {
   const dataFeed$ = Observable.create((observer) => {
     const wsUrl = wsUrlFn();
 
-    if (process.env.NODE_ENV === 'development') {
-      console.warn(`Binance dataFeed$ opened ${wsUrl}`);
+    if (debug) {
+      console.log(`tvcd => Binance dataFeed$ opened ${wsUrl}`);
     }
 
     const pushEvent = (event) => observer.next(event);
@@ -19,7 +19,6 @@ const makeDataStream = (wsUrlFn, options = {}) => {
     let ws = connectWs(wsUrl, {
       initSubs: (options && options.initSubs) || {},
       onReconnectCb: (_err, wsInstance) => {
-        console.warn('reconnect');
         ws.removeEventListener('message', pushEvent);
 
         ws = wsInstance;
@@ -36,10 +35,10 @@ const makeDataStream = (wsUrlFn, options = {}) => {
       if (ws) {
         if (ws.readyState === 1) {
           if (debug) {
-            console.warn(`Binance dataFeed$ closed ${wsUrl}`);
-            console.warn(`ws status: ${ws.readyState}`);
+            console.log(`tvcd => Binance dataFeed$ closed ${wsUrl}`);
+            console.log(`tvcd => ws status: ${ws.readyState}`);
           }
-          ws.close(1000, 'Close handle was called');
+          ws.close(1000, 'tvcd => Close handle was called');
         }
       }
     };

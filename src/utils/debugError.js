@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 const debugError = (message, isDebug) => {
   if (isDebug) {
-    console.warn(message);
+    console.log(`tvcd => ${message}`);
   }
   return new Error(message);
 };
