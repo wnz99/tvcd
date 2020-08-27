@@ -1,9 +1,10 @@
-import without from 'lodash/without';
+import _without from 'lodash/without';
 
 let subscribedPairs = [];
 
 const processStreamEvent = (event) => {
   const msg = JSON.parse(event.data);
+
   if (Array.isArray(msg) && subscribedPairs[msg[0]] && msg[1] !== 'hb') {
     const { interval, ticker } = subscribedPairs[msg[0]];
     return [ticker, msg[1], interval];
@@ -20,7 +21,7 @@ const processStreamEvent = (event) => {
   }
 
   if (msg.event === 'unsubscribed') {
-    subscribedPairs = without(subscribedPairs, msg.chanId);
+    subscribedPairs = _without(subscribedPairs, msg.chanId);
   }
 
   return null;

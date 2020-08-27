@@ -1,18 +1,31 @@
-import { Subject, timer } from 'rxjs';
-import { map, multicast, takeUntil, filter, switchMap } from 'rxjs/operators';
+import { Subject, timer, merge } from 'rxjs';
+import { map, multicast, takeUntil, switchMap } from 'rxjs/operators';
 import moment from 'moment';
+import _omit from 'lodash/omit';
 
-import { debugError, fetchCandles, updateCandles } from '../../utils';
-import { ERROR, REST_ROOT_URL, INTERVALS, makeCustomApiUrl } from './const';
+import {
+  debugError,
+  fetchCandles,
+  updateCandles,
+  makePairConfig,
+  mapToStandardInterval,
+} from '../../utils';
+import {
+  ERROR,
+  REST_ROOT_URL,
+  API_RESOLUTIONS_MAP,
+  makeCustomApiUrl,
+} from './const';
 import {
   makeOptions,
   makeCandlesUrl,
   shouldReturnCandles,
   addChannelToCandlesData,
-  isNotPrevCandle,
+  // Dont remove
+  // isNotPrevCandle,
 } from './utils';
 import { getTicker$ } from './observables';
-import { EXCHANGE_NAME } from '../../const';
+import { EXCHANGE_NAME, REAL_TIME } from '../../const';
 import { data$ } from '../../observables';
 
 const bittrex = (function bittrex() {
@@ -48,22 +61,27 @@ const bittrex = (function bittrex() {
       if (status.isRunning) {
         return debugError(ERROR.SERVICE_IS_RUNNING, status.debug);
       }
+
       options = makeOptions(opts);
 
       timer(0, 5000)
         .pipe(
           switchMap(() => {
-            const channel = Object.keys(pairs)[0];
+            const tickers = Object.keys(pairs).map((channel) => {
+              return getTicker$(pairs[channel], status.restRootUrl);
+            });
 
-            return getTicker$(pairs[channel], status.restRootUrl).pipe(
-              filter((streamData) => {
-                return isNotPrevCandle(availableDataForThePeriod, streamData);
-              }),
+            return merge(...tickers).pipe(
+              map((streamData) =>
+                mapToStandardInterval(streamData, API_RESOLUTIONS_MAP)
+              ),
               map((streamData) => {
                 candlesData = addChannelToCandlesData(candlesData, streamData);
                 return streamData;
               }),
               map((ticker) => {
+                const channel = `${ticker[2]}:${ticker[0]}`;
+
                 candlesData = updateCandles(
                   ticker,
                   candlesData,
@@ -101,6 +119,7 @@ const bittrex = (function bittrex() {
           start: moment(start).startOf('minute').valueOf(),
           end: moment(end).startOf('minute').valueOf(),
         };
+
         return fetchCandles(pair, interval, start, end, limit, {
           status,
           options: { ...options, makeChunkCalls: false },
@@ -123,16 +142,22 @@ const bittrex = (function bittrex() {
       status.restRootUrl = makeCustomApiUrl(apiUrl);
     },
 
-    addTradingPair: (pair, conf) => {
-      if (!conf) {
+    addTradingPair: (pair, pairConf) => {
+      if (!pairConf) {
         return debugError(ERROR.NO_CONFIGURATION_PROVIDED, status.debug);
       }
-      if (conf && !conf.interval) {
+      if (pairConf && !pairConf.interval) {
         return debugError(ERROR.NO_TIME_FRAME_PROVIDED, status.debug);
       }
       if (!Array.isArray(pair)) {
         return debugError(ERROR.PAIR_IS_NOT_ARRAY, status.debug);
       }
+      if (!Object.keys(API_RESOLUTIONS_MAP).includes(pairConf.interval)) {
+        return debugError(ERROR.INTERVAL_NOT_SUPPORTED, status.debug);
+      }
+
+      const conf = makePairConfig(pairConf, API_RESOLUTIONS_MAP);
+
       const ticker = `${pair[0]}${pair[1]}`;
       const channel = `${conf.interval}:${ticker}`;
       const config = { ...conf, symbols: [...pair], ticker };
@@ -141,7 +166,12 @@ const bittrex = (function bittrex() {
         return debugError(ERROR.PAIR_ALREADY_DEFINED, status.debug);
       }
 
-      pairs = { [channel]: config };
+      if (pairConf.interval === REAL_TIME) {
+        pairs = { ...pairs, [channel]: config };
+      } else {
+        pairs = { [channel]: config };
+      }
+
       return pairs;
     },
 
@@ -160,7 +190,7 @@ const bittrex = (function bittrex() {
         return debugError(ERROR.PAIR_NOT_DEFINED, status.debug);
       }
 
-      pairs = {};
+      pairs = _omit(pair, [channel]);
 
       return pairs;
     },
@@ -171,7 +201,7 @@ const bittrex = (function bittrex() {
 
 bittrex.options = {
   debug: false,
-  intervals: INTERVALS,
+  intervals: API_RESOLUTIONS_MAP,
 };
 
 export default bittrex;

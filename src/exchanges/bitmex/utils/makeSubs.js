@@ -5,11 +5,11 @@ const makeSubs = (pairs) => {
   const subscriptions = [];
 
   for (const channel in pairs) {
-    const { interval, symbols } = pairs[channel];
+    const { intervalApi, symbols } = pairs[channel];
 
     subscriptions.push({
       op: 'subscribe',
-      args: `tradeBin${interval}:${symbols[0]}${symbols[1]}`,
+      args: `tradeBin${intervalApi}:${symbols[0]}${symbols[1]}`,
     });
   }
 

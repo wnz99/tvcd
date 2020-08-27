@@ -16,3 +16,5 @@ export const EXCHANGE_NAME = {
 export const ERROR = {
   EXCHANGE_NOT_SUPPORTED,
 };
+
+export const REAL_TIME = 'realtime';

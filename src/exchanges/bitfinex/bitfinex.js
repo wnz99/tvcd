@@ -10,15 +10,17 @@ import {
 
 import {
   debugError,
-  makeCandlesRestApiUrl,
   fetchCandles,
+  makeCandlesRestApiUrl,
+  makePairConfig,
+  mapToStandardInterval,
   updateCandles,
 } from '../../utils';
 import {
   ERROR,
   WS_ROOT_URL,
   REST_ROOT_URL,
-  INTERVALS,
+  API_RESOLUTIONS_MAP,
   makeCustomApiUrl,
 } from './const';
 import {
@@ -39,7 +41,7 @@ const bitfinex = (function bitfinex() {
   let closeStream$ = new Subject();
   let wsInstance$ = wsInst();
   let candlesData = {};
-  let pairs = {};
+  let tradingPairs = {};
   let dataSource$;
   let ws;
   let options;
@@ -54,7 +56,7 @@ const bitfinex = (function bitfinex() {
   const resetConf = () => {
     closeStream$ = new Subject();
     wsInstance$ = wsInst();
-    pairs = {};
+    tradingPairs = {};
     candlesData = {};
     dataSource$ = undefined;
     ws = undefined;
@@ -77,8 +79,9 @@ const bitfinex = (function bitfinex() {
       options = makeOptions(opts);
 
       dataSource$ = makeDataStream(status.wsRootUrl, {
-        initSubs: makeSubs(pairs),
+        initSubs: makeSubs(tradingPairs),
         wsInstance$,
+        debug: status.debug,
       });
 
       wsInstance$.subscribe((instance) => {
@@ -89,6 +92,9 @@ const bitfinex = (function bitfinex() {
         .pipe(
           map((streamEvent) => processStreamEvent(streamEvent)),
           filter((streamEvent) => streamEvent),
+          map((streamData) =>
+            mapToStandardInterval(streamData, API_RESOLUTIONS_MAP)
+          ),
           map((streamData) => {
             candlesData = updateCandles(
               streamData,
@@ -116,22 +122,23 @@ const bitfinex = (function bitfinex() {
       setStatus({ isRunning: false });
     },
 
-    fetchCandles: async (pair, interV, start, end, limit) => {
+    fetchCandles: async (pair, interval, start, end, limit) => {
       const makeCandlesUrlFn = (symbols, timeInterval, startTime, endTime) =>
         makeCandlesRestApiUrl(status.exchange.name, status.restRootUrl, {
           symbol: makePair(symbols[0], symbols[1]),
-          interval: timeInterval,
+          interval: API_RESOLUTIONS_MAP[timeInterval],
           start: startTime,
           end: endTime,
         });
-      return fetchCandles(pair, interV, start, end, limit, {
+
+      return fetchCandles(pair, interval, start, end, limit, {
         status,
         options: { ...options, makeChunkCalls: true },
         makeCandlesUrlFn,
       });
     },
 
-    getTradingPairs: () => pairs,
+    getTradingPairs: () => tradingPairs,
 
     getStatus: () => status,
 
@@ -143,26 +150,36 @@ const bitfinex = (function bitfinex() {
       status.restRootUrl = makeCustomApiUrl(apiUrl);
     },
 
-    addTradingPair: (pair, conf) => {
-      if (!conf) {
+    addTradingPair: (pair, pairConf) => {
+      if (!pairConf) {
         return debugError(ERROR.NO_CONFIGURATION_PROVIDED, status.debug);
       }
-      if (conf && !conf.interval) {
+      if (pairConf && !pairConf.interval) {
         return debugError(ERROR.NO_TIME_FRAME_PROVIDED, status.debug);
       }
       if (!Array.isArray(pair)) {
         return debugError(ERROR.PAIR_IS_NOT_ARRAY, status.debug);
       }
-      const ticker = `${pair[0]}${pair[1]}`;
-      const channel = `${conf.interval}:${ticker}`;
-      const config = { ...conf, symbols: [...pair], ticker };
+      if (!Object.keys(API_RESOLUTIONS_MAP).includes(pairConf.interval)) {
+        return debugError(ERROR.INTERVAL_NOT_SUPPORTED, status.debug);
+      }
 
-      if (pairs[channel]) {
+      const conf = makePairConfig(pairConf, API_RESOLUTIONS_MAP);
+      const ticker = `${pair[0]}${pair[1]}`;
+      const channelName = `${conf.interval}:${ticker}`;
+      const channelArgs = { ...conf, symbols: [...pair], ticker };
+
+      if (tradingPairs[channelName]) {
         return debugError(ERROR.PAIR_ALREADY_DEFINED, status.debug);
       }
 
       if (ws && ws.readyState === 1) {
-        pairs = addTradingPair(ws, pairs, channel, config);
+        tradingPairs = addTradingPair(
+          ws,
+          tradingPairs,
+          channelName,
+          channelArgs
+        );
         return null;
       }
 
@@ -174,8 +191,14 @@ const bitfinex = (function bitfinex() {
           take(1)
         )
         .subscribe(() => {
-          pairs = addTradingPair(ws, pairs, channel, config);
-          return pairs;
+          tradingPairs = addTradingPair(
+            ws,
+            tradingPairs,
+            channelName,
+            channelArgs
+          );
+
+          return tradingPairs;
         });
 
       return null;
@@ -192,11 +215,16 @@ const bitfinex = (function bitfinex() {
 
       const channel = `${interV}:${pair[0]}${pair[1]}`;
 
-      if (!pairs[channel]) {
+      if (!tradingPairs[channel]) {
         return debugError(ERROR.PAIR_NOT_DEFINED, status.debug);
       }
 
-      [pairs, candlesData] = removeTradingPair(ws, pairs, channel, candlesData);
+      [tradingPairs, candlesData] = removeTradingPair(
+        ws,
+        tradingPairs,
+        channel,
+        candlesData
+      );
 
       return null;
     },
@@ -207,7 +235,7 @@ const bitfinex = (function bitfinex() {
 
 bitfinex.options = {
   debug: false,
-  intervals: INTERVALS,
+  intervals: API_RESOLUTIONS_MAP,
 };
 
 export default bitfinex;

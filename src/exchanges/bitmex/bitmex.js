@@ -1,5 +1,12 @@
-import { Subject } from 'rxjs';
-import { map, multicast, takeUntil, filter } from 'rxjs/operators';
+import { Subject, interval as rxInterval } from 'rxjs';
+import {
+  map,
+  multicast,
+  takeUntil,
+  filter,
+  skipUntil,
+  take,
+} from 'rxjs/operators';
 import moment from 'moment';
 
 import {
@@ -7,13 +14,14 @@ import {
   makeCandlesRestApiUrl,
   fetchCandles,
   updateCandles,
+  makePairConfig,
 } from '../../utils';
 import {
   ERROR,
   WS_ROOT_URL,
   REST_ROOT_URL,
-  INTERVALS,
   API_OPTIONS,
+  API_RESOLUTIONS_MAP,
   makeCustomApiUrl,
 } from './const';
 import {
@@ -24,6 +32,7 @@ import {
   removeTradingPair,
   processStreamEvent,
   addChannelToCandlesData,
+  wsInst,
 } from './utils';
 import { EXCHANGE_NAME } from '../../const';
 import { data$ } from '../../observables';
@@ -33,7 +42,7 @@ const bitmex = (function bitmex() {
   let closeStream$ = new Subject();
   let candlesData = {};
   let tradingPairs = {};
-  let wsInstance$;
+  let wsInstance$ = wsInst();
   let dataSource$;
   let ws;
   let options;
@@ -47,6 +56,7 @@ const bitmex = (function bitmex() {
 
   const resetConf = () => {
     closeStream$ = new Subject();
+    wsInstance$ = wsInst();
     tradingPairs = {};
     candlesData = {};
     wsInstance$ = undefined;
@@ -71,12 +81,11 @@ const bitmex = (function bitmex() {
       }
 
       options = makeOptions(opts);
-      if (Object.keys(tradingPairs).length === 0) {
-        return debugError(ERROR.NO_INIT_tradingPairs_DEFINED, status.debug);
-      }
 
-      [wsInstance$, dataSource$] = makeDataStream(status.wsRootUrl, {
+      dataSource$ = makeDataStream(status.wsRootUrl, {
         initSubs: makeSubs(tradingPairs),
+        wsInstance$,
+        debug: status.debug,
       });
 
       wsInstance$.subscribe((instance) => {
@@ -123,17 +132,17 @@ const bitmex = (function bitmex() {
       setStatus({ isRunning: false });
     },
 
-    fetchCandles: async (pair, interV, start, end, limit) => {
-      const makeCandlesUrlFn = (symbols, interval, startT, endT) =>
+    fetchCandles: async (pair, interval, start, end, limit) => {
+      const makeCandlesUrlFn = (symbols, timeInterval, startT, endT) =>
         makeCandlesRestApiUrl(status.exchange.name, status.restRootUrl, {
           symbol: `${symbols[0]}${symbols[1]}`,
-          binSize: interval,
+          binSize: API_RESOLUTIONS_MAP[timeInterval],
           columns: 'open,close,high,low,volume',
           startTime: moment(startT).toISOString(),
           endTime: moment(endT).toISOString(),
           count: API_OPTIONS.apiLimit,
         });
-      return fetchCandles(pair, interV, start, end, limit, {
+      return fetchCandles(pair, interval, start, end, limit, {
         status,
         options: {
           ...options,
@@ -156,16 +165,20 @@ const bitmex = (function bitmex() {
       status.restRootUrl = makeCustomApiUrl(apiUrl);
     },
 
-    addTradingPair: (pair, conf) => {
-      if (!conf) {
+    addTradingPair: (pair, pairConf) => {
+      if (!pairConf) {
         return debugError(ERROR.NO_CONFIGURATION_PROVIDED, status.debug);
       }
-      if (conf && !conf.interval) {
+      if (pairConf && !pairConf.interval) {
         return debugError(ERROR.NO_TIME_FRAME_PROVIDED, status.debug);
       }
       if (!Array.isArray(pair)) {
         return debugError(ERROR.PAIR_IS_NOT_ARRAY, status.debug);
       }
+      if (!Object.keys(API_RESOLUTIONS_MAP).includes(pairConf.interval)) {
+        return debugError(ERROR.INTERVAL_NOT_SUPPORTED, status.debug);
+      }
+      const conf = makePairConfig(pairConf, API_RESOLUTIONS_MAP);
       const ticker = `${pair[0]}${pair[1]}`;
       const channelName = `${conf.interval}:${ticker}`;
       const channelArgs = { ...conf, symbols: pair, ticker };
@@ -174,9 +187,35 @@ const bitmex = (function bitmex() {
         return debugError(ERROR.PAIR_ALREADY_DEFINED, status.debug);
       }
 
-      tradingPairs = addTradingPair(ws, tradingPairs, channelName, channelArgs);
+      if (ws && ws.readyState === 1) {
+        tradingPairs = addTradingPair(
+          ws,
+          tradingPairs,
+          channelName,
+          channelArgs
+        );
+        return null;
+      }
 
-      return tradingPairs;
+      rxInterval(200)
+        .pipe(
+          skipUntil(
+            wsInstance$.pipe(filter((instance) => instance.readyState === 1))
+          ),
+          take(1)
+        )
+        .subscribe(() => {
+          tradingPairs = addTradingPair(
+            ws,
+            tradingPairs,
+            channelName,
+            channelArgs
+          );
+
+          return tradingPairs;
+        });
+
+      return null;
     },
 
     removeTradingPair: (pair, interval) => {
@@ -210,7 +249,7 @@ const bitmex = (function bitmex() {
 
 bitmex.options = {
   debug: false,
-  intervals: INTERVALS,
+  intervals: API_RESOLUTIONS_MAP,
 };
 
 export default bitmex;

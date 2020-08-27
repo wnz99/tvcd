@@ -1,16 +1,24 @@
-import { Subject, timer, from } from 'rxjs';
+import { Subject, timer, from, merge } from 'rxjs';
 import { map, multicast, takeUntil, filter, switchMap } from 'rxjs/operators';
 import moment from 'moment';
+import _omit from 'lodash/omit';
 
 import {
   debugError,
   fetchCandles,
-  updateCandles,
   makeCandlesRestApiUrl,
+  makePairConfig,
+  mapToStandardInterval,
+  updateCandles,
 } from '../../utils';
-import { ERROR, REST_ROOT_URL, INTERVALS, makeCustomApiUrl } from './const';
+import {
+  ERROR,
+  REST_ROOT_URL,
+  API_RESOLUTIONS_MAP,
+  makeCustomApiUrl,
+} from './const';
 import { makeOptions, addChannelToCandlesData } from './utils';
-import { EXCHANGE_NAME } from '../../const';
+import { EXCHANGE_NAME, REAL_TIME } from '../../const';
 import { data$ } from '../../observables';
 
 const poloniex = (function poloniex() {
@@ -47,37 +55,59 @@ const poloniex = (function poloniex() {
       }
 
       options = makeOptions(opts);
+
       timer(0, 5000)
         .pipe(
           switchMap(() => {
-            const channel = Object.keys(pairs)[0];
-            const { symbols, interval } = pairs[channel];
-            const start = moment().subtract(5, 'minute').valueOf();
-            const end = moment().valueOf();
+            // const channel = Object.keys(pairs)[0];
+            // const { symbols, interval } = pairs[channel];
+            // const start = moment().subtract(5, 'minute').valueOf();
+            // const end = moment().valueOf();
 
-            const candlesApiCall = this.fetchCandles(
-              symbols,
-              interval,
-              start,
-              end
-            );
-            return from(candlesApiCall).pipe(
-              filter((data) => data.length),
-              map((streamData) => {
-                return [
-                  `${symbols[0]}${symbols[1]}`,
-                  streamData[streamData.length - 1],
-                  interval,
-                ];
-              }),
+            // const candlesApiCall = this.fetchCandles(
+            //   symbols,
+            //   interval,
+            //   start,
+            //   end
+            // );
+
+            // from(candlesApiCall);
+
+            const tickers = Object.keys(pairs).map((channel) => {
+              const { symbols, interval } = pairs[channel];
+              const start = moment().subtract(5, 'minute').valueOf();
+              const end = moment().valueOf();
+
+              const candlesApiCall = this.fetchCandles(
+                symbols,
+                interval,
+                start,
+                end
+              );
+
+              return from(candlesApiCall).pipe(
+                filter((data) => data.length),
+                map((streamData) => {
+                  return [
+                    `${symbols[0]}${symbols[1]}`,
+                    streamData[streamData.length - 1],
+                    interval,
+                  ];
+                })
+              );
+            });
+
+            return merge(...tickers).pipe(
               map((streamData) => {
                 candlesData = addChannelToCandlesData(candlesData, streamData);
 
                 return streamData;
               }),
-              map((streamData) => {
+              map((ticker) => {
+                const channel = `${ticker[2]}:${ticker[0]}`;
+
                 candlesData = updateCandles(
-                  streamData,
+                  ticker,
                   candlesData,
                   options.format
                 );
@@ -106,16 +136,17 @@ const poloniex = (function poloniex() {
       setStatus({ isRunning: false });
     },
 
-    fetchCandles: async (pair, interV, start, end, limit) => {
-      const makeCandlesUrlFn = (symbols, interval, startT, endT) =>
+    fetchCandles: async (pair, interval, start, end, limit) => {
+      const makeCandlesUrlFn = (symbols, timeInterval, startT, endT) =>
         makeCandlesRestApiUrl(status.exchange.name, status.restRootUrl, {
           currencyPair: `${symbols[1]}_${symbols[0]}`,
-          period: interval,
+          period: API_RESOLUTIONS_MAP[timeInterval],
           start: moment(startT).unix(),
           end: moment(endT).unix(),
           resolution: 'auto',
         });
-      return fetchCandles(pair, interV, start, end, limit, {
+
+      return fetchCandles(pair, interval, start, end, limit, {
         status,
         options: {
           ...options,
@@ -136,17 +167,21 @@ const poloniex = (function poloniex() {
       status.restRootUrl = makeCustomApiUrl(apiUrl);
     },
 
-    addTradingPair: (pair, conf) => {
-      if (!conf) {
+    addTradingPair: (pair, pairConf) => {
+      if (!pairConf) {
         return debugError(ERROR.NO_CONFIGURATION_PROVIDED, status.debug);
       }
-      if (conf && !conf.interval) {
+      if (pairConf && !pairConf.interval) {
         return debugError(ERROR.NO_TIME_FRAME_PROVIDED, status.debug);
       }
       if (!Array.isArray(pair)) {
         return debugError(ERROR.PAIR_IS_NOT_ARRAY, status.debug);
       }
+      if (!Object.keys(API_RESOLUTIONS_MAP).includes(pairConf.interval)) {
+        return debugError(ERROR.INTERVAL_NOT_SUPPORTED, status.debug);
+      }
 
+      const conf = makePairConfig(pairConf, API_RESOLUTIONS_MAP);
       const ticker = `${pair[0]}${pair[1]}`;
       const channel = `${conf.interval}:${ticker}`;
       const config = { ...conf, symbols: [...pair], ticker };
@@ -155,7 +190,12 @@ const poloniex = (function poloniex() {
         return debugError(ERROR.PAIR_ALREADY_DEFINED, status.debug);
       }
 
-      pairs = { [channel]: config };
+      if (pairConf.interval === REAL_TIME) {
+        pairs = { ...pairs, [channel]: config };
+      } else {
+        pairs = { [channel]: config };
+      }
+
       return pairs;
     },
 
@@ -174,7 +214,7 @@ const poloniex = (function poloniex() {
         return debugError(ERROR.PAIR_NOT_DEFINED, status.debug);
       }
 
-      pairs = {};
+      pairs = _omit(pair, [channel]);
 
       return pairs;
     },
@@ -185,7 +225,7 @@ const poloniex = (function poloniex() {
 
 poloniex.options = {
   debug: false,
-  intervals: INTERVALS,
+  intervals: API_RESOLUTIONS_MAP,
 };
 
 export default poloniex;

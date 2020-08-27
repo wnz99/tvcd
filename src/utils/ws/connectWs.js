@@ -87,7 +87,7 @@ function connectWs(url, opts = {}) {
       clearInterval(td);
     }
 
-    if (event.code !== 1000) {
+    if (event.code !== 1000 && event.code !== 1006) {
       reconnectWs(url, { ...connOpts, subs: { ...ws.subs } });
     }
 

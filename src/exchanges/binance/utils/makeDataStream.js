@@ -1,25 +1,28 @@
-import { Observable, Subject } from 'rxjs';
+import { Observable } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { connectWs } from '../../../utils/ws';
 
-let ws;
+// let ws;
 
-const makeDataStream = (wsUrlFn, options) => {
-  const { wsInstance$ } = options;
+const makeDataStream = (wsUrlFn, options = {}) => {
+  const { wsInstance$, debug } = options;
 
   const dataFeed$ = Observable.create((observer) => {
+    const wsUrl = wsUrlFn();
+
     if (process.env.NODE_ENV === 'development') {
-      console.warn('Binance dataFeed$ opened');
+      console.warn(`Binance dataFeed$ opened ${wsUrl}`);
     }
 
     const pushEvent = (event) => observer.next(event);
 
-    ws = connectWs(wsUrlFn(), {
+    let ws = connectWs(wsUrl, {
       initSubs: (options && options.initSubs) || {},
-      onReconnectCb: (err, data) => {
+      onReconnectCb: (_err, wsInstance) => {
+        console.warn('reconnect');
         ws.removeEventListener('message', pushEvent);
 
-        ws = data;
+        ws = wsInstance;
 
         ws.addEventListener('message', pushEvent);
       },
@@ -31,13 +34,13 @@ const makeDataStream = (wsUrlFn, options) => {
 
     return () => {
       if (ws) {
-        if (process.env.NODE_ENV === 'development') {
-          console.warn('Binance dataFeed$ closed');
+        if (ws.readyState === 1) {
+          if (debug) {
+            console.warn(`Binance dataFeed$ closed ${wsUrl}`);
+            console.warn(`ws status: ${ws.readyState}`);
+          }
+          ws.close(1000, 'Close handle was called');
         }
-
-        ws.close(1000, 'Close handle was called', {
-          keepClosed: true,
-        });
       }
     };
   }).pipe(filter((msg) => msg));

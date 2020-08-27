@@ -5,11 +5,11 @@ import { onSubscriptionMsg, onPongMsg } from '.';
 
 let ws;
 
-const wsInstance$ = new Subject();
-
 const reconnect$ = new Subject();
 
 const makeDataStream = (wsUrl, options) => {
+  const { wsInstance$, debug } = options;
+
   ws = connectWs(wsUrl, {
     initSubs: (options && options.initSubs) || {},
     keepAlive: { msg: 'ping' },
@@ -23,6 +23,7 @@ const makeDataStream = (wsUrl, options) => {
       if (process.env.NODE_ENV === 'development') {
         console.warn('Bitmex WS opened');
       }
+      wsInstance$.next(ws);
     },
   });
 
@@ -36,30 +37,26 @@ const makeDataStream = (wsUrl, options) => {
     return () => {
       if (ws.readyState === 1) {
         ws.close();
-        if (process.env.NODE_ENV === 'development') {
+        if (debug) {
           console.warn('Bitmex WS closed');
         }
       }
-      if (process.env.NODE_ENV === 'development') {
+      if (debug) {
         console.warn('Bitmex dataFeed$ closed');
       }
     };
   }).pipe(
-    filter((event) => event.data !== 'pong'),
-    map((event) => {
+    filter((event) => event && event.data !== 'pong'),
+    filter((event) => {
       const data = JSON.parse(event.data);
-      if (data.table) {
-        return event;
-      }
-      return null;
-    }),
 
-    filter((event) => event),
+      return data.table;
+    }),
     takeUntil(reconnect$),
     repeat()
   );
 
-  return [wsInstance$, dataFeed$];
+  return dataFeed$;
 };
 
 export default makeDataStream;

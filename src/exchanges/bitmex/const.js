@@ -1,12 +1,18 @@
+import { REAL_TIME } from '../../const';
+
 export const WS_ROOT_URL = 'wss://www.bitmex.com/realtime';
 export const REST_ROOT_URL = `https://www.bitmex.com/api/v1`;
 export const makeCustomApiUrl = (rootUrl) => `${rootUrl}/bitmex/api/v1`;
 
-export const INTERVALS = {
+// Maps exchange API resolutions to TVCD starndard resolutions
+// https://www.bitmex.com/api/explorer/#!/Trade/Trade_getBucketed
+
+export const API_RESOLUTIONS_MAP = {
   '1m': '1m',
   '5m': '5m',
   '1h': '1h',
-  '1d': '1d',
+  '1D': '1d',
+  [REAL_TIME]: ['1m', '1m'], // Format: [tvcd_resolution, api_resolution]
 };
 
 export const API_OPTIONS = {
@@ -14,11 +20,12 @@ export const API_OPTIONS = {
 };
 
 export const ERROR = {
-  NO_INIT_PAIRS_DEFINED: 'No trading pairs defined.',
+  INTERVAL_NOT_SUPPORTED: 'Interval is not supported',
   NO_CONFIGURATION_PROVIDED: 'No configuration provided.',
+  NO_INIT_PAIRS_DEFINED: 'No trading pairs defined.',
   NO_TIME_FRAME_PROVIDED: 'No interval provided.',
   PAIR_ALREADY_DEFINED: 'Pair already defined.',
-  PAIR_NOT_DEFINED: 'Pair not defined.',
   PAIR_IS_NOT_ARRAY: 'Pair must be an array with base ccy and quote ccy.',
-  SERVICE_IS_RUNNING: 'The service is already running.',
+  PAIR_NOT_DEFINED: 'Pair not defined.',
+  SERVICE_IS_RUNNING: 'tdcv is already running.',
 };

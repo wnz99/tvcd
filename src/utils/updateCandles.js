@@ -11,7 +11,7 @@ export const isLastNthDataPoint = (points, candles, entry) => {
   return [isNew ? 0 : i, isNew];
 };
 
-const updateCandles = (update, candlesData, formatFn, debug = false) => {
+const updateCandles = (update, candlesData, formatFn, debug = true) => {
   try {
     const [pair, data, interval] = update;
     const channel = `${interval}:${pair}`;
@@ -48,7 +48,7 @@ const updateCandles = (update, candlesData, formatFn, debug = false) => {
 
       if (isNew) {
         if (debug) {
-          console.log(`${pair} => NEW point`);
+          console.log(`tvcd => ${channel} => NEW candle => `, entry);
         }
 
         candles.unshift(entry);
@@ -60,7 +60,7 @@ const updateCandles = (update, candlesData, formatFn, debug = false) => {
         };
       } else {
         if (debug) {
-          console.log(`${pair} => UPDATE point ${i}`);
+          console.log(`tvcd => ${channel} => UPDATE candle ${i} => `, entry);
         }
 
         candles[i] = entry;
