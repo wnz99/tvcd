@@ -1,5 +1,5 @@
 import { timer, from } from 'rxjs';
-import { tap, delayWhen, retryWhen, switchMap } from 'rxjs/operators';
+import { delayWhen, retryWhen, switchMap } from 'rxjs/operators';
 import { INTERVALS_CONVERSION } from '../const';
 
 const getTicker$ = (channel, restRootUrl) => {

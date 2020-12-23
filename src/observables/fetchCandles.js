@@ -1,5 +1,5 @@
 import { timer, defer } from 'rxjs';
-import { tap, delayWhen, retryWhen, switchMap } from 'rxjs/operators';
+import { delayWhen, retryWhen, switchMap } from 'rxjs/operators';
 
 export const fetchCandles$ = (restApiUrl, requestOptions = {}) => {
   return defer(() => fetch(restApiUrl, requestOptions)).pipe(
