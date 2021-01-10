@@ -15,8 +15,8 @@ const makeDataStream = (wsUrl, options) => {
     keepAlive: { msg: 'ping' },
     onPongCb: onPongMsg,
     onSubscriptionCb: onSubscriptionMsg,
-    onReconnectCb: (err, data) => {
-      ws = data;
+    onReconnectCb: (err, wsInstance) => {
+      ws = wsInstance;
       reconnect$.next();
     },
     onOpenCb: () => {
@@ -36,7 +36,8 @@ const makeDataStream = (wsUrl, options) => {
 
     return () => {
       if (ws.readyState === 1) {
-        ws.close();
+        ws.close(1000, 'Close handle was called');
+        
         if (debug) {
           console.log('tvcd => Bitmex WS closed');
         }

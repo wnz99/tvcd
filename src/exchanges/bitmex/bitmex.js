@@ -40,9 +40,9 @@ import { data$ } from '../../observables';
 const bitmex = (function bitmex() {
   const dataStream$ = new Subject();
   let closeStream$ = new Subject();
+  let wsInstance$ = wsInst();
   let candlesData = {};
   let tradingPairs = {};
-  let wsInstance$ = wsInst();
   let dataSource$;
   let ws;
   let options;
@@ -59,7 +59,6 @@ const bitmex = (function bitmex() {
     wsInstance$ = wsInst();
     tradingPairs = {};
     candlesData = {};
-    wsInstance$ = undefined;
     dataSource$ = undefined;
     ws = undefined;
     status = {
