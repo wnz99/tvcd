@@ -63,6 +63,8 @@ const bitfinex = (function bitfinex() {
     status = {
       ...status,
       isRunning: false,
+      wsRootUrl: WS_ROOT_URL,
+      restRootUrl: REST_ROOT_URL,
     };
   };
 
