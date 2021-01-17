@@ -23,6 +23,7 @@ import {
   API_OPTIONS,
   API_RESOLUTIONS_MAP,
   makeCustomApiUrl,
+  API_RESOLUTIONS_MAP_UDF,
 } from './const';
 import {
   makeDataStream,
@@ -52,6 +53,7 @@ const bitmex = (function bitmex() {
     debug: false,
     wsRootUrl: WS_ROOT_URL,
     restRootUrl: REST_ROOT_URL,
+    isUdf: false,
   };
 
   const resetConf = () => {
@@ -66,6 +68,7 @@ const bitmex = (function bitmex() {
       isRunning: false,
       wsRootUrl: WS_ROOT_URL,
       restRootUrl: REST_ROOT_URL,
+      isUdf: false,
     };
   };
 
@@ -73,13 +76,15 @@ const bitmex = (function bitmex() {
     status = { ...status, ...update };
   };
 
+  const defaultOps = { format: 'tradingview' };
+
   return {
-    start: (opts = { format: 'tradingview' }) => {
+    start: (opts = {}) => {
       if (status.isRunning) {
         return debugError(ERROR.SERVICE_IS_RUNNING, status.debug);
       }
 
-      options = makeOptions(opts);
+      options = makeOptions({ ...defaultOps, ...opts });
 
       dataSource$ = makeDataStream(status.wsRootUrl, {
         initSubs: makeSubs(tradingPairs),
@@ -133,24 +138,53 @@ const bitmex = (function bitmex() {
     },
 
     fetchCandles: async (pair, interval, start, end, limit) => {
-      const makeCandlesUrlFn = (symbols, timeInterval, startT, endT) =>
-        makeCandlesRestApiUrl(status.exchange.name, status.restRootUrl, {
-          symbol: `${symbols[0]}${symbols[1]}`,
-          binSize: API_RESOLUTIONS_MAP[timeInterval],
-          columns: 'open,close,high,low,volume',
-          startTime: moment(startT).toISOString(),
-          endTime: moment(endT).toISOString(),
-          count: API_OPTIONS.apiLimit,
-        });
-      return fetchCandles(pair, interval, start, end, limit, {
-        status,
-        options: {
-          ...options,
-          apiLimit: API_OPTIONS.apiLimit,
-          makeChunkCalls: true,
-        },
-        makeCandlesUrlFn,
-      });
+      const limitDateToApiMinimun = (date) => {
+        if (moment(date).isBefore('2010-01-01')) {
+          return moment('2010-01-01').valueOf();
+        }
+
+        return date;
+      };
+
+      const makeCandlesUrlFn = (symbols, timeInterval, startT, endT) => {
+        const params = status.isUdf
+          ? {
+              symbol: `${symbols[0]}${symbols[1]}`,
+              resolution: API_RESOLUTIONS_MAP_UDF[timeInterval],
+              from: moment(startT).unix(),
+              to: moment(endT).unix(),
+            }
+          : {
+              symbol: `${symbols[0]}${symbols[1]}`,
+              binSize: API_RESOLUTIONS_MAP[timeInterval],
+              columns: 'open,close,high,low,volume',
+              startTime: moment(startT).toISOString(),
+              endTime: moment(endT).toISOString(),
+              count: API_OPTIONS.apiLimit,
+            };
+        const restRootUrl = status.isUdf
+          ? `${status.restRootUrl}/history`
+          : `${status.restRootUrl}/trade/bucketed`;
+
+        return makeCandlesRestApiUrl(status.exchange.name, restRootUrl, params);
+      };
+
+      return fetchCandles(
+        pair,
+        interval,
+        limitDateToApiMinimun(start),
+        limitDateToApiMinimun(end),
+        limit,
+        {
+          status,
+          options: {
+            ...options,
+            apiLimit: API_OPTIONS.apiLimit,
+            makeChunkCalls: true,
+          },
+          makeCandlesUrlFn,
+        }
+      );
     },
 
     getTradingPairs: () => tradingPairs,
@@ -161,8 +195,9 @@ const bitmex = (function bitmex() {
       status.debug = isDebug;
     },
 
-    setApiUrl: (apiUrl) => {
-      status.restRootUrl = makeCustomApiUrl(apiUrl);
+    setApiUrl: (apiUrl, isUdf = false) => {
+      status.isUdf = isUdf;
+      status.restRootUrl = makeCustomApiUrl(apiUrl, status.isUdf);
     },
 
     addTradingPair: (pair, pairConf) => {

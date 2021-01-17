@@ -22,7 +22,7 @@ const makeCandlesRestApiUrl = (exchangeName, REST_ROOT_URL, params) => {
       return `${REST_ROOT_URL}/klines?limit=1000&${makeQuery(params)}`;
     }
     case EXCHANGE_NAME.BITMEX: {
-      return `${REST_ROOT_URL}/trade/bucketed?${makeQuery(params)}`;
+      return `${REST_ROOT_URL}?${makeQuery(params)}`;
     }
     case EXCHANGE_NAME.BITTREX: {
       return `${REST_ROOT_URL}/market/GetTicks?${makeQuery(params)}`;

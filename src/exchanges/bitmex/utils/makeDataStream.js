@@ -37,7 +37,7 @@ const makeDataStream = (wsUrl, options) => {
     return () => {
       if (ws.readyState === 1) {
         ws.close(1000, 'Close handle was called');
-        
+
         if (debug) {
           console.log('tvcd => Bitmex WS closed');
         }
