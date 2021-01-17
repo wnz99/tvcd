@@ -1,6 +1,7 @@
 import { concat } from 'rxjs';
 import { map, reduce, filter } from 'rxjs/operators';
 import makeChunkCalls from './makeChunkCalls';
+import processUdfData from './processUdfData';
 
 const sortByTime = (candles) => {
   return candles.sort((a, b) => {
@@ -17,11 +18,16 @@ const sortByTime = (candles) => {
 };
 
 const fetchCandles = async (pair, interval, start, end, limit, opts) => {
-  const { status, options, debug } = opts;
+  const {
+    status,
+    options,
+    debug,
+    status: { isUdf },
+  } = opts;
 
   if (debug) {
     console.warn(
-      `${status.exchange.name} fetchCandles(${pair}, ${interval}, ${start}, ${end}, ${limit})`
+      `tvcd => ${status.exchange.name} fetchCandles(${pair}, ${interval}, ${start}, ${end}, ${limit})`
     );
   }
 
@@ -29,6 +35,7 @@ const fetchCandles = async (pair, interval, start, end, limit, opts) => {
 
   return concat(...fetchCallsArray)
     .pipe(
+      map((data) => (isUdf ? processUdfData(data) : data)),
       filter((data) => data[0] && data[0].date !== 0),
       reduce((acc, val) => [...acc, ...val], []),
       map((data) => {

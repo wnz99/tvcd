@@ -2,7 +2,9 @@ import { REAL_TIME } from '../../const';
 
 export const WS_ROOT_URL = 'wss://www.bitmex.com/realtime';
 export const REST_ROOT_URL = `https://www.bitmex.com/api/v1`;
-export const makeCustomApiUrl = (rootUrl) => `${rootUrl}/bitmex/api/v1`;
+export const REST_ROOT_URL_UDF = 'https://www.bitmex.com/api/udf';
+export const makeCustomApiUrl = (rootUrl, isUdf) =>
+  isUdf ? `${rootUrl}/bitmex/api/udf` : `${rootUrl}/bitmex/api/v1`;
 
 // Maps exchange API resolutions to TVCD starndard resolutions
 // https://www.bitmex.com/api/explorer/#!/Trade/Trade_getBucketed
@@ -12,6 +14,14 @@ export const API_RESOLUTIONS_MAP = {
   '5m': '5m',
   '1h': '1h',
   '1D': '1d',
+  [REAL_TIME]: ['1m', '1m'], // Format: [tvcd_resolution, api_resolution]
+};
+
+export const API_RESOLUTIONS_MAP_UDF = {
+  '1m': '1',
+  '5m': '5',
+  '1h': '60',
+  '1D': 'D',
   [REAL_TIME]: ['1m', '1m'], // Format: [tvcd_resolution, api_resolution]
 };
 
