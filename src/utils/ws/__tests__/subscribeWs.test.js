@@ -79,7 +79,7 @@ describe('catchErr function', () => {
     const spy = jest
       .spyOn(global.console, 'warn')
       .mockImplementation(() => jest.fn());
-    catchErr(spyFnError)('test');
+    catchErr(spyFnError, 'test');
     expect(spy).toHaveBeenCalled();
   });
 });
