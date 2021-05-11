@@ -1,21 +1,34 @@
 module.exports = {
-  parser: 'babel-eslint',
-  plugins: ['prettier'],
-  extends: ['airbnb-base', 'plugin:prettier/recommended'],
+  root: true,
+  parser: '@typescript-eslint/parser',
+  plugins: ['@typescript-eslint', 'jest'],
+  extends: [
+    'airbnb-typescript/base',
+    // 'eslint:recommended',
+    // 'plugin:@typescript-eslint/eslint-recommended',
+    'plugin:@typescript-eslint/recommended',
+    'prettier',
+  ],
   rules: {
-    'prettier/prettier': ['error', { singleQuote: true }],
     'implicit-arrow-linebreak': 'off',
-    'no-restricted-imports': [
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-vars-experimental': 'error',
+    'operator-linebreak': [
       2,
-      {
-        paths: ['lodash'],
-      },
+      'before',
+      { overrides: { '?': 'before', '=': 'after' } },
     ],
+    'no-underscore-dangle': ['error', { allowAfterThis: true }],
+  },
+  parserOptions: {
+    parser: '@typescript-eslint/parser',
+    project: './tsconfig.json',
   },
   settings: {
     'import/resolver': {
       node: {
-        moduleDirectory: ['node_modules', 'src'],
+        extensions: ['.js', '.jsx', '.ts', '.tsx'],
       },
     },
   },

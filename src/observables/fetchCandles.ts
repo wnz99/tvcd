@@ -1,8 +1,11 @@
-import { timer, defer } from 'rxjs';
+import { timer, defer, Observable } from 'rxjs';
 import { delayWhen, retryWhen, switchMap } from 'rxjs/operators';
 
-export const fetchCandles$ = (restApiUrl, requestOptions = {}) => {
-  return defer(() => fetch(restApiUrl, requestOptions)).pipe(
+export const fetchCandles$ = <T>(
+  restApiUrl: string,
+  requestOptions?: { [key: string]: string | number }
+): Observable<T> =>
+  defer(() => fetch(restApiUrl, requestOptions)).pipe(
     switchMap(async (response) => {
       if (response.status === 200) {
         const responseBody = await response.json();
@@ -21,6 +24,5 @@ export const fetchCandles$ = (restApiUrl, requestOptions = {}) => {
     }),
     retryWhen((errors) => errors.pipe(delayWhen(() => timer(5000))))
   );
-};
 
 export default fetchCandles$;

@@ -1,9 +1,11 @@
 const formatter = {
   tradingview: (data) => {
     const { date, open, close, high, low, volume, time } = data;
+
     if (time) {
       return data;
     }
+
     return {
       time: Number(date * 1000),
       open: Number(open),

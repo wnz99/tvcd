@@ -1,0 +1,804 @@
+
+{
+  "header": {
+    "reportVersion": 1,
+    "event": "Allocation failed - JavaScript heap out of memory",
+    "trigger": "FatalError",
+    "filename": "report.20210508.161243.674126.0.001.json",
+    "dumpEventTime": "2021-05-08T16:12:43Z",
+    "dumpEventTimeStamp": "1620486763617",
+    "processId": 674126,
+    "cwd": "/home/whitenoise/Desktop/Aluna/tv-test-app/src/utils/tvcd",
+    "commandLine": [
+      "/home/whitenoise/.nvm/versions/node/v12.13.1/bin/node",
+      "/home/whitenoise/Desktop/Aluna/tv-test-app/src/utils/tvcd/node_modules/.bin/jest",
+      "./src/exchanges/gateIo/utils/makeSubs.test.js",
+      "--watch"
+    ],
+    "nodejsVersion": "v12.13.1",
+    "glibcVersionRuntime": "2.31",
+    "glibcVersionCompiler": "2.17",
+    "wordSize": 64,
+    "arch": "x64",
+    "platform": "linux",
+    "componentVersions": {
+      "node": "12.13.1",
+      "v8": "7.7.299.13-node.16",
+      "uv": "1.33.1",
+      "zlib": "1.2.11",
+      "brotli": "1.0.7",
+      "ares": "1.15.0",
+      "modules": "72",
+      "nghttp2": "1.39.2",
+      "napi": "5",
+      "llhttp": "1.1.4",
+      "http_parser": "2.8.0",
+      "openssl": "1.1.1d",
+      "cldr": "35.1",
+      "icu": "64.2",
+      "tz": "2019c",
+      "unicode": "12.1"
+    },
+    "release": {
+      "name": "node",
+      "lts": "Erbium",
+      "headersUrl": "https://nodejs.org/download/release/v12.13.1/node-v12.13.1-headers.tar.gz",
+      "sourceUrl": "https://nodejs.org/download/release/v12.13.1/node-v12.13.1.tar.gz"
+    },
+    "osName": "Linux",
+    "osRelease": "5.4.0-72-generic",
+    "osVersion": "#80-Ubuntu SMP Mon Apr 12 17:35:00 UTC 2021",
+    "osMachine": "x86_64",
+    "cpus": [
+      {
+        "model": "AMD Ryzen 9 5950X 16-Core Processor",
+        "speed": 3765,
+        "user": 9574400,
+        "nice": 800,
+        "sys": 1913700,
+        "idle": 908085900,
+        "irq": 0
+      },
+      {
+        "model": "AMD Ryzen 9 5950X 16-Core Processor",
+        "speed": 4713,
+        "user": 11542900,
+        "nice": 1300,
+        "sys": 2152000,
+        "idle": 908303400,
+        "irq": 0
+      },
+      {
+        "model": "AMD Ryzen 9 5950X 16-Core Processor",
+        "speed": 3822,
+        "user": 11257900,
+        "nice": 1200,
+        "sys": 2136500,
+        "idle": 908816200,
+        "irq": 0
+      },
+      {
+        "model": "AMD Ryzen 9 5950X 16-Core Processor",
+        "speed": 4182,
+        "user": 11253900,
+        "nice": 700,
+        "sys": 2164200,
+        "idle": 908832000,
+        "irq": 0
+      },
+      {
+        "model": "AMD Ryzen 9 5950X 16-Core Processor",
+        "speed": 3852,
+        "user": 10954400,
+        "nice": 600,
+        "sys": 2115500,
+        "idle": 909262100,
+        "irq": 0
+      },
+      {
+        "model": "AMD Ryzen 9 5950X 16-Core Processor",
+        "speed": 3859,
+        "user": 10347000,
+        "nice": 700,
+        "sys": 2109200,
+        "idle": 909812600,
+        "irq": 0
+      },
+      {
+        "model": "AMD Ryzen 9 5950X 16-Core Processor",
+        "speed": 3855,
+        "user": 11189600,
+        "nice": 500,
+        "sys": 2132700,
+        "idle": 908951300,
+        "irq": 0
+      },
+      {
+        "model": "AMD Ryzen 9 5950X 16-Core Processor",
+        "speed": 3793,
+        "user": 10648200,
+        "nice": 900,
+        "sys": 2072700,
+        "idle": 909595300,
+        "irq": 0
+      },
+      {
+        "model": "AMD Ryzen 9 5950X 16-Core Processor",
+        "speed": 3066,
+        "user": 10712200,
+        "nice": 3400,
+        "sys": 2319800,
+        "idle": 908774600,
+        "irq": 0
+      },
+      {
+        "model": "AMD Ryzen 9 5950X 16-Core Processor",
+        "speed": 4466,
+        "user": 9969400,
+        "nice": 1500,
+        "sys": 2399100,
+        "idle": 909563100,
+        "irq": 0
+      },
+      {
+        "model": "AMD Ryzen 9 5950X 16-Core Processor",
+        "speed": 3125,
+        "user": 10327800,
+        "nice": 800,
+        "sys": 2243900,
+        "idle": 909401300,
+        "irq": 0
+      },
+      {
+        "model": "AMD Ryzen 9 5950X 16-Core Processor",
+        "speed": 3048,
+        "user": 10751900,
+        "nice": 800,
+        "sys": 2494600,
+        "idle": 906201000,
+        "irq": 0
+      },
+      {
+        "model": "AMD Ryzen 9 5950X 16-Core Processor",
+        "speed": 3034,
+        "user": 10099400,
+        "nice": 1900,
+        "sys": 2465100,
+        "idle": 909424400,
+        "irq": 0
+      },
+      {
+        "model": "AMD Ryzen 9 5950X 16-Core Processor",
+        "speed": 3706,
+        "user": 10685800,
+        "nice": 1100,
+        "sys": 2462300,
+        "idle": 908761600,
+        "irq": 0
+      },
+      {
+        "model": "AMD Ryzen 9 5950X 16-Core Processor",
+        "speed": 3841,
+        "user": 10177500,
+        "nice": 1200,
+        "sys": 2429700,
+        "idle": 909287800,
+        "irq": 0
+      },
+      {
+        "model": "AMD Ryzen 9 5950X 16-Core Processor",
+        "speed": 3014,
+        "user": 10825400,
+        "nice": 400,
+        "sys": 2427500,
+        "idle": 908686900,
+        "irq": 0
+      },
+      {
+        "model": "AMD Ryzen 9 5950X 16-Core Processor",
+        "speed": 3790,
+        "user": 10836100,
+        "nice": 900,
+        "sys": 2193600,
+        "idle": 908617800,
+        "irq": 0
+      },
+      {
+        "model": "AMD Ryzen 9 5950X 16-Core Processor",
+        "speed": 4789,
+        "user": 9593000,
+        "nice": 3800,
+        "sys": 2134600,
+        "idle": 910606300,
+        "irq": 0
+      },
+      {
+        "model": "AMD Ryzen 9 5950X 16-Core Processor",
+        "speed": 3854,
+        "user": 10130500,
+        "nice": 1600,
+        "sys": 2097700,
+        "idle": 909953100,
+        "irq": 0
+      },
+      {
+        "model": "AMD Ryzen 9 5950X 16-Core Processor",
+        "speed": 3867,
+        "user": 10131300,
+        "nice": 1200,
+        "sys": 2056900,
+        "idle": 910140800,
+        "irq": 0
+      },
+      {
+        "model": "AMD Ryzen 9 5950X 16-Core Processor",
+        "speed": 3856,
+        "user": 10061300,
+        "nice": 1500,
+        "sys": 2075200,
+        "idle": 909911700,
+        "irq": 0
+      },
+      {
+        "model": "AMD Ryzen 9 5950X 16-Core Processor",
+        "speed": 3824,
+        "user": 10272400,
+        "nice": 1200,
+        "sys": 2109900,
+        "idle": 909503000,
+        "irq": 0
+      },
+      {
+        "model": "AMD Ryzen 9 5950X 16-Core Processor",
+        "speed": 3645,
+        "user": 10349900,
+        "nice": 2400,
+        "sys": 2137900,
+        "idle": 909643800,
+        "irq": 0
+      },
+      {
+        "model": "AMD Ryzen 9 5950X 16-Core Processor",
+        "speed": 3831,
+        "user": 9963800,
+        "nice": 1400,
+        "sys": 2075300,
+        "idle": 910269200,
+        "irq": 0
+      },
+      {
+        "model": "AMD Ryzen 9 5950X 16-Core Processor",
+        "speed": 3725,
+        "user": 10459700,
+        "nice": 1900,
+        "sys": 2393200,
+        "idle": 909070800,
+        "irq": 0
+      },
+      {
+        "model": "AMD Ryzen 9 5950X 16-Core Processor",
+        "speed": 3835,
+        "user": 9856400,
+        "nice": 1200,
+        "sys": 2329500,
+        "idle": 909899400,
+        "irq": 0
+      },
+      {
+        "model": "AMD Ryzen 9 5950X 16-Core Processor",
+        "speed": 3606,
+        "user": 10333800,
+        "nice": 2500,
+        "sys": 2349600,
+        "idle": 909150900,
+        "irq": 0
+      },
+      {
+        "model": "AMD Ryzen 9 5950X 16-Core Processor",
+        "speed": 2959,
+        "user": 9632100,
+        "nice": 1200,
+        "sys": 2266800,
+        "idle": 910239300,
+        "irq": 0
+      },
+      {
+        "model": "AMD Ryzen 9 5950X 16-Core Processor",
+        "speed": 2985,
+        "user": 9853800,
+        "nice": 2800,
+        "sys": 2288200,
+        "idle": 909663500,
+        "irq": 0
+      },
+      {
+        "model": "AMD Ryzen 9 5950X 16-Core Processor",
+        "speed": 3602,
+        "user": 9409700,
+        "nice": 2800,
+        "sys": 2261200,
+        "idle": 910376300,
+        "irq": 0
+      },
+      {
+        "model": "AMD Ryzen 9 5950X 16-Core Processor",
+        "speed": 4510,
+        "user": 10278900,
+        "nice": 3600,
+        "sys": 2280400,
+        "idle": 909143700,
+        "irq": 0
+      },
+      {
+        "model": "AMD Ryzen 9 5950X 16-Core Processor",
+        "speed": 2966,
+        "user": 10224400,
+        "nice": 3400,
+        "sys": 2279900,
+        "idle": 909370700,
+        "irq": 0
+      }
+    ],
+    "networkInterfaces": [
+      {
+        "name": "lo",
+        "internal": true,
+        "mac": "00:00:00:00:00:00",
+        "address": "127.0.0.1",
+        "netmask": "255.0.0.0",
+        "family": "IPv4"
+      },
+      {
+        "name": "enp42s0",
+        "internal": false,
+        "mac": "2c:f0:5d:a4:5d:8e",
+        "address": "192.168.1.130",
+        "netmask": "255.255.255.0",
+        "family": "IPv4"
+      },
+      {
+        "name": "br-f47eedb0d9c0",
+        "internal": false,
+        "mac": "02:42:6f:1b:4b:2c",
+        "address": "172.18.0.1",
+        "netmask": "255.255.0.0",
+        "family": "IPv4"
+      },
+      {
+        "name": "enp42s0",
+        "internal": false,
+        "mac": "2c:f0:5d:a4:5d:8e",
+        "address": "fd00::60ee:831c:1e53:6e24",
+        "netmask": "ffff:ffff:ffff:ffff::",
+        "family": "IPv6",
+        "scopeid": 0
+      },
+      {
+        "name": "enp42s0",
+        "internal": false,
+        "mac": "2c:f0:5d:a4:5d:8e",
+        "address": "2a01:4b00:8691:8b00:60ee:831c:1e53:6e24",
+        "netmask": "ffff:ffff:ffff:ffff::",
+        "family": "IPv6",
+        "scopeid": 0
+      },
+      {
+        "name": "enp42s0",
+        "internal": false,
+        "mac": "2c:f0:5d:a4:5d:8e",
+        "address": "2a01:4b00:8691:8b00:877:9b08:543e:606e",
+        "netmask": "ffff:ffff:ffff:ffff::",
+        "family": "IPv6",
+        "scopeid": 0
+      },
+      {
+        "name": "enp42s0",
+        "internal": false,
+        "mac": "2c:f0:5d:a4:5d:8e",
+        "address": "2a01:4b00:8691:8b00:7d:863d:3946:e6d0",
+        "netmask": "ffff:ffff:ffff:ffff::",
+        "family": "IPv6",
+        "scopeid": 0
+      },
+      {
+        "name": "enp42s0",
+        "internal": false,
+        "mac": "2c:f0:5d:a4:5d:8e",
+        "address": "fd00::877:9b08:543e:606e",
+        "netmask": "ffff:ffff:ffff:ffff::",
+        "family": "IPv6",
+        "scopeid": 0
+      },
+      {
+        "name": "enp42s0",
+        "internal": false,
+        "mac": "2c:f0:5d:a4:5d:8e",
+        "address": "fd00::e070:c89d:f7d3:6199",
+        "netmask": "ffff:ffff:ffff:ffff::",
+        "family": "IPv6",
+        "scopeid": 0
+      },
+      {
+        "name": "enp42s0",
+        "internal": false,
+        "mac": "2c:f0:5d:a4:5d:8e",
+        "address": "fe80::d03a:ffbc:5a42:5826",
+        "netmask": "ffff:ffff:ffff:ffff::",
+        "family": "IPv6",
+        "scopeid": 2
+      }
+    ],
+    "host": "whitenoise-home-lond"
+  },
+  "javascriptStack": {
+    "message": "No stack.",
+    "stack": [
+      "Unavailable."
+    ]
+  },
+  "nativeStack": [
+    {
+      "pc": "0x0000000000b04935",
+      "symbol": "report::TriggerNodeReport(v8::Isolate*, node::Environment*, char const*, char const*, std::string const&, v8::Local<v8::String>) [/home/whitenoise/.nvm/versions/node/v12.13.1/bin/node]"
+    },
+    {
+      "pc": "0x00000000009db9e3",
+      "symbol": "node::OnFatalError(char const*, char const*) [/home/whitenoise/.nvm/versions/node/v12.13.1/bin/node]"
+    },
+    {
+      "pc": "0x0000000000b39f1e",
+      "symbol": "v8::Utils::ReportOOMFailure(v8::internal::Isolate*, char const*, bool) [/home/whitenoise/.nvm/versions/node/v12.13.1/bin/node]"
+    },
+    {
+      "pc": "0x0000000000b3a299",
+      "symbol": "v8::internal::V8::FatalProcessOutOfMemory(v8::internal::Isolate*, char const*, bool) [/home/whitenoise/.nvm/versions/node/v12.13.1/bin/node]"
+    },
+    {
+      "pc": "0x0000000000ce5635",
+      "symbol": " [/home/whitenoise/.nvm/versions/node/v12.13.1/bin/node]"
+    },
+    {
+      "pc": "0x0000000000ce5cc6",
+      "symbol": "v8::internal::Heap::RecomputeLimits(v8::internal::GarbageCollector) [/home/whitenoise/.nvm/versions/node/v12.13.1/bin/node]"
+    },
+    {
+      "pc": "0x0000000000cf1b5a",
+      "symbol": "v8::internal::Heap::PerformGarbageCollection(v8::internal::GarbageCollector, v8::GCCallbackFlags) [/home/whitenoise/.nvm/versions/node/v12.13.1/bin/node]"
+    },
+    {
+      "pc": "0x0000000000cf2a65",
+      "symbol": "v8::internal::Heap::CollectGarbage(v8::internal::AllocationSpace, v8::internal::GarbageCollectionReason, v8::GCCallbackFlags) [/home/whitenoise/.nvm/versions/node/v12.13.1/bin/node]"
+    },
+    {
+      "pc": "0x0000000000cf5478",
+      "symbol": "v8::internal::Heap::AllocateRawWithRetryOrFail(int, v8::internal::AllocationType, v8::internal::AllocationAlignment) [/home/whitenoise/.nvm/versions/node/v12.13.1/bin/node]"
+    },
+    {
+      "pc": "0x0000000000cbbda7",
+      "symbol": "v8::internal::Factory::NewFillerObject(int, bool, v8::internal::AllocationType) [/home/whitenoise/.nvm/versions/node/v12.13.1/bin/node]"
+    },
+    {
+      "pc": "0x0000000000ff1e0b",
+      "symbol": "v8::internal::Runtime_AllocateInYoungGeneration(int, unsigned long*, v8::internal::Isolate*) [/home/whitenoise/.nvm/versions/node/v12.13.1/bin/node]"
+    },
+    {
+      "pc": "0x0000000001374fd9",
+      "symbol": " [/home/whitenoise/.nvm/versions/node/v12.13.1/bin/node]"
+    }
+  ],
+  "javascriptHeap": {
+    "totalMemory": 2165510144,
+    "totalCommittedMemory": 2164180112,
+    "usedMemory": 1934913776,
+    "availableMemory": 92325304,
+    "memoryLimit": 2197815296,
+    "heapSpaces": {
+      "read_only_space": {
+        "memorySize": 262144,
+        "committedMemory": 32568,
+        "capacity": 261872,
+        "used": 32296,
+        "available": 229576
+      },
+      "new_space": {
+        "memorySize": 33554432,
+        "committedMemory": 33554400,
+        "capacity": 16759808,
+        "used": 276336,
+        "available": 16483472
+      },
+      "old_space": {
+        "memorySize": 2102767616,
+        "committedMemory": 2101845144,
+        "capacity": 1933449792,
+        "used": 1906902496,
+        "available": 26547296
+      },
+      "code_space": {
+        "memorySize": 688128,
+        "committedMemory": 625760,
+        "capacity": 408992,
+        "used": 408992,
+        "available": 0
+      },
+      "map_space": {
+        "memorySize": 2625536,
+        "committedMemory": 2509952,
+        "capacity": 1743840,
+        "used": 1743840,
+        "available": 0
+      },
+      "large_object_space": {
+        "memorySize": 25563136,
+        "committedMemory": 25563136,
+        "capacity": 25546264,
+        "used": 25546264,
+        "available": 0
+      },
+      "code_large_object_space": {
+        "memorySize": 49152,
+        "committedMemory": 49152,
+        "capacity": 3552,
+        "used": 3552,
+        "available": 0
+      },
+      "new_large_object_space": {
+        "memorySize": 0,
+        "committedMemory": 0,
+        "capacity": 16759808,
+        "used": 0,
+        "available": 16759808
+      }
+    }
+  },
+  "resourceUsage": {
+    "userCpuSeconds": 168.47,
+    "kernelCpuSeconds": 2.07166,
+    "cpuConsumptionPercent": 121.815,
+    "maxRss": 2344382464,
+    "pageFaults": {
+      "IORequired": 0,
+      "IONotRequired": 919720
+    },
+    "fsActivity": {
+      "reads": 0,
+      "writes": 72
+    }
+  },
+  "uvthreadResourceUsage": {
+    "userCpuSeconds": 137.431,
+    "kernelCpuSeconds": 0.712366,
+    "cpuConsumptionPercent": 98.6737,
+    "fsActivity": {
+      "reads": 0,
+      "writes": 72
+    }
+  },
+  "libuv": [
+  ],
+  "environmentVariables": {
+    "PROFILEHOME": "/home/whitenoise/Desktop/Aluna/tv-test-app/src/utils/tvcd/",
+    "LESSOPEN": "| /usr/bin/lesspipe %s",
+    "KDE_FULL_SESSION": "true",
+    "npm_package_devDependencies_ts_node": "^9.1.1",
+    "npm_package_devDependencies_rollup": "^2.23.0",
+    "npm_package_devDependencies__types_node": "^15.0.1",
+    "npm_package_devDependencies__babel_polyfill": "^7.10.4",
+    "CONDA_PROMPT_MODIFIER": "(base) ",
+    "LANGUAGE": "",
+    "USER": "whitenoise",
+    "PAM_KWALLET5_LOGIN": "/run/user/1000/kwallet5.socket",
+    "npm_package_devDependencies_jest": "^26.1.0",
+    "npm_package_devDependencies__rollup_plugin_node_resolve": "^7.1.3",
+    "npm_config_version_commit_hooks": "true",
+    "npm_config_user_agent": "yarn/1.22.10 npm/? node/v12.13.1 linux x64",
+    "QT_SCREEN_SCALE_FACTORS": "DisplayPort-0=1;DisplayPort-1=1;DisplayPort-2=1;HDMI-A-0=1;DVI-D-0=1;",
+    "XDG_SEAT": "seat0",
+    "npm_package_bugs_url": "https://github.com/wnz99/tvcd/issues",
+    "npm_package_scripts_release": "npm run build && git fetch && np",
+    "npm_config_bin_links": "true",
+    "SSH_AGENT_PID": "6693",
+    "XDG_SESSION_TYPE": "x11",
+    "npm_node_execpath": "/home/whitenoise/.nvm/versions/node/v12.13.1/bin/node",
+    "npm_config_init_version": "1.0.0",
+    "KONSOLE_VERSION": "191203",
+    "SHLVL": "1",
+    "npm_package_devDependencies__types_express": "^4.17.11",
+    "npm_package_dependencies_rxjs": "^6.6.2",
+    "HOME": "/home/whitenoise",
+    "REACT_EDITOR": "code",
+    "CONDA_SHLVL": "1",
+    "npm_package_devDependencies_esm": "^3.2.25",
+    "npm_package_devDependencies__typescript_eslint_parser": "^3.7.0",
+    "npm_package_devDependencies__babel_plugin_proposal_class_properties": "^7.10.4",
+    "npm_package_dependencies_bufferutil": "^4.0.1",
+    "DESKTOP_SESSION": "plasma",
+    "NVM_BIN": "/home/whitenoise/.nvm/versions/node/v12.13.1/bin",
+    "npm_package_devDependencies_eslint_config_prettier": "^8.3.0",
+    "npm_package_devDependencies__types_ws": "^7.4.0",
+    "npm_package_dependencies_typescript_eslint": "^0.0.1-alpha.0",
+    "NVM_INC": "/home/whitenoise/.nvm/versions/node/v12.13.1/include/node",
+    "npm_config_init_license": "MIT",
+    "SHELL_SESSION_ID": "0ee096b28bfb4d03a073957e0a25f216",
+    "GTK_RC_FILES": "/etc/gtk/gtkrc:/home/whitenoise/.gtkrc:/home/whitenoise/.config/gtkrc",
+    "XDG_SEAT_PATH": "/org/freedesktop/DisplayManager/Seat0",
+    "KDE_SESSION_VERSION": "5",
+    "YARN_WRAP_OUTPUT": "false",
+    "npm_config_version_tag_prefix": "v",
+    "KONSOLE_DBUS_SESSION": "/Sessions/1",
+    "npm_package_devDependencies_jest_extended": "^0.11.2",
+    "GOROOT": "/usr/local/go",
+    "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/1000/bus",
+    "npm_package_devDependencies_tsc": "^1.20150623.0",
+    "npm_package_devDependencies_husky": "^4.2.3",
+    "npm_package_dependencies_moment": "^2.27.0",
+    "COLORTERM": "truecolor",
+    "_CE_M": "",
+    "LIBVIRT_DEFAULT_URI": "qemu:///system",
+    "KONSOLE_DBUS_WINDOW": "/Windows/1",
+    "npm_package_devDependencies_typescript": "^4.2.2",
+    "npm_package_description": "```javascript const symbols = [ ['BTC', 'USD'], ['ETH', 'USD'], ['ZRX', 'USD'], ['OMG', 'USD'] ];",
+    "CMC_API_KEY": "1b076d8f-7b80-4465-8ad6-f87bda49aa73",
+    "NVM_DIR": "/home/whitenoise/.nvm",
+    "npm_package_readmeFilename": "README.md",
+    "npm_package_devDependencies_rollup_plugin_node_builtins": "^2.1.2",
+    "npm_package_devDependencies__babel_preset_env": "^7.10.4",
+    "npm_package_homepage": "https://github.com/wnz99/tvcd#readme",
+    "MANDATORY_PATH": "/usr/share/gconf/plasma.mandatory.path",
+    "npm_package_devDependencies_prettier": "^2.2.1",
+    "npm_package_devDependencies_babel_jest": "^26.1.0",
+    "LOGNAME": "whitenoise",
+    "npm_package_devDependencies_hash_filename": "^1.0.4",
+    "npm_package_devDependencies_eslint_plugin_import": "^2.22.0",
+    "npm_package_devDependencies__babel_preset_typescript": "^7.13.0",
+    "WINDOWID": "94371847",
+    "QT_AUTO_SCREEN_SCALE_FACTOR": "0",
+    "_": "/home/whitenoise/.nvm/versions/node/v12.13.1/bin/yarn",
+    "npm_package_devDependencies__rollup_plugin_commonjs": "^11.0.2",
+    "XDG_SESSION_CLASS": "user",
+    "DEFAULTS_PATH": "/usr/share/gconf/plasma.default.path",
+    "COLORFGBG": "0;15",
+    "npm_package_devDependencies_rollup_plugin_typescript2": "^0.27.1",
+    "npm_package_devDependencies__typescript_eslint_eslint_plugin": "^4.4.1",
+    "npm_config_registry": "https://registry.npmjs.org/",
+    "TERM": "xterm-256color",
+    "XDG_SESSION_ID": "3",
+    "npm_package_devDependencies__types_lodash": "^4.14.168",
+    "npm_package_devDependencies__babel_core": "^7.10.5",
+    "npm_package_dependencies_ws": "^7.3.1",
+    "_CE_CONDA": "",
+    "npm_config_ignore_scripts": "",
+    "GTK2_RC_FILES": "/etc/gtk-2.0/gtkrc:/home/whitenoise/.gtkrc-2.0:/home/whitenoise/.config/gtkrc-2.0",
+    "npm_package_devDependencies_np": "^6.5.0",
+    "npm_package_devDependencies_eslint_config_airbnb_typescript": "^12.3.1",
+    "npm_package_author_email": "dfava80@gmail.com",
+    "PATH": "/tmp/yarn--1620486623050-0.12344599722884375:/home/whitenoise/Desktop/Aluna/tv-test-app/src/utils/tvcd/node_modules/.bin:/home/whitenoise/.config/yarn/link/node_modules/.bin:/home/whitenoise/.nvm/versions/node/v12.13.1/libexec/lib/node_modules/npm/bin/node-gyp-bin:/home/whitenoise/.nvm/versions/node/v12.13.1/lib/node_modules/npm/bin/node-gyp-bin:/home/whitenoise/.nvm/versions/node/v12.13.1/bin/node_modules/npm/bin/node-gyp-bin:/home/whitenoise/anaconda3/bin:/home/whitenoise/anaconda3/condabin:/home/whitenoise/.nvm/versions/node/v12.13.1/bin:/home/whitenoise/.yarn/bin:/home/whitenoise/.config/yarn/global/node_modules/.bin:/home/whitenoise/go/bin:/usr/local/go/bin:/home/whitenoise/go/bin:/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/whitenoise/Android/Sdk/emulator:/home/whitenoise/Android/Sdk/tools:/home/whitenoise/Android/Sdk/tools/bin:/home/whitenoise/Android/Sdk/platform-tools:/opt/genymobile/genymotion:/home/whitenoise/.cargo/bin",
+    "NODE": "/home/whitenoise/.nvm/versions/node/v12.13.1/bin/node",
+    "SESSION_MANAGER": "local/whitenoise-home-lond:@/tmp/.ICE-unix/6748,unix/whitenoise-home-lond:/tmp/.ICE-unix/6748",
+    "npm_package_repository_type": "git",
+    "npm_package_name": "tvcd",
+    "XDG_SESSION_PATH": "/org/freedesktop/DisplayManager/Session1",
+    "XDG_RUNTIME_DIR": "/run/user/1000",
+    "XCURSOR_THEME": "breeze_cursors",
+    "DISPLAY": ":0",
+    "npm_package_devDependencies_prettier_eslint": "^11.0.0",
+    "npm_package_devDependencies_git_branch_is": "^3.1.0",
+    "LANG": "en_GB.UTF-8",
+    "XDG_CURRENT_DESKTOP": "KDE",
+    "npm_package_devDependencies_ts_node_dev": "^1.1.6",
+    "npm_package_devDependencies_eslint": "^7.26.0",
+    "XDG_SESSION_DESKTOP": "KDE",
+    "XAUTHORITY": "/tmp/xauth-1000-_0",
+    "LS_COLORS": "rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:",
+    "npm_lifecycle_script": "jest",
+    "npm_package_main": "dist/index.js",
+    "SSH_AUTH_SOCK": "/tmp/ssh-8BjxkfqR1MU7/agent.6648",
+    "CONDA_PYTHON_EXE": "/home/whitenoise/anaconda3/bin/python",
+    "npm_package_scripts_test": "jest",
+    "npm_config_version_git_message": "v%s",
+    "SHELL": "/bin/bash",
+    "GOPATH": "/home/whitenoise/go",
+    "npm_lifecycle_event": "test",
+    "npm_package_husky_hooks_pre_commit": "npm run prettify",
+    "npm_package_repository_url": "git+https://github.com/wnz99/tvcd.git",
+    "npm_package_version": "1.3.1",
+    "QT_ACCESSIBILITY": "1",
+    "npm_config_argv": "{\"remain\":[],\"cooked\":[\"run\",\"test\"],\"original\":[\"test\",\"./src/exchanges/gateIo/utils/makeSubs.test.js\",\"--watch\"]}",
+    "npm_package_devDependencies_tslib": "^2.0.0",
+    "npm_package_devDependencies_lint_staged": "^10.0.8",
+    "npm_package_scripts_build": "rm -rf dist/ && rollup -c",
+    "LESSCLOSE": "/usr/bin/lesspipe %s %s",
+    "CONDA_DEFAULT_ENV": "base",
+    "npm_package_dependencies_lodash": "^4.17.20",
+    "npm_package_scripts_test_coverage": "jest --coverage --colors",
+    "KONSOLE_DBUS_SERVICE": ":1.2202",
+    "npm_config_version_git_tag": "true",
+    "npm_config_version_git_sign": "",
+    "GPG_AGENT_INFO": "/run/user/1000/gnupg/S.gpg-agent:0:1",
+    "npm_package_license": "ISC",
+    "npm_config_strict_ssl": "true",
+    "npm_config_username": "davidfava",
+    "XDG_VTNR": "1",
+    "npm_package_devDependencies_mock_socket": "^9.0.0",
+    "npm_package_scripts_test_watch": "jest --watch",
+    "GPG_TTY": "/dev/pts/1",
+    "PWD": "/home/whitenoise/Desktop/Aluna/tv-test-app/src/utils/tvcd",
+    "npm_execpath": "/home/whitenoise/.nvm/versions/node/v12.13.1/lib/node_modules/yarn/bin/yarn.js",
+    "npm_package_devDependencies__types_simpleddp": "^2.2.0",
+    "XDG_CONFIG_DIRS": "/etc/xdg/xdg-plasma:/etc/xdg:/usr/share/kubuntu-default-settings/kf5-settings",
+    "CONDA_EXE": "/home/whitenoise/anaconda3/bin/conda",
+    "GOOGLE_CLOUD_KEYFILE_JSON": "/home/whitenoise/.google/ta-graylog-bb9dc5776082.json",
+    "ANDROID_HOME": "/home/whitenoise/Android/Sdk",
+    "NVM_CD_FLAGS": "",
+    "XDG_DATA_DIRS": "/usr/share/plasma:/usr/local/share:/usr/share:/var/lib/snapd/desktop",
+    "npm_package_author_name": "David Fava",
+    "npm_package_devDependencies_rollup_plugin_node_globals": "^1.4.0",
+    "npm_package_devDependencies_cross_env": "^5.2.1",
+    "npm_config_save_prefix": "^",
+    "npm_config_ignore_optional": "",
+    "CONDA_PREFIX": "/home/whitenoise/anaconda3",
+    "KDE_SESSION_UID": "1000",
+    "npm_package_devDependencies_babel_eslint": "^10.1.0",
+    "npm_package_scripts_prettify": "prettier --write \"**/*.js\"",
+    "npm_package_dependencies_utf_8_validate": "^5.0.2",
+    "npm_package_dependencies_updeep": "^1.1.0",
+    "INIT_CWD": "/home/whitenoise/Desktop/Aluna/tv-test-app/src/utils/tvcd",
+    "npm_config_email": "david@connido.com",
+    "NODE_ENV": "test",
+    "JEST_WORKER_ID": "1"
+  },
+  "userLimits": {
+    "core_file_size_blocks": {
+      "soft": 0,
+      "hard": "unlimited"
+    },
+    "data_seg_size_kbytes": {
+      "soft": "unlimited",
+      "hard": "unlimited"
+    },
+    "file_size_blocks": {
+      "soft": "unlimited",
+      "hard": "unlimited"
+    },
+    "max_locked_memory_bytes": {
+      "soft": 67108864,
+      "hard": 67108864
+    },
+    "max_memory_size_kbytes": {
+      "soft": "unlimited",
+      "hard": "unlimited"
+    },
+    "open_files": {
+      "soft": 1048576,
+      "hard": 1048576
+    },
+    "stack_size_bytes": {
+      "soft": 8388608,
+      "hard": "unlimited"
+    },
+    "cpu_time_seconds": {
+      "soft": "unlimited",
+      "hard": "unlimited"
+    },
+    "max_user_processes": {
+      "soft": 127756,
+      "hard": 127756
+    },
+    "virtual_memory_kbytes": {
+      "soft": "unlimited",
+      "hard": "unlimited"
+    }
+  },
+  "sharedObjects": [
+    "linux-vdso.so.1",
+    "/lib/x86_64-linux-gnu/libdl.so.2",
+    "/usr/lib/x86_64-linux-gnu/libstdc++.so.6",
+    "/lib/x86_64-linux-gnu/libm.so.6",
+    "/lib/x86_64-linux-gnu/libgcc_s.so.1",
+    "/lib/x86_64-linux-gnu/libpthread.so.0",
+    "/lib/x86_64-linux-gnu/libc.so.6",
+    "/lib64/ld-linux-x86-64.so.2",
+    "/home/whitenoise/Desktop/Aluna/tv-test-app/src/utils/tvcd/node_modules/bufferutil/prebuilds/linux-x64/node.napi.node",
+    "/home/whitenoise/Desktop/Aluna/tv-test-app/src/utils/tvcd/node_modules/utf-8-validate/prebuilds/linux-x64/node.napi.node"
+  ]
+}

@@ -12,7 +12,8 @@ const makeDataStream = (wsUrl, options = {}) => {
 
   ws = connectWs(wsUrl, {
     initSubs: initSubs || {},
-    keepAlive: { msg: { event: 'ping' } },
+    keepAlive: true,
+    keepAliveMsg: JSON.stringify({ event: 'ping' }),
     onPongCb: onPongMsg,
     onSubscriptionCb: onSubscriptionMsg,
     onReconnectCb: (_err, wsInstance) => {

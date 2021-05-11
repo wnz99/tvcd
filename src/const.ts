@@ -1,16 +1,20 @@
+export const BINANCE = 'binance';
 export const BITFINEX = 'bitfinex';
 export const BITMEX = 'bitmex';
-export const BINANCE = 'binance';
-export const POLONIEX = 'poloniex';
 export const BITTREX = 'bittrex';
 export const EXCHANGE_NOT_SUPPORTED = 'Exchange not supported';
+export const GATEIO = 'gateio';
+export const KAIKO = 'kaiko';
+export const POLONIEX = 'poloniex';
 
 export const EXCHANGE_NAME = {
-  BITMEX,
-  BITFINEX,
   BINANCE,
-  POLONIEX,
+  BITFINEX,
+  BITMEX,
   BITTREX,
+  GATEIO,
+  KAIKO,
+  POLONIEX,
 };
 
 export const ERROR = {

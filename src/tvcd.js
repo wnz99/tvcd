@@ -4,7 +4,7 @@ import tvcdBase from './tvcdBase';
 let instance;
 let selectedExchange;
 
-const tvcd = (exchange) =>
+const tvcd = (exchange: string) =>
   (() => {
     if (!exchanges[exchange]) {
       throw new Error(`${exchange} not supported.`);

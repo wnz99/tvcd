@@ -1,4 +1,5 @@
 export { default as debugError } from './debugError';
+export { default as makeOptions } from './makeOptions';
 export { default as makeCandlesRestApiUrl } from './makeCandlesRestApiUrl';
 export { default as makeTimeChunks } from './makeTimeChunks';
 export { default as fetchCandles } from './fetchCandles';

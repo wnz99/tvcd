@@ -1,4 +1,13 @@
-const makeTimeChunks = (start, end, chunkSize) => {
+type Chunk = {
+  fromTime: number;
+  toTime: number;
+};
+
+const makeTimeChunks = (
+  start: number,
+  end: number,
+  chunkSize: number
+): Chunk[] => {
   const startTime = start;
   const chunks = [];
   const endTime = end;

@@ -1,11 +1,10 @@
-import makeDashPair from './utils/makeDashPair';
 import { REAL_TIME } from '../../const';
 
 export const WS_ROOT_URL = 'wss://api-pub.bitfinex.com/ws/2';
 export const REST_ROOT_URL = `https://api-pub.bitfinex.com/v2`;
 export const makeCustomApiUrl = (rootUrl) => `${rootUrl}/bitfinex/v2`;
 
-// Maps exchange API resolutions to TVCD starndard resolutions
+// Maps TVCD standard resolutions to exchange API resolutions
 // https://docs.bitfinex.com/reference#rest-public-candles
 
 export const API_RESOLUTIONS_MAP = {

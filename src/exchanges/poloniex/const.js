@@ -4,7 +4,7 @@ export const WS_ROOT_URL = '';
 export const REST_ROOT_URL = `https://poloniex.com/public`;
 export const makeCustomApiUrl = () => `https://poloniex.com/public`;
 
-// Maps exchange API resolutions to TVCD starndard resolutions
+// Maps TVCD standard resolutions to exchange API resolutions
 // https://docs.poloniex.com/#returnchartdata
 
 export const API_RESOLUTIONS_MAP = {
