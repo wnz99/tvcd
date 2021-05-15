@@ -1,12 +1,12 @@
-import omit from 'lodash/omit';
+import _omitBy from 'lodash/omitBy';
 
 import { WsEvent } from '../../../utils/ws/types';
 import { WsSubscriptions } from '../types';
 
 /**
- * Returns the subscription message to be replayed ws re-connection
+ * Returns the subscription messages to be replayed on ws re-connection
  *
- * Example eessage receive on successful subscription:
+ * Example message received on successful subscription:
  *
  * {
  *  "id": 1234,
@@ -20,33 +20,21 @@ import { WsSubscriptions } from '../types';
  * @param  {WsSubscriptions} subs
  * @return WsSubscriptions
  */
-const onSubscriptionMsg = (
+const onSubscriptionMsg = (subs: WsSubscriptions) => (
   event: WsEvent,
-  subs: WsSubscriptions
+  _subs: WsSubscriptions
 ): WsSubscriptions => {
   const msg = JSON.parse(event.data);
 
   switch (msg.event) {
     case 'subscribe': {
-      const { channel, id } = msg;
-
-      if (subs[id]) {
-        return subs;
-      }
-
       return {
         ...subs,
-        [msg.id]: {
-          id,
-          time: new Date().valueOf(),
-          channel,
-          event: 'subscribe',
-        },
       };
     }
 
     case 'unsubscribe': {
-      return omit(subs, [msg.id]);
+      return _omitBy(subs, (key) => key.id === msg.id);
     }
     default:
       return subs;

@@ -8,3 +8,5 @@ export { default as makeChunkCalls } from './makeChunkCalls';
 export { default as isChannelChanged } from './isChannelChanged';
 export { default as makePairConfig } from './makePairConfig';
 export { default as mapToStandardInterval } from './mapToStandardInterval';
+export { default as makeChannelFromDataStream } from './makeChannelFromDataStream';
+export { default as addChannelToCandlesData } from './addChannelToCandlesData';

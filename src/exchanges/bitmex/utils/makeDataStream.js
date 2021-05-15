@@ -12,11 +12,13 @@ const makeDataStream = (wsUrl, options) => {
 
   ws = connectWs(wsUrl, {
     initSubs: (options && options.initSubs) || {},
-    keepAlive: { msg: 'ping' },
+    keepAlive: true,
+    keepAliveMsg: 'ping',
     onPongCb: onPongMsg,
     onSubscriptionCb: onSubscriptionMsg,
-    onReconnectCb: (err, wsInstance) => {
+    onReconnectCb: (wsInstance) => {
       ws = wsInstance;
+
       reconnect$.next();
     },
     onOpenCb: () => {
@@ -28,9 +30,7 @@ const makeDataStream = (wsUrl, options) => {
   });
 
   const dataFeed$ = Observable.create((observer) => {
-    ws.addEventListener('message', (event) => {
-      observer.next(event);
-    });
+    ws.addEventListener('message', (event) => observer.next(event));
 
     wsInstance$.next(ws);
 

@@ -2,33 +2,26 @@ import { Subject, Observable } from 'rxjs';
 
 import { WSInstance, WsEvent } from '../utils/ws/types';
 
-export type Intervarls = {
+export type Intervals = {
   [key: string]: string | [string, string];
   realtime: [string, string];
 };
 
 export type TokensSymbols = [string, string];
 
-export type StreamData<T> = [string, T, string];
+export type StreamData<T> = [[string, string], T, string];
 
-export type TradingPair = [string, string];
+// export type RealtimeInterval = [string, string];
 
 export type Pair = {
   ticker: string;
-  interval: string | [string, string];
-  intervalApi: string | [string, string];
+  interval: string;
+  intervalApi: string;
   symbols: TokensSymbols;
 };
 
 export type TradingPairs = {
   [key: string]: Pair;
-};
-
-export type ChannelArgs = {
-  symbols: [string, string];
-  ticker: string;
-  interval: string | [string, string];
-  intervalApi: string | [string, string];
 };
 
 export enum ClientError {
@@ -65,7 +58,7 @@ export type Candle = {
 
 export type CandlesData = {
   [key: string]: {
-    pair: string;
+    pair: [string, string];
     interval: string;
     candles: Candle[];
     seq: number;
@@ -103,13 +96,13 @@ export interface IExchange<T> {
   _wsInstance$: Subject<WSInstance>;
   _dataSource$: Observable<WsEvent> | undefined;
   _dataStream$: Subject<CandlesData>;
-  _closeStream$: Subject<any>;
+  _closeStream$: Subject<boolean>;
   _tradingPairs: TradingPairs;
   _candlesData: CandlesData;
   start: (options?: Options) => unknown;
   stop: () => void;
   fetchCandles: (
-    pair: TradingPair,
+    pair: TokensSymbols,
     interval: string,
     start: number,
     end: number,
@@ -119,9 +112,12 @@ export interface IExchange<T> {
   getStatus: () => ExchangeStatus;
   setDebug: () => void;
   setApiUrl: (apiUrl: string) => void;
-  addTradingPair: (pair: TradingPair, pairConf: PairConf) => string | undefined;
+  addTradingPair: (
+    pair: TokensSymbols,
+    pairConf: PairConf
+  ) => string | undefined;
   removeTradingPair: (
-    pair: TradingPair,
+    pair: TokensSymbols,
     intervalApi: string
   ) => string | undefined;
   _resetConf: () => void;

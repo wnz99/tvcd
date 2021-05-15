@@ -1,17 +1,14 @@
 /* eslint-disable no-console */
 import { subPairs } from './wsUtils';
 
-const addTradingPair = (ws, tradingPairs, channelName, channelArgs) => {
-  if (ws && !tradingPairs[channelName]) {
+const addTradingPair = (ws, pair) => {
+  if (ws) {
     try {
-      subPairs(ws.send.bind(ws), { [channelName]: channelArgs });
-      return { ...tradingPairs, [channelName]: channelArgs };
+      subPairs(ws.send.bind(ws), pair);
     } catch (e) {
       console.warn(e);
     }
   }
-
-  return { ...tradingPairs, [channelName]: channelArgs };
 };
 
 export default addTradingPair;

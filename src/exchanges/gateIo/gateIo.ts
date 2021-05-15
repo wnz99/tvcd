@@ -1,5 +1,5 @@
 import _omit from 'lodash/omit';
-import { Subject, Observable, interval as rxInterval } from 'rxjs';
+import { Subject, Observable, interval as rxInterval, of } from 'rxjs';
 import {
   map,
   multicast,
@@ -7,7 +7,9 @@ import {
   filter,
   skipUntil,
   take,
+  catchError,
 } from 'rxjs/operators';
+import { Options } from '../../types/exchanges';
 
 import {
   debugError,
@@ -17,6 +19,7 @@ import {
   makeOptions,
   makePairConfig,
   makeCandlesRestApiUrl,
+  addChannelToCandlesData,
 } from '../../utils';
 import {
   formatter,
@@ -29,14 +32,13 @@ import {
 import { WSInstance, WsEvent } from '../../utils/ws/types';
 import {
   IExchange,
-  Options,
   ClientError,
   TradingPairs,
   CandlesData,
-  TradingPair,
   ClientOptions,
   PairConf,
-  ChannelArgs,
+  Pair,
+  TokensSymbols,
 } from '../../types';
 import { EXCHANGE_NAME } from '../../const';
 import {
@@ -45,14 +47,18 @@ import {
   API_RESOLUTIONS_MAP,
   makeCustomApiUrl,
 } from './const';
-import { CandlesStreamData, UpdateData, ApiCandle } from './types';
+import {
+  CandlesStreamData,
+  UpdateData,
+  GateIoCandle,
+  WsSubscriptions,
+} from './types';
+import { data$ } from '../../observables';
 
-class GateIo implements IExchange<ApiCandle> {
-  options!: { debug: boolean; intervals: { [key: string]: string | string[] } };
+class GateIo implements IExchange<GateIoCandle> {
+  _dataStream$ = new Subject<CandlesData>();
 
-  _dataStream$!: Subject<CandlesData>;
-
-  _closeStream$!: Subject<string>;
+  _closeStream$ = new Subject<boolean>();
 
   _tradingPairs: TradingPairs = {};
 
@@ -62,16 +68,23 @@ class GateIo implements IExchange<ApiCandle> {
 
   _ws: WSInstance | undefined = undefined;
 
-  _options!: ClientOptions<ApiCandle>;
+  _options!: ClientOptions<GateIoCandle>;
 
   _dataSource$: Observable<WsEvent> | undefined = undefined;
 
   _status = {
     isRunning: false,
-    exchange: { name: EXCHANGE_NAME.BITFINEX },
+    exchange: { name: EXCHANGE_NAME.GATEIO },
     debug: false,
     wsRootUrl: WS_ROOT_URL,
     restRootUrl: REST_ROOT_URL,
+  };
+
+  _subscriptions: WsSubscriptions = {};
+
+  options = {
+    debug: false,
+    intervals: API_RESOLUTIONS_MAP,
   };
 
   _resetConf = () => {
@@ -81,6 +94,7 @@ class GateIo implements IExchange<ApiCandle> {
     this._candlesData = {};
     this._dataSource$ = undefined;
     this._ws = undefined;
+    this._subscriptions = {};
     this._status = {
       ...this._status,
       isRunning: false,
@@ -94,12 +108,14 @@ class GateIo implements IExchange<ApiCandle> {
       return debugError(ClientError.SERVICE_IS_RUNNING, this._status.debug);
     }
 
-    this._options = makeOptions<ApiCandle>(opts, formatter);
+    console.log('start');
+
+    this._options = makeOptions<GateIoCandle>(opts, formatter);
 
     this._dataSource$ = makeDataStream(this._status.wsRootUrl, {
-      initialPairs: this._tradingPairs,
       wsInstance$: this._wsInstance$,
       debug: this._status.debug,
+      subscriptions: this._subscriptions,
     });
 
     this._wsInstance$.subscribe((instance) => {
@@ -119,7 +135,14 @@ class GateIo implements IExchange<ApiCandle> {
           )
         ),
         map((streamData) => {
-          this._candlesData = updateCandles<UpdateData['result'], ApiCandle>(
+          this._candlesData = addChannelToCandlesData<UpdateData['result']>(
+            this._candlesData,
+            streamData
+          );
+          return streamData;
+        }),
+        map((streamData) => {
+          this._candlesData = updateCandles<UpdateData['result'], GateIoCandle>(
             streamData,
             this._candlesData,
             this._options.format,
@@ -130,6 +153,11 @@ class GateIo implements IExchange<ApiCandle> {
           return this._candlesData;
         }),
         takeUntil(this._closeStream$),
+        catchError((error) => {
+          console.warn(error);
+
+          return of(error);
+        }),
         multicast(() => new Subject<CandlesData>())
       )
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -143,7 +171,7 @@ class GateIo implements IExchange<ApiCandle> {
 
   stop = () => {
     if (this._ws) {
-      this._closeStream$.next('close');
+      this._closeStream$.next(true);
       this._closeStream$.complete();
     }
 
@@ -153,14 +181,14 @@ class GateIo implements IExchange<ApiCandle> {
   };
 
   fetchCandles = async (
-    pair: TradingPair,
+    pair: TokensSymbols,
     interval: string,
     start: number,
     end: number,
     limit: number
   ) => {
     const makeCandlesUrlFn = (
-      symbols: TradingPair,
+      symbols: TokensSymbols,
       timeInterval: string,
       startTime: number,
       endTime: number
@@ -171,14 +199,15 @@ class GateIo implements IExchange<ApiCandle> {
         {
           currency_pair: makePair(symbols[0], symbols[1]),
           interval: API_RESOLUTIONS_MAP[timeInterval] as string,
-          from: startTime,
-          to: endTime,
+          from: Math.ceil(startTime / 1000),
+          to: Math.ceil(endTime / 1000),
         }
       );
 
-    return fetchCandles<ApiCandle>(pair, interval, start, end, limit, {
+    return fetchCandles<GateIoCandle>(pair, interval, start, end, limit, {
       formatFn: this._options.format,
       makeChunks: true,
+      apiLimit: 999,
       debug: {
         exchangeName: this._status.exchange.name,
         isDebug: this._status.debug,
@@ -200,7 +229,7 @@ class GateIo implements IExchange<ApiCandle> {
   };
 
   addTradingPair = (
-    pair: TradingPair,
+    pair: TokensSymbols,
     pairConf: PairConf
   ): string | undefined => {
     if (!pairConf) {
@@ -224,29 +253,43 @@ class GateIo implements IExchange<ApiCandle> {
 
     const conf = makePairConfig(pairConf, API_RESOLUTIONS_MAP);
 
-    const ticker = `${pair[0]}${pair[1]}`;
+    const ticker = `${pair[0]}:${pair[1]}`;
 
-    const channelName = `${conf.interval}:${ticker}`;
+    const pairKey = `${conf.interval}:${ticker}`;
 
-    const channelArgs: ChannelArgs = { ...conf, symbols: [...pair], ticker };
+    const newPair: { [key: string]: Pair } = {
+      [pairKey]: { ...conf, symbols: [...pair], ticker },
+    };
 
-    if (this._tradingPairs[channelName]) {
+    if (this._tradingPairs[pairKey]) {
       return debugError(ClientError.PAIR_ALREADY_DEFINED, this._status.debug);
     }
 
-    if (this._ws && this._ws.readyState === 1) {
-      addTradingPair(this._ws.send.bind(this._ws), channelName, channelArgs);
+    console.log('Pair added: ', this._tradingPairs);
 
-      this._tradingPairs = {
-        ...this._tradingPairs,
-        [channelName]: channelArgs,
-      };
+    this._tradingPairs = {
+      ...this._tradingPairs,
+      ...newPair,
+    };
+
+    if (this._ws && this._ws.readyState === 1) {
+      const subscription = addTradingPair(
+        this._ws.send.bind(this._ws),
+        newPair
+      );
+
+      if (subscription) {
+        this._subscriptions = { ...this._subscriptions, ...subscription };
+      }
 
       return undefined;
     }
 
     rxInterval(200)
       .pipe(
+        map((data) => {
+          console.log('data: ', data);
+        }),
         skipUntil(
           this._wsInstance$.pipe(
             filter((instance) => instance.readyState === 1)
@@ -259,19 +302,31 @@ class GateIo implements IExchange<ApiCandle> {
           return;
         }
 
-        addTradingPair(this._ws.send.bind(this._ws), channelName, channelArgs);
+        console.log('run subscribe');
 
-        this._tradingPairs = {
-          ...this._tradingPairs,
-          [channelName]: channelArgs,
-        };
+        const subscription = addTradingPair(
+          this._ws.send.bind(this._ws),
+          newPair
+        );
+
+        if (subscription) {
+          this._subscriptions = {
+            ...this._subscriptions,
+            ...subscription,
+          };
+        }
+
+        // this._tradingPairs = {
+        //   ...this._tradingPairs,
+        //   [channelName]: Pair,
+        // };
       });
 
     return undefined;
   };
 
   removeTradingPair = (
-    pair: TradingPair,
+    pair: TokensSymbols,
     intervalApi: string
   ): string | undefined => {
     if (!Array.isArray(pair)) {
@@ -305,6 +360,8 @@ class GateIo implements IExchange<ApiCandle> {
 
     return undefined;
   };
+
+  data$ = (channels: string[]) => data$(channels, this._dataStream$);
 }
 
 export default new GateIo();

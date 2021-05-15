@@ -1,25 +1,16 @@
-import _omit from 'lodash/omit';
+import _omitBy from 'lodash/omitBy';
 
 import { WsEvent } from '../../../utils/ws/types';
 import { UpdateData, CandlesStreamData } from '../types';
 
-type SubscribePairs = {
-  [key: number]: {
-    chanId: number;
-    interval: string;
-    ticker: string;
-  };
-};
-
-let subscribedPairs: SubscribePairs = {};
-
 /**
- * Formats event data and tracks subscribed pairs
+ * Formats event data and tracks subscribed pairs.
  *
- * Example event data:
+ * Example update event data:
  *
  * ```json
  * {
+ * "id": 1234,
  * "time": 1606292600,
  * "channel": "spot.candlesticks",
  * "event": "update",
@@ -35,6 +26,20 @@ let subscribedPairs: SubscribePairs = {};
  * }
  * ```
  *
+ * Example subscribe event data:
+ *
+ * ```json
+ * {
+ * "id": 1234
+ * "time": 1606292600,
+ * "channel": "spot.candlesticks",
+ * "event": "subscribe",
+ * "result": {
+ *   "status": "success",
+ *  }
+ * }
+ * ```
+ *
  * @param  {WsEvent} event
  * @return (null | CandlesStreamData)
  */
@@ -42,28 +47,14 @@ const processStreamEvent = (event: WsEvent): undefined | CandlesStreamData => {
   const msg: UpdateData = JSON.parse(event.data);
 
   if (msg.event === 'update') {
-    const { interval, ticker } = subscribedPairs[msg.id];
+    const [interval, baseSymbol, quoteSymbol] = msg.result.n.split('_');
+
+    const ticker: [string, string] = [baseSymbol, quoteSymbol];
 
     return [ticker, msg.result, interval];
   }
 
-  if (msg.event === 'subscribe') {
-    const keys = msg.result.n.split('_');
-
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    subscribedPairs[msg.id] = `${keys[0]}:${keys[1]}${keys[2]}`;
-
-    subscribedPairs[msg.id] = {
-      chanId: msg.id,
-      interval: keys[0],
-      ticker: `${keys[1]}${keys[2]}`,
-    };
-  }
-
-  if (msg.event === 'unsubscribed') {
-    subscribedPairs = _omit(subscribedPairs, msg.id);
-  }
+  return undefined;
 };
 
 export default processStreamEvent;

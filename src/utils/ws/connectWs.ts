@@ -10,9 +10,9 @@ import { WsEvent, Options, WSInstance } from './types';
 function connectWs(url: string, opts: Partial<Options> = {}): WS | WebSocket {
   console.log(opts);
   const defOpts: Options = {
-    initSubs: [],
-    keepAlive: true,
-    keepAliveMsg: 'PING',
+    initMsg: [],
+    keepAlive: false,
+    keepAliveMsg: 'ping',
     keepAliveTime: conf.wsPingTime,
     keepAliveTimeout: conf.wsTimeout,
     maxRetry: conf.wsMaxRetry,
@@ -21,7 +21,7 @@ function connectWs(url: string, opts: Partial<Options> = {}): WS | WebSocket {
     onMessageCb: undefined,
     onOpenCb: undefined,
     onPongCb: (event: WsEvent) =>
-      event.data === 'PONG' ? new Date().getTime() : null,
+      event.data === 'pong' ? new Date().getTime() : null,
     onReconnectCb: undefined,
     onSubscriptionCb: undefined,
     retryDelay: conf.wsRetryDelay,
@@ -45,8 +45,6 @@ function connectWs(url: string, opts: Partial<Options> = {}): WS | WebSocket {
     keepAliveTime,
     keepAliveTimeout,
   } = connOpts;
-
-  console.log(connOpts);
 
   const ws: WSInstance =
     typeof window !== 'undefined' && window.WebSocket
@@ -77,7 +75,7 @@ function connectWs(url: string, opts: Partial<Options> = {}): WS | WebSocket {
       td = pingWs(ws.send.bind(ws), isStaleFn, keepAliveMsg, keepAliveTime);
     }
 
-    const { initSubs } = connOpts;
+    const { initMsg: initSubs } = connOpts;
 
     // @ts-ignore
     const subs = Object.keys(ws.subs);

@@ -3,33 +3,17 @@ import { map, reduce, filter } from 'rxjs/operators';
 
 import makeChunkCalls, { FetchCandlesOptions } from './makeChunkCalls';
 import processUdfData, { UdfData } from './processUdfData';
-import { TradingPair, Candle } from '../types';
+import { Candle, TokensSymbols } from '../types';
 
 const sortByTime = <T>(candles: T[]) =>
   candles.sort(
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     (a, b) => new Date(a.time) - new Date(b.time)
-
-    // if (a.time) {
-    //   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //   // @ts-ignore
-    //   return new Date(a.time) - new Date(b.time);
-    // }
-
-    // if (a.date) {
-    //   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //   // @ts-ignore
-    //   return new Date(a.date) - new Date(b.date);
-    // }
-
-    // // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // // @ts-ignore
-    // return new Date(a.timestamp) - new Date(b.timestamp);
   );
 
 const fetchCandles = async <T>(
-  pair: TradingPair,
+  pair: TokensSymbols,
   interval: string,
   start: number,
   end: number,
@@ -44,7 +28,14 @@ const fetchCandles = async <T>(
     );
   }
 
-  const fetchCallsArray = makeChunkCalls<T>(pair, interval, start, end, opts);
+  const fetchCallsArray = makeChunkCalls<T>(
+    pair,
+    interval,
+    start,
+    end,
+    limit,
+    opts
+  );
 
   return concat(...fetchCallsArray)
     .pipe(

@@ -7,6 +7,7 @@ import {
   updateCandles,
   makePairConfig,
   mapToStandardInterval,
+  addChannelToCandlesData,
 } from '../../utils';
 import {
   ERROR,
@@ -22,7 +23,6 @@ import {
   removeTradingPair,
   processStreamEvent,
   makeDataStream,
-  addChannelToCandlesData,
 } from './utils';
 import { EXCHANGE_NAME } from '../../const';
 import { data$ } from '../../observables';

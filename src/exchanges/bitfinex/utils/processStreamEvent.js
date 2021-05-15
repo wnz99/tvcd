@@ -12,12 +12,17 @@ const processStreamEvent = (event) => {
   }
 
   if (msg.event === 'subscribed') {
+    console.log('event: ', msg);
     const keys = msg.key.split(':');
-    // subscribedPairs[msg.chanId] = `${keys[1]}:${keys[2].substr(1)}`;
+
+    const ticker = Array.isArray(keys[2])
+      ? [keys[2][0].substr(1), keys[2][1]]
+      : [keys[2].substring(1, 4), keys[2].substring(keys[2].length - 3)];
+
     subscribedPairs[msg.chanId] = {
       chanId: msg.chanId,
       interval: keys[1],
-      ticker: keys[2].substr(1),
+      ticker,
     };
   }
 

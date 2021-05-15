@@ -1,31 +1,31 @@
 import { Formatter, Candle } from '../../../types';
-import { ApiCandle } from '../types';
+import { GateIoCandle } from '../types';
 
-const formatter: Formatter<ApiCandle> = {
+const formatter: Formatter<GateIoCandle> = {
   /**
-   * Formats API candle to TV candle
+   * Formats API candle to TV candle.
    *
    * @param  {any} data
    * @return
    */
-  tradingview: (data: ApiCandle): Candle => {
+  tradingview: (data: GateIoCandle): Candle => {
     if (Array.isArray(data)) {
       const [time, volume, close, high, low, open] = data;
 
       return {
-        time,
-        open,
-        close,
-        high,
-        low,
-        volume,
+        time: Number(time) * 1000,
+        open: Number(open),
+        close: Number(close),
+        high: Number(high),
+        low: Number(low),
+        volume: Number(volume),
       };
     }
 
     const { t, o, c, h, l, v } = data;
 
     return {
-      time: Number(t),
+      time: Number(t) * 1000,
       open: Number(o),
       close: Number(c),
       high: Number(h),

@@ -16,6 +16,7 @@ const makeCandlesRestApiUrl = (
   REST_ROOT_URL: string,
   params: { [key: string]: string | number | undefined }
 ): string => {
+  console.log(exchangeName, REST_ROOT_URL, params);
   switch (exchangeName) {
     case EXCHANGE_NAME.BITFINEX: {
       const { symbol, interval, ...rest } = params;
@@ -37,9 +38,7 @@ const makeCandlesRestApiUrl = (
       return `${REST_ROOT_URL}?command=returnChartData&${makeQuery(params)}`;
     }
     case EXCHANGE_NAME.GATEIO: {
-      return `${REST_ROOT_URL}/spot/candlesticks/command=returnChartData&${makeQuery(
-        params
-      )}`;
+      return `${REST_ROOT_URL}/spot/candlesticks?${makeQuery(params)}`;
     }
     case EXCHANGE_NAME.KAIKO: {
       const { symbol, exchange, ...rest } = params;

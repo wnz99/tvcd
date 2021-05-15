@@ -3,8 +3,9 @@ import { Observable, Subject } from 'rxjs';
 import { filter, takeUntil, repeat } from 'rxjs/operators';
 import { WSInstance, WsEvent } from '../../../utils/ws/types';
 import { connectWs } from '../../../utils/ws';
-import { onSubscriptionMsg, onPongMsg, makeSubs } from '.';
+import { onSubscriptionMsg, onPongMsg } from '.';
 import { TradingPairs } from '../../../types';
+import { WsSubscriptions } from '../types';
 
 let ws: WSInstance;
 
@@ -13,7 +14,8 @@ const reconnect$ = new Subject();
 type Options = {
   wsInstance$: Subject<WSInstance>;
   debug: boolean;
-  initialPairs: TradingPairs;
+  initialPairs?: TradingPairs;
+  subscriptions: WsSubscriptions;
 };
 /**
  * Connects to ws and emits ws events. It also handles automatic re-connection.
@@ -26,17 +28,17 @@ const makeDataStream = (
   wsUrl: string,
   options: Options
 ): Observable<WsEvent> => {
-  const { initialPairs, wsInstance$, debug } = options;
+  const { subscriptions, wsInstance$, debug } = options;
 
   ws = connectWs(wsUrl, {
-    initSubs: makeSubs(initialPairs),
-    keepAlive: true,
+    // initMsg: initialPairs ? makeSubs(initialPairs) : [],
+    keepAlive: false,
     keepAliveMsg: JSON.stringify({
       time: new Date().valueOf(),
       channel: 'spot.ping',
     }),
     onPongCb: onPongMsg,
-    onSubscriptionCb: onSubscriptionMsg,
+    onSubscriptionCb: onSubscriptionMsg(subscriptions),
     onReconnectCb: (wsInstance) => {
       ws = wsInstance;
 
@@ -62,7 +64,6 @@ const makeDataStream = (
     return () => {
       if (ws.readyState === 1) {
         ws.close(1000, 'Close handle was called');
-
         if (debug) {
           console.log('tvcd => Gate.io WS closed');
         }

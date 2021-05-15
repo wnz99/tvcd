@@ -5,26 +5,27 @@ import { FormatFn } from '../types/exchanges';
 import { debugError, makeTimeChunks } from '.';
 import timePeriods from './timePeriods';
 import { fetchCandles$ } from '../observables';
-import { TradingPair } from '../types';
+import { TokensSymbols } from '../types';
 
 export type FetchCandlesOptions<T> = {
   makeCandlesUrlFn: (...args: any) => string;
   makeChunks?: boolean;
-  apiLimit?: number;
+  apiLimit: number;
   debug?: {
     exchangeName: string;
     isDebug: boolean;
   };
-  isUdf: boolean;
+  isUdf?: boolean;
   formatFn: FormatFn<T>;
   requestOptions?: { [key: string]: string | number };
 };
 
 const makeChunkCalls = <T>(
-  pair: TradingPair,
+  pair: TokensSymbols,
   interval: string,
   start: number,
   end: number,
+  limit: number,
   opts: FetchCandlesOptions<T>
 ): Observable<T>[] => {
   const {
@@ -44,7 +45,9 @@ const makeChunkCalls = <T>(
     ];
   }
 
-  const limit = apiLimit || 1000;
+  // const dataPointLimit = apiLimit || 1000;
+
+  const dataPointLimit = Math.min(apiLimit, limit);
 
   const timePeriod = timePeriods[interval.slice(-1)];
 
@@ -54,7 +57,7 @@ const makeChunkCalls = <T>(
     .duration(Number(interval.slice(0, interval.length - 1)), timePeriod)
     .asMilliseconds();
 
-  const chunksSize = Math.ceil(limit * unixInterval);
+  const chunksSize = Math.ceil(dataPointLimit * unixInterval);
 
   const timeIntervalChunks = makeTimeChunks(start, end, chunksSize);
 

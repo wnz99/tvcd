@@ -15,7 +15,7 @@ export type WsEvent = {
 };
 
 export type Options = {
-  initSubs: any[];
+  initMsg: any[];
   keepAlive: boolean;
   keepAliveMsg: string;
   keepAliveTime: number;

@@ -1,5 +1,5 @@
 import { REAL_TIME } from '../../const';
-import { Intervarls } from '../../types';
+import { Intervals } from '../../types';
 
 export const WS_ROOT_URL = 'wss://api.gateio.ws/ws/v4/';
 export const REST_ROOT_URL = `https://api.gateio.ws/api/v4`;
@@ -9,8 +9,8 @@ export const makeCustomApiUrl = (rootUrl: string): string =>
 // Maps TVCD standard resolutions to exchange API resolutions
 // https://www.gate.io/docs/apiv4/ws/index.html#client-subscription-3
 
-export const API_RESOLUTIONS_MAP: Intervarls = {
-  '10': '10',
+export const API_RESOLUTIONS_MAP: Intervals = {
+  '10s': '10s',
   '1m': '1m',
   '5m': '5m',
   '15m': '15m',
@@ -20,7 +20,7 @@ export const API_RESOLUTIONS_MAP: Intervarls = {
   '8h': '8h',
   '1D': '1d',
   '7D': '7d',
-  [REAL_TIME]: ['10', '10'], // Format: [tvcd_resolution, api_resolution]
+  [REAL_TIME]: ['10s', '10s'], // Format: [tvcd_resolution, api_resolution]
 };
 
 // Maps exchange API resolutions to TVCD standard resolutions

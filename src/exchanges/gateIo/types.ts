@@ -9,7 +9,7 @@ type CandlesSubscription = {
 };
 
 export type WsSubscriptions = {
-  [key: string]: CandlesSubscription;
+  [key: number]: CandlesSubscription;
 };
 
 export type PongData = {
@@ -38,8 +38,6 @@ export type UpdateData = {
 
 export type CandlesStreamData = StreamData<UpdateData['result']>;
 
-export type InitCandlesSubscriptions = CandlesSubscription[];
-
 export type DataStream = {
   data: string;
 };
@@ -56,4 +54,4 @@ export type WsApiCandle = {
 
 export type RestApiCandle = [number, number, number, number, number, number];
 
-export type ApiCandle = WsApiCandle | RestApiCandle;
+export type GateIoCandle = WsApiCandle | RestApiCandle;

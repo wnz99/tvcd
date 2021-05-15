@@ -8,6 +8,5 @@ export { default as processStreamEvent } from './processStreamEvent';
 export { default as makeDataStream } from './makeDataStream';
 export { default as onSubscriptionMsg } from './onSubscriptionMsg';
 export { default as onPongMsg } from './onPongMsg';
-export { default as addChannelToCandlesData } from './addChannelToCandlesData';
 export { default as wsInst } from './wsInstance';
 export * from './wsUtils';

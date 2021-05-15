@@ -26,7 +26,7 @@ export const API_RESOLUTIONS_MAP_UDF = {
 };
 
 export const API_OPTIONS = {
-  apiLimit: 3000,
+  apiLimit: 999,
 };
 
 export const ERROR = {

@@ -1,4 +1,4 @@
-import { CandlesData, Candle } from '../types';
+import { CandlesData, Candle, StreamData } from '../types';
 
 export const isLastNthDataPoint = (
   points: number,
@@ -20,28 +20,28 @@ export const isLastNthDataPoint = (
 };
 
 function updateCandles<D, F>(
-  update: [string, D, string],
+  update: StreamData<D>,
   candlesData: CandlesData,
   formatFn: (data: F) => Candle,
   debug: boolean
 ): CandlesData;
 
-function updateCandles<F>(
-  update: [string, unknown[], string],
+function updateCandles(
+  update: [[string, string], unknown[], string],
   candlesData: CandlesData,
-  formatFn: F,
+  formatFn: (data: unknown[]) => Candle,
   debug = false
 ): CandlesData {
   try {
     const [pair, data, interval] = update;
 
-    const channel = `${interval}:${pair}`;
+    const channel = `${interval}:${pair.join(':')}`;
 
     // INITIAL SHAPSHOT
     if (Array.isArray(data[0])) {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      const candles = data.map((point) => formatFn(point));
+      const candles = data.map((point) => formatFn(point)).slice(0, 10);
 
       return {
         ...candlesData,
@@ -103,13 +103,13 @@ function updateCandles<F>(
         [channel]: {
           pair,
           interval,
-          candles: [...candles],
+          candles: [...candles].slice(0, 10),
           seq: (candlesData[channel].seq || 0) + 1,
           meta,
         },
       };
     }
-
+    console.log(candlesData);
     return candlesData;
   } catch (e) {
     console.warn(e);

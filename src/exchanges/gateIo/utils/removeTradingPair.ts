@@ -1,7 +1,7 @@
-import { ChannelArgs } from '../../../types';
+import { Pair } from '../../../types';
 
 /**
- * Unsubscribes pair from API ws
+ * Unsubscribes pair from API ws.
  *
  * Example unsubscribe message:
  *
@@ -15,13 +15,10 @@ import { ChannelArgs } from '../../../types';
  * ```
  *
  * @param  {(msg: string) => void} sendFn
- * @param  {ChannelArgs} pair
+ * @param  {Pair} pair
  * @return {void}
  */
-const removeTradingPair = (
-  sendFn: (msg: string) => void,
-  pair: ChannelArgs
-): void => {
+const removeTradingPair = (sendFn: (msg: string) => void, pair: Pair): void => {
   const { intervalApi, symbols } = pair;
 
   const msg = {

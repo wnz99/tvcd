@@ -1,5 +1,5 @@
 import { Observable, Subject } from 'rxjs';
-import { filter, takeUntil, repeat } from 'rxjs/operators';
+import { filter, takeUntil, repeat, map, retry } from 'rxjs/operators';
 import { connectWs } from '../../../utils/ws';
 import { onSubscriptionMsg, onPongMsg } from '.';
 
@@ -11,27 +11,27 @@ const makeDataStream = (wsUrl, options = {}) => {
   const { initSubs, wsInstance$, debug } = options;
 
   ws = connectWs(wsUrl, {
-    initSubs: initSubs || {},
+    initMsg: initSubs || {},
     keepAlive: true,
     keepAliveMsg: JSON.stringify({ event: 'ping' }),
     onPongCb: onPongMsg,
     onSubscriptionCb: onSubscriptionMsg,
-    onReconnectCb: (_err, wsInstance) => {
+    onReconnectCb: (wsInstance) => {
       ws = wsInstance;
-      reconnect$.next();
+
+      reconnect$.next(true);
     },
     onOpenCb: () => {
       if (debug) {
         console.log('tvcd => Bitfinex WS opened');
       }
+
       wsInstance$.next(ws);
     },
   });
 
   const dataFeed$ = Observable.create((observer) => {
-    ws.addEventListener('message', (event) => {
-      observer.next(event);
-    });
+    ws.addEventListener('message', (event) => observer.next(event));
 
     wsInstance$.next(ws);
 

@@ -1,5 +1,12 @@
 import { Subject, timer, from, merge } from 'rxjs';
-import { map, multicast, takeUntil, filter, switchMap } from 'rxjs/operators';
+import {
+  map,
+  multicast,
+  takeUntil,
+  filter,
+  switchMap,
+  catchError,
+} from 'rxjs/operators';
 import moment from 'moment';
 import _omit from 'lodash/omit';
 
@@ -8,8 +15,9 @@ import {
   fetchCandles,
   makeCandlesRestApiUrl,
   makePairConfig,
-  mapToStandardInterval,
   updateCandles,
+  makeChannelFromDataStream,
+  addChannelToCandlesData,
 } from '../../utils';
 import {
   ERROR,
@@ -17,7 +25,7 @@ import {
   API_RESOLUTIONS_MAP,
   makeCustomApiUrl,
 } from './const';
-import { makeOptions, addChannelToCandlesData } from './utils';
+import { makeOptions } from './utils';
 import { EXCHANGE_NAME, REAL_TIME } from '../../const';
 import { data$ } from '../../observables';
 
@@ -59,20 +67,6 @@ const poloniex = (function poloniex() {
       timer(0, 5000)
         .pipe(
           switchMap(() => {
-            // const channel = Object.keys(pairs)[0];
-            // const { symbols, interval } = pairs[channel];
-            // const start = moment().subtract(5, 'minute').valueOf();
-            // const end = moment().valueOf();
-
-            // const candlesApiCall = this.fetchCandles(
-            //   symbols,
-            //   interval,
-            //   start,
-            //   end
-            // );
-
-            // from(candlesApiCall);
-
             const tickers = Object.keys(pairs).map((channel) => {
               const { symbols, interval } = pairs[channel];
               const start = moment().subtract(5, 'minute').valueOf();
@@ -87,13 +81,11 @@ const poloniex = (function poloniex() {
 
               return from(candlesApiCall).pipe(
                 filter((data) => data.length),
-                map((streamData) => {
-                  return [
-                    `${symbols[0]}${symbols[1]}`,
-                    streamData[streamData.length - 1],
-                    interval,
-                  ];
-                })
+                map((streamData) => [
+                  symbols,
+                  streamData[streamData.length - 1],
+                  interval,
+                ])
               );
             });
 
@@ -104,12 +96,13 @@ const poloniex = (function poloniex() {
                 return streamData;
               }),
               map((ticker) => {
-                const channel = `${ticker[2]}:${ticker[0]}`;
+                const channel = makeChannelFromDataStream(ticker);
 
                 candlesData = updateCandles(
                   ticker,
                   candlesData,
-                  options.format
+                  options.format,
+                  status.debug
                 );
 
                 if (candlesData[channel].meta.isNewCandle) {
@@ -119,6 +112,11 @@ const poloniex = (function poloniex() {
                 return candlesData;
               })
             );
+          }),
+          catchError((error) => {
+            if (status.debug) {
+              console.warn(error);
+            }
           }),
           takeUntil(closeStream$),
           multicast(() => new Subject())
@@ -146,10 +144,20 @@ const poloniex = (function poloniex() {
           resolution: 'auto',
         });
 
+      // return fetchCandles(pair, interval, start, end, limit, {
+      //   status,
+      //   options: {
+      //     ...options,
+      //   },
+      //   makeCandlesUrlFn,
+      // });
+
       return fetchCandles(pair, interval, start, end, limit, {
-        status,
-        options: {
-          ...options,
+        formatFn: options.format,
+        // makeChunks: true,
+        debug: {
+          exchangeName: status.exchange.name,
+          isDebug: status.debug,
         },
         makeCandlesUrlFn,
       });

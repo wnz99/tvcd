@@ -1,21 +1,21 @@
-import { PairConf, Intervarls } from '../types';
+import { PairConf, Intervals } from '../types';
 import { REAL_TIME } from '../const';
 
 const makePairConfig = (
   config: PairConf,
-  intervals: Intervarls
+  apiResolutionMap: Intervals
 ): {
-  interval: string | [string, string];
-  intervalApi: string | [string, string];
+  interval: string;
+  intervalApi: string;
 } => ({
   interval:
     config.interval === REAL_TIME
-      ? intervals.realtime[0]
-      : intervals[config.interval],
+      ? apiResolutionMap.realtime[0]
+      : (config.interval as string),
   intervalApi:
     config.interval === REAL_TIME
-      ? intervals.realtime[1]
-      : intervals[config.interval],
+      ? apiResolutionMap.realtime[1]
+      : (apiResolutionMap[config.interval] as string),
 });
 
 export default makePairConfig;

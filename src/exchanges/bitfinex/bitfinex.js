@@ -6,6 +6,7 @@ import {
   filter,
   skipUntil,
   take,
+  catchError,
 } from 'rxjs/operators';
 
 import {
@@ -93,6 +94,10 @@ const bitfinex = (function bitfinex() {
       dataSource$
         .pipe(
           map((streamEvent) => processStreamEvent(streamEvent)),
+          map((data) => {
+            console.log(data);
+            return data;
+          }),
           filter((streamEvent) => streamEvent),
           map((streamData) =>
             mapToStandardInterval(streamData, API_RESOLUTIONS_MAP)
@@ -106,6 +111,15 @@ const bitfinex = (function bitfinex() {
             );
             dataStream$.next(candlesData);
             return candlesData;
+          }),
+          map((data) => {
+            console.log(data);
+            return data;
+          }),
+          catchError((error) => {
+            if (status.debug) {
+              console.warn(error);
+            }
           }),
           takeUntil(closeStream$),
           multicast(() => new Subject())
@@ -135,8 +149,12 @@ const bitfinex = (function bitfinex() {
         });
 
       return fetchCandles(pair, interval, start, end, limit, {
-        status,
-        options: { ...options, makeChunkCalls: true },
+        formatFn: options.format,
+        makeChunks: true,
+        debug: {
+          exchangeName: status.exchange.name,
+          isDebug: status.debug,
+        },
         makeCandlesUrlFn,
       });
     },
@@ -168,21 +186,19 @@ const bitfinex = (function bitfinex() {
       }
 
       const conf = makePairConfig(pairConf, API_RESOLUTIONS_MAP);
-      const ticker = `${pair[0]}${pair[1]}`;
+
+      const ticker = `${pair[0]}:${pair[1]}`;
+
       const channelName = `${conf.interval}:${ticker}`;
-      const channelArgs = { ...conf, symbols: [...pair], ticker };
+
+      const Pair = { ...conf, symbols: [...pair], ticker };
 
       if (tradingPairs[channelName]) {
         return debugError(ERROR.PAIR_ALREADY_DEFINED, status.debug);
       }
 
       if (ws && ws.readyState === 1) {
-        tradingPairs = addTradingPair(
-          ws,
-          tradingPairs,
-          channelName,
-          channelArgs
-        );
+        tradingPairs = addTradingPair(ws, tradingPairs, channelName, Pair);
         return null;
       }
 
@@ -194,12 +210,7 @@ const bitfinex = (function bitfinex() {
           take(1)
         )
         .subscribe(() => {
-          tradingPairs = addTradingPair(
-            ws,
-            tradingPairs,
-            channelName,
-            channelArgs
-          );
+          tradingPairs = addTradingPair(ws, tradingPairs, channelName, Pair);
 
           return tradingPairs;
         });

@@ -1,6 +1,5 @@
 export { default as addTradingPair } from './addTradingPair';
 export { default as makePair } from './makePair';
-// export { default as fetchCandles } from '../../../observables/fetchCandles';
 export { default as makeSubs } from './makeSubs';
 export { default as removeTradingPair } from './removeTradingPair';
 export { default as formatter } from './formatter';
@@ -9,6 +8,3 @@ export { default as processStreamEvent } from './processStreamEvent';
 export { default as makeDataStream } from './makeDataStream';
 export { default as onSubscriptionMsg } from './onSubscriptionMsg';
 export { default as onPongMsg } from './onPongMsg';
-// export { default as wsInst } from './wsInstance';
-// export { default as makeDashPair } from './makeDashPair';
-// export * from './wsUtils';

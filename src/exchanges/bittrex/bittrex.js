@@ -1,5 +1,11 @@
-import { Subject, timer, merge } from 'rxjs';
-import { map, multicast, takeUntil, switchMap } from 'rxjs/operators';
+import { Subject, timer, merge, config } from 'rxjs';
+import {
+  map,
+  multicast,
+  takeUntil,
+  switchMap,
+  catchError,
+} from 'rxjs/operators';
 import moment from 'moment';
 import _omit from 'lodash/omit';
 
@@ -9,6 +15,8 @@ import {
   updateCandles,
   makePairConfig,
   mapToStandardInterval,
+  makeChannelFromDataStream,
+  addChannelToCandlesData,
 } from '../../utils';
 import {
   ERROR,
@@ -20,7 +28,7 @@ import {
   makeOptions,
   makeCandlesUrl,
   shouldReturnCandles,
-  addChannelToCandlesData,
+
   // Dont remove
   // isNotPrevCandle,
 } from './utils';
@@ -67,20 +75,21 @@ const bittrex = (function bittrex() {
       timer(0, 5000)
         .pipe(
           switchMap(() => {
-            const tickers = Object.keys(pairs).map((channel) => {
-              return getTicker$(pairs[channel], status.restRootUrl);
-            });
+            const tickers = Object.keys(pairs).map((channel) =>
+              getTicker$(pairs[channel], status.restRootUrl)
+            );
 
             return merge(...tickers).pipe(
               map((streamData) =>
                 mapToStandardInterval(streamData, API_RESOLUTIONS_MAP)
               ),
               map((streamData) => {
+                console.log(streamData);
                 candlesData = addChannelToCandlesData(candlesData, streamData);
                 return streamData;
               }),
               map((ticker) => {
-                const channel = `${ticker[2]}:${ticker[0]}`;
+                const channel = makeChannelFromDataStream(ticker);
 
                 candlesData = updateCandles(
                   ticker,
@@ -94,6 +103,11 @@ const bittrex = (function bittrex() {
                 return candlesData;
               })
             );
+          }),
+          catchError((error) => {
+            if (status.debug) {
+              console.warn(error);
+            }
           }),
           takeUntil(closeStream$),
           multicast(() => new Subject())
@@ -121,8 +135,12 @@ const bittrex = (function bittrex() {
         };
 
         return fetchCandles(pair, interval, start, end, limit, {
-          status,
-          options: { ...options, makeChunkCalls: false },
+          formatFn: options.format,
+          makeChunks: false,
+          debug: {
+            exchangeName: status.exchange.name,
+            isDebug: status.debug,
+          },
           makeCandlesUrlFn: makeCandlesUrl(status, status.restRootUrl),
         });
       }
