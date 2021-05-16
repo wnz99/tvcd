@@ -23,7 +23,7 @@ const fetchCandles = async <T>(
   const { debug, isUdf, formatFn } = opts;
 
   if (debug?.isDebug) {
-    console.warn(
+    console.log(
       `tvcd => ${debug.exchangeName} fetchCandles(${pair}, ${interval}, ${start}, ${end}, ${limit})`
     );
   }

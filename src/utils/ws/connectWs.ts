@@ -74,13 +74,13 @@ function connectWs(url: string, opts: Partial<Options> = {}): WS | WebSocket {
       td = pingWs(ws.send.bind(ws), isStaleFn, keepAliveMsg, keepAliveTime);
     }
 
-    const { initMsg: initSubs } = connOpts;
+    const { initMsg } = connOpts;
 
     // @ts-ignore
     const subs = Object.keys(ws.subs);
 
-    if (initSubs.length && !subs.length) {
-      initSubs.forEach((sub) => {
+    if (initMsg.length && !subs.length) {
+      initMsg.forEach((sub) => {
         ws.send(JSON.stringify(sub));
       });
     } else {
@@ -109,8 +109,8 @@ function connectWs(url: string, opts: Partial<Options> = {}): WS | WebSocket {
       if (td) {
         clearInterval(td);
       }
-
-      if (event.code !== 1000) {
+      // In Chrome ws.close(1000) will produce a close event with code 1006
+      if (event.code !== 1000 && event.code !== 1006) {
         reconnectWs(url, {
           ...connOpts,
           subs: {

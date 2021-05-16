@@ -1,9 +1,19 @@
-const processStreamEvent = (event) => {
+import _pickBy from 'lodash/pickBy';
+
+const processStreamEvent = (event, tradingPairs) => {
   const msg = JSON.parse(event.data);
 
   if (msg && msg.data && msg.data.k) {
     const ticker = msg.data.s;
+
     const interval = msg.data.k.i;
+
+    const pair = _pickBy(
+      tradingPairs,
+      (item) =>
+        item.symbols.join('') === ticker && item.intervalApi === interval
+    );
+
     const data = [
       msg.data.k.t,
       Number(msg.data.k.o),
@@ -13,7 +23,7 @@ const processStreamEvent = (event) => {
       Number(msg.data.k.v),
       msg.data.k.x,
     ];
-    return [ticker, data, interval];
+    return [Object.values(pair)[0].symbols, data, interval];
   }
 
   return null;

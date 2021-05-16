@@ -45,9 +45,11 @@ const makeChunkCalls = <T>(
     ];
   }
 
-  // const dataPointLimit = apiLimit || 1000;
+  let dataPointLimit = limit ?? 1000;
 
-  const dataPointLimit = Math.min(apiLimit, limit);
+  if (apiLimit && limit) {
+    dataPointLimit = Math.min(apiLimit, limit);
+  }
 
   const timePeriod = timePeriods[interval.slice(-1)];
 

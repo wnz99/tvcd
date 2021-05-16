@@ -11,7 +11,7 @@ const makeDataStream = (wsUrl, options) => {
   const { wsInstance$, debug } = options;
 
   ws = connectWs(wsUrl, {
-    initSubs: (options && options.initSubs) || {},
+    initMsg: (options && options.initSubs) || {},
     keepAlive: true,
     keepAliveMsg: 'ping',
     onPongCb: onPongMsg,

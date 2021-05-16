@@ -17,8 +17,8 @@ const makeDataStream = (wsUrlFn, options = {}) => {
     const pushEvent = (event) => observer.next(event);
 
     let ws = connectWs(wsUrl, {
-      initSubs: (options && options.initSubs) || {},
-      onReconnectCb: (_err, wsInstance) => {
+      initMsg: (options && options.initSubs) || {},
+      onReconnectCb: (wsInstance) => {
         ws.removeEventListener('message', pushEvent);
 
         ws = wsInstance;
