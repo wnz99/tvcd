@@ -84,7 +84,6 @@ const bittrex = (function bittrex() {
                 mapToStandardInterval(streamData, API_RESOLUTIONS_MAP)
               ),
               map((streamData) => {
-                console.log(streamData);
                 candlesData = addChannelToCandlesData(candlesData, streamData);
                 return streamData;
               }),
@@ -177,7 +176,7 @@ const bittrex = (function bittrex() {
       const conf = makePairConfig(pairConf, API_RESOLUTIONS_MAP);
 
       const ticker = `${pair[0]}${pair[1]}`;
-      const channel = `${conf.interval}:${ticker}`;
+      const channel = `${conf.interval}:${pair[0]}:${pair[1]}`;
       const config = { ...conf, symbols: [...pair], ticker };
 
       if (pairs[channel]) {
@@ -202,7 +201,7 @@ const bittrex = (function bittrex() {
         return debugError(ERROR.NO_TIME_FRAME_PROVIDED, status.debug);
       }
 
-      const channel = `${interval}:${pair[0]}${pair[1]}`;
+      const channel = `${interval}:${pair[0]}:${pair[1]}`;
 
       if (!pairs[channel]) {
         return debugError(ERROR.PAIR_NOT_DEFINED, status.debug);

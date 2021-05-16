@@ -1,7 +1,7 @@
 /* eslint no-console: ["error", { allow: ["warn"] }] */
 import { SendFn } from './types';
 
-export const catchErr = (sendFn: SendFn, msg: string) => {
+export const catchErr = (sendFn: SendFn, msg: string): void => {
   try {
     sendFn(msg);
   } catch (e) {
@@ -9,7 +9,10 @@ export const catchErr = (sendFn: SendFn, msg: string) => {
   }
 };
 
-export const subPair = (sendFn: SendFn) => (pair: string, channel: string) => {
+export const subPair = (sendFn: SendFn) => (
+  pair: string,
+  channel: string
+): void => {
   let msg;
 
   switch (channel) {
@@ -39,7 +42,7 @@ export const subPair = (sendFn: SendFn) => (pair: string, channel: string) => {
   }
 };
 
-export const unsubPair = (sendFn: SendFn) => (chanId: string) => {
+export const unsubPair = (sendFn: SendFn) => (chanId: string): void => {
   const msg = JSON.stringify({
     event: 'unsubscribe',
     chanId,

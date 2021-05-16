@@ -191,7 +191,7 @@ const poloniex = (function poloniex() {
 
       const conf = makePairConfig(pairConf, API_RESOLUTIONS_MAP);
       const ticker = `${pair[0]}${pair[1]}`;
-      const channel = `${conf.interval}:${ticker}`;
+      const channel = `${conf.interval}:${pair[0]}:${pair[1]}`;
       const config = { ...conf, symbols: [...pair], ticker };
 
       if (pairs[channel]) {
@@ -216,7 +216,7 @@ const poloniex = (function poloniex() {
         return debugError(ERROR.NO_TIME_FRAME_PROVIDED, status.debug);
       }
 
-      const channel = `${interval}:${pair[0]}${pair[1]}`;
+      const channel = `${interval}:${pair[0]}:${pair[1]}`;
 
       if (!pairs[channel]) {
         return debugError(ERROR.PAIR_NOT_DEFINED, status.debug);

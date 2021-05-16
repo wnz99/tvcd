@@ -109,7 +109,7 @@ function updateCandles(
         },
       };
     }
-    console.log(candlesData);
+
     return candlesData;
   } catch (e) {
     console.warn(e);

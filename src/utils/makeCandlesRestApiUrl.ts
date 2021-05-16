@@ -16,7 +16,6 @@ const makeCandlesRestApiUrl = (
   REST_ROOT_URL: string,
   params: { [key: string]: string | number | undefined }
 ): string => {
-  console.log(exchangeName, REST_ROOT_URL, params);
   switch (exchangeName) {
     case EXCHANGE_NAME.BITFINEX: {
       const { symbol, interval, ...rest } = params;

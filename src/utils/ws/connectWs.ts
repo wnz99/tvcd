@@ -8,7 +8,6 @@ import reconnectWs from './reconnectWs';
 import { WsEvent, Options, WSInstance } from './types';
 
 function connectWs(url: string, opts: Partial<Options> = {}): WS | WebSocket {
-  console.log(opts);
   const defOpts: Options = {
     initMsg: [],
     keepAlive: false,

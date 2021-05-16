@@ -57,7 +57,7 @@ describe('reconnectWs function', () => {
 
     expect(spyCbFn.onReconnectCb).toHaveBeenCalledTimes(1);
 
-    expect(spyCbFn.onReconnectCb).toHaveBeenCalledWith(null, 'success');
+    expect(spyCbFn.onReconnectCb).toHaveBeenCalledWith('success');
   });
   it('does not call cb success', () => {
     const runTime = 10000;

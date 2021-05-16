@@ -17,9 +17,7 @@ jest.mock('../utils/makeDataStream');
 jest.mock('../../../utils/makeCandlesRestApiUrl');
 jest.mock('../../../utils/fetchCandles');
 jest.mock('../utils/wsInstance', () =>
-  jest.fn().mockImplementation(() => {
-    return global.wsTestInstance$;
-  })
+  jest.fn().mockImplementation(() => global.wsTestInstance$)
 );
 
 const ws = { send: jest.fn(), close: jest.fn(), subs: {} };
@@ -49,30 +47,28 @@ describe('bitfinex connector', () => {
 
     const tradingPairs = bitfinex.getTradingPairs();
     const expectedTragingPairs = {
-      '1m:ETHUSD': {
+      '1m:ETH:USD': {
         interval: '1m',
         intervalApi: '1m',
         symbols: ['ETH', 'USD'],
-        ticker: 'ETHUSD',
+        ticker: 'ETH:USD',
       },
     };
 
     expect(tradingPairs).toEqual(expectedTragingPairs);
 
-    expect(bitfinex.addTradingPair()).toEqual(
-      new Error(ERROR.NO_CONFIGURATION_PROVIDED)
-    );
+    expect(bitfinex.addTradingPair()).toEqual(ERROR.NO_CONFIGURATION_PROVIDED);
     expect(bitfinex.addTradingPair('ETHUSD', { interval })).toEqual(
-      new Error(ERROR.PAIR_IS_NOT_ARRAY)
+      ERROR.PAIR_IS_NOT_ARRAY
     );
     expect(bitfinex.addTradingPair('ETHUSD')).toEqual(
-      new Error(ERROR.NO_CONFIGURATION_PROVIDED)
+      ERROR.NO_CONFIGURATION_PROVIDED
     );
     expect(bitfinex.addTradingPair(['ETH', 'USD'], {})).toEqual(
-      new Error(ERROR.NO_TIME_FRAME_PROVIDED)
+      ERROR.NO_TIME_FRAME_PROVIDED
     );
     expect(bitfinex.addTradingPair(['ETH', 'USD'], { interval })).toEqual(
-      new Error(ERROR.PAIR_ALREADY_DEFINED)
+      ERROR.PAIR_ALREADY_DEFINED
     );
 
     bitfinex.stop();
@@ -83,17 +79,15 @@ describe('bitfinex connector', () => {
     const interval = '1m';
     makeDataStream.mockImplementation(() => mockObservable);
 
-    expect(bitfinex.removeTradingPair()).toEqual(
-      new Error(ERROR.PAIR_IS_NOT_ARRAY)
-    );
+    expect(bitfinex.removeTradingPair()).toEqual(ERROR.PAIR_IS_NOT_ARRAY);
     expect(bitfinex.removeTradingPair('ETHUSD', interval)).toEqual(
-      new Error(ERROR.PAIR_IS_NOT_ARRAY)
+      ERROR.PAIR_IS_NOT_ARRAY
     );
     expect(bitfinex.removeTradingPair(['ETH', 'USD'])).toEqual(
-      new Error(ERROR.NO_TIME_FRAME_PROVIDED)
+      ERROR.NO_TIME_FRAME_PROVIDED
     );
     expect(bitfinex.removeTradingPair(['ETH', 'USD'], interval)).toEqual(
-      new Error(ERROR.PAIR_NOT_DEFINED)
+      ERROR.PAIR_NOT_DEFINED
     );
 
     bitfinex.addTradingPair(['ETH', 'USD'], { interval });
@@ -185,17 +179,17 @@ describe('bitfinex connector', () => {
     tradingPairs = bitfinex.getTradingPairs();
     expect(subPairs).toHaveBeenCalledTimes(2);
     expect(tradingPairs).toEqual({
-      '1m:ETHUSD': {
+      '1m:ETH:USD': {
         interval,
         intervalApi,
         symbols: ['ETH', 'USD'],
-        ticker: 'ETHUSD',
+        ticker: 'ETH:USD',
       },
-      '1m:ZRXUSD': {
+      '1m:ZRX:USD': {
         interval,
         intervalApi,
         symbols: ['ZRX', 'USD'],
-        ticker: 'ZRXUSD',
+        ticker: 'ZRX:USD',
       },
     });
     jest.clearAllTimers();
@@ -222,11 +216,11 @@ describe('bitfinex connector', () => {
     let tradingPairs = bitfinex.getTradingPairs();
     expect(subPairs).toHaveBeenCalledTimes(1);
     expect(tradingPairs).toEqual({
-      '1m:ETHUSD': {
+      '1m:ETH:USD': {
         interval,
-        intervalApi: '1m',
+        intervalApi,
         symbols: ['ETH', 'USD'],
-        ticker: 'ETHUSD',
+        ticker: 'ETH:USD',
       },
     });
 
@@ -234,17 +228,17 @@ describe('bitfinex connector', () => {
     tradingPairs = bitfinex.getTradingPairs();
     expect(subPairs).toHaveBeenCalledTimes(2);
     expect(tradingPairs).toEqual({
-      '1m:ETHUSD': {
+      '1m:ETH:USD': {
         interval,
-        intervalApi: '1m',
+        intervalApi,
         symbols: ['ETH', 'USD'],
-        ticker: 'ETHUSD',
+        ticker: 'ETH:USD',
       },
-      '1m:ZRXUSD': {
+      '1m:ZRX:USD': {
         interval,
-        intervalApi: '1m',
+        intervalApi,
         symbols: ['ZRX', 'USD'],
-        ticker: 'ZRXUSD',
+        ticker: 'ZRX:USD',
       },
     });
 
@@ -256,11 +250,11 @@ describe('bitfinex connector', () => {
     tradingPairs = bitfinex.getTradingPairs();
     expect(unsubPairs).toHaveBeenCalledTimes(1);
     expect(tradingPairs).toEqual({
-      '1m:ETHUSD': {
+      '1m:ETH:USD': {
         interval,
-        intervalApi: '1m',
+        intervalApi,
         symbols: ['ETH', 'USD'],
-        ticker: 'ETHUSD',
+        ticker: 'ETH:USD',
       },
     });
 
@@ -299,11 +293,12 @@ describe('bitfinex connector', () => {
     expect(fetchCandles.mock.calls[0][2]).toEqual(start);
     expect(fetchCandles.mock.calls[0][3]).toEqual(end);
     expect(fetchCandles.mock.calls[0][4]).toEqual(limit);
-    expect(fetchCandles.mock.calls[0][5].status).toEqual(bitfinex.getStatus());
-    expect(fetchCandles.mock.calls[0][5]).toContainKeys([
-      'status',
-      'options',
+    // expect(fetchCandles.mock.calls[0][5].status).toEqual(bitfinex.getStatus());
+    expect(fetchCandles.mock.calls[0][5]).toContainAllKeys([
+      'debug',
+      'formatFn',
       'makeCandlesUrlFn',
+      'makeChunks',
     ]);
   });
 });

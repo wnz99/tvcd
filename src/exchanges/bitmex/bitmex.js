@@ -260,7 +260,7 @@ const bitmex = (function bitmex() {
         return debugError(ERROR.NO_TIME_FRAME_PROVIDED, status.debug);
       }
 
-      const channel = `${interval}:${pair[0]}${pair[1]}`;
+      const channel = `${interval}:${pair[0]}:${pair[1]}`;
 
       if (!tradingPairs[channel]) {
         return debugError(ERROR.PAIR_NOT_DEFINED, status.debug);

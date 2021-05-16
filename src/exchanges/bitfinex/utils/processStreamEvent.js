@@ -12,7 +12,6 @@ const processStreamEvent = (event) => {
   }
 
   if (msg.event === 'subscribed') {
-    console.log('event: ', msg);
     const keys = msg.key.split(':');
 
     const ticker = Array.isArray(keys[2])

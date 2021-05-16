@@ -13,17 +13,19 @@ beforeEach(() => {
 
 afterEach(() => {
   jest.clearAllTimers();
+  spyFn.mockClear();
 });
 
 describe('subPair function', () => {
-  it('returns a send function', () => {
+  it('should return a send function', () => {
     const sendFn = subPair(spyFn);
 
     expect(spyFn).not.toHaveBeenCalled();
+
     expect(sendFn).toBeInstanceOf(Function);
   });
 
-  it('returns a text message', () => {
+  it('should return a text message', () => {
     let msg = {
       event: 'subscribe',
       channel: 'ticker',
@@ -31,9 +33,13 @@ describe('subPair function', () => {
     };
 
     subPair(spyFn)(pair, 'ticker');
+
     expect(spyFn).toHaveBeenCalledWith(JSON.stringify(msg));
 
+    spyFn.mockClear();
+
     subPair(spyFn)(pair, 'book');
+
     msg = {
       event: 'subscribe',
       channel: 'book',
@@ -43,13 +49,16 @@ describe('subPair function', () => {
     };
     expect(spyFn).toHaveBeenCalledWith(JSON.stringify(msg));
 
+    spyFn.mockClear();
+
     subPair(spyFn)(pair, '');
-    expect(spyFn).toHaveBeenCalledWith(undefined);
+
+    expect(spyFn).not.toHaveBeenCalled();
   });
 });
 
 describe('unsubPair function', () => {
-  it('returns a send function', () => {
+  it('should return a send function', () => {
     const sendFn = unsubPair(spyFn);
 
     expect(spyFn).not.toHaveBeenCalled();
@@ -57,7 +66,7 @@ describe('unsubPair function', () => {
     expect(sendFn).toBeInstanceOf(Function);
   });
 
-  it('returns a text message', () => {
+  it('should return a text message', () => {
     const msg = {
       event: 'unsubscribe',
       chanId,
@@ -69,13 +78,12 @@ describe('unsubPair function', () => {
 });
 
 describe('catchErr function', () => {
-  it('returns a send function', () => {
-    const sendFn = catchErr(spyFn);
-    expect(spyFn).not.toHaveBeenCalled();
-    expect(sendFn).toBeInstanceOf(Function);
+  it('should execute send function', () => {
+    catchErr(spyFn, 'test');
+    expect(spyFn).toHaveBeenCalledWith('test');
   });
 
-  it('catchs error', () => {
+  it('catches error', () => {
     const spy = jest
       .spyOn(global.console, 'warn')
       .mockImplementation(() => jest.fn());

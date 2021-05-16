@@ -12,9 +12,9 @@ afterEach(() => {
 
 describe('debugError function', () => {
   it('returns error succes', () => {
-    jest.spyOn(global.console, 'warn');
+    jest.spyOn(global.console, 'log');
     const debugMessage = debugError('test message', true);
     expect(spyFn).toHaveBeenCalled();
-    expect(debugMessage.message).toEqual('test message');
+    expect(debugMessage).toEqual('test message');
   });
 });

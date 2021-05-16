@@ -94,10 +94,6 @@ const bitfinex = (function bitfinex() {
       dataSource$
         .pipe(
           map((streamEvent) => processStreamEvent(streamEvent)),
-          map((data) => {
-            console.log(data);
-            return data;
-          }),
           filter((streamEvent) => streamEvent),
           map((streamData) =>
             mapToStandardInterval(streamData, API_RESOLUTIONS_MAP)
@@ -111,10 +107,6 @@ const bitfinex = (function bitfinex() {
             );
             dataStream$.next(candlesData);
             return candlesData;
-          }),
-          map((data) => {
-            console.log(data);
-            return data;
           }),
           catchError((error) => {
             if (status.debug) {
@@ -199,6 +191,7 @@ const bitfinex = (function bitfinex() {
 
       if (ws && ws.readyState === 1) {
         tradingPairs = addTradingPair(ws, tradingPairs, channelName, Pair);
+
         return null;
       }
 
@@ -227,7 +220,7 @@ const bitfinex = (function bitfinex() {
         return debugError(ERROR.NO_TIME_FRAME_PROVIDED, status.debug);
       }
 
-      const channel = `${interV}:${pair[0]}${pair[1]}`;
+      const channel = `${interV}:${pair[0]}:${pair[1]}`;
 
       if (!tradingPairs[channel]) {
         return debugError(ERROR.PAIR_NOT_DEFINED, status.debug);

@@ -108,8 +108,6 @@ class GateIo implements IExchange<GateIoCandle> {
       return debugError(ClientError.SERVICE_IS_RUNNING, this._status.debug);
     }
 
-    console.log('start');
-
     this._options = makeOptions<GateIoCandle>(opts, formatter);
 
     this._dataSource$ = makeDataStream(this._status.wsRootUrl, {
@@ -265,8 +263,6 @@ class GateIo implements IExchange<GateIoCandle> {
       return debugError(ClientError.PAIR_ALREADY_DEFINED, this._status.debug);
     }
 
-    console.log('Pair added: ', this._tradingPairs);
-
     this._tradingPairs = {
       ...this._tradingPairs,
       ...newPair,
@@ -287,9 +283,6 @@ class GateIo implements IExchange<GateIoCandle> {
 
     rxInterval(200)
       .pipe(
-        map((data) => {
-          console.log('data: ', data);
-        }),
         skipUntil(
           this._wsInstance$.pipe(
             filter((instance) => instance.readyState === 1)
@@ -302,8 +295,6 @@ class GateIo implements IExchange<GateIoCandle> {
           return;
         }
 
-        console.log('run subscribe');
-
         const subscription = addTradingPair(
           this._ws.send.bind(this._ws),
           newPair
@@ -315,11 +306,6 @@ class GateIo implements IExchange<GateIoCandle> {
             ...subscription,
           };
         }
-
-        // this._tradingPairs = {
-        //   ...this._tradingPairs,
-        //   [channelName]: Pair,
-        // };
       });
 
     return undefined;
