@@ -1,6 +1,6 @@
 {
   "name": "tvcd",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
@@ -26,10 +26,10 @@
     "lodash": "^4.17.20",
     "moment": "^2.27.0",
     "rxjs": "^6.6.7",
+    "tslib": "^2.2.0",
     "typescript-eslint": "^0.0.1-alpha.0",
     "updeep": "^1.1.0",
     "utf-8-validate": "^5.0.2",
-    "tslib": "^2.2.0",
     "ws": "^7.3.1"
   },
   "husky": {
