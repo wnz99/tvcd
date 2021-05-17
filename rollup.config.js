@@ -18,7 +18,7 @@ export default {
     format: 'cjs',
     name: 'tvcd',
     sourcemap: true,
-    exports: 'auto',
+    exports: 'named',
   },
   plugins: [
     peerDepsExternal(),
