@@ -30,7 +30,6 @@ coverage/
 .tmp
 .vscode/
 ./directory
-yarn.lock
 audit.log
 *.code-workspace
 .rpt2_cache/

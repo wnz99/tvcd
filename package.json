@@ -29,6 +29,7 @@
     "typescript-eslint": "^0.0.1-alpha.0",
     "updeep": "^1.1.0",
     "utf-8-validate": "^5.0.2",
+    "tslib": "^2.2.0",
     "ws": "^7.3.1"
   },
   "husky": {
