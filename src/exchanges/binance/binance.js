@@ -7,6 +7,7 @@ import {
   updateCandles,
   makePairConfig,
   mapToStandardInterval,
+  addChannelToCandlesData,
 } from '../../utils';
 import {
   ERROR,
@@ -22,7 +23,6 @@ import {
   removeTradingPair,
   processStreamEvent,
   makeDataStream,
-  addChannelToCandlesData,
 } from './utils';
 import { EXCHANGE_NAME } from '../../const';
 import { data$ } from '../../observables';
@@ -33,7 +33,7 @@ const binance = (function binance() {
   let wsInstance$ = new Subject();
   let addTradingPairToStream$ = new Subject();
   let candlesData = {};
-  let pairs = {};
+  let tradingPairs = {};
   let dataSource$;
   let ws;
   let options;
@@ -49,7 +49,7 @@ const binance = (function binance() {
     closeStream$ = new Subject();
     wsInstance$ = new Subject();
     addTradingPairToStream$ = new Subject();
-    pairs = {};
+    tradingPairs = {};
     candlesData = {};
     dataSource$ = undefined;
     ws = undefined;
@@ -71,11 +71,11 @@ const binance = (function binance() {
 
       options = makeOptions(opts);
 
-      if (Object.keys(pairs).length === 0) {
+      if (Object.keys(tradingPairs).length === 0) {
         return debugError(ERROR.NO_INIT_PAIRS_DEFINED, status.debug);
       }
 
-      const wsUrl = () => makeCandlesWsApiUrl(status.wsRootUrl, pairs);
+      const wsUrl = () => makeCandlesWsApiUrl(status.wsRootUrl, tradingPairs);
 
       dataSource$ = makeDataStream(wsUrl, { wsInstance$, debug: status.debug });
 
@@ -85,7 +85,7 @@ const binance = (function binance() {
 
       dataSource$
         .pipe(
-          map((streamEvent) => processStreamEvent(streamEvent)),
+          map((streamEvent) => processStreamEvent(streamEvent, tradingPairs)),
           map((streamData) =>
             mapToStandardInterval(streamData, API_RESOLUTIONS_MAP)
           ),
@@ -132,13 +132,18 @@ const binance = (function binance() {
         });
 
       return fetchCandles(pair, interval, start, end, limit, {
-        status,
-        options: { ...options, makeChunkCalls: true },
+        formatFn: options.format,
+        makeChunks: true,
+        debug: {
+          exchangeName: status.exchange.name,
+          isDebug: status.debug,
+        },
+        apiLimit: 1000,
         makeCandlesUrlFn,
       });
     },
 
-    getTradingPairs: () => pairs,
+    getTradingPairs: () => tradingPairs,
 
     getStatus: () => status,
 
@@ -166,14 +171,14 @@ const binance = (function binance() {
 
       const conf = makePairConfig(pairConf, API_RESOLUTIONS_MAP);
       const ticker = `${pair[0]}${pair[1]}`;
-      const channel = `${conf.interval}:${ticker}`;
+      const channel = `${conf.interval}:${pair[0]}:${pair[1]}`;
       const config = { ...conf, symbols: [...pair], ticker };
 
-      if (pairs[channel]) {
+      if (tradingPairs[channel]) {
         return debugError(ERROR.PAIR_ALREADY_DEFINED, status.debug);
       }
 
-      pairs = addTradingPair(pairs, channel, config);
+      tradingPairs = addTradingPair(tradingPairs, channel, config);
 
       if (status.isRunning) {
         if (ws.readyState === 1) {
@@ -183,7 +188,7 @@ const binance = (function binance() {
         addTradingPairToStream$.next();
       }
 
-      return pairs;
+      return tradingPairs;
     },
 
     removeTradingPair: (pair, interval) => {
@@ -197,13 +202,17 @@ const binance = (function binance() {
 
       const channel = `${interval}:${pair[0]}${pair[1]}`;
 
-      if (!pairs[channel]) {
+      if (!tradingPairs[channel]) {
         return debugError(ERROR.PAIR_NOT_DEFINED, status.debug);
       }
 
-      [pairs, candlesData] = removeTradingPair(pairs, channel, candlesData);
+      [tradingPairs, candlesData] = removeTradingPair(
+        tradingPairs,
+        channel,
+        candlesData
+      );
 
-      return pairs;
+      return tradingPairs;
     },
 
     data$: (channels) => data$(channels, dataStream$),

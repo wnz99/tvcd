@@ -2,6 +2,7 @@ import makeSubs from './makeSubs';
 
 export const subPairs = (sendFn, pairs) => {
   const msgs = makeSubs(pairs);
+
   msgs.forEach((msg) => {
     sendFn(JSON.stringify(msg));
   });

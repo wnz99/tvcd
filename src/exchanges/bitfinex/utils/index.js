@@ -10,5 +10,4 @@ export { default as makeDataStream } from './makeDataStream';
 export { default as onSubscriptionMsg } from './onSubscriptionMsg';
 export { default as onPongMsg } from './onPongMsg';
 export { default as wsInst } from './wsInstance';
-export { default as makeDashPair } from './makeDashPair';
 export * from './wsUtils';

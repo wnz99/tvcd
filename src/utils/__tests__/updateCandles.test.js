@@ -35,20 +35,21 @@ describe('updateCandles function', () => {
 
     const expectedResult = {
       ...candlesData,
-      '1m:ETHUSD': {
-        pair: 'ETHUSD',
+      '1m:ETH:USD': {
+        pair: ['ETH', 'USD'],
         interval: '1m',
         candles: expectedCandles,
         meta: {
           isSnapshot: true,
           isNewCandle: false,
+          isUpdateCandle: false,
           updateIndex: undefined,
         },
         seq: 0,
       },
     };
 
-    const update = ['ETHUSD', data, '1m'];
+    const update = [['ETH', 'USD'], data, '1m'];
     const result = updateCandles(update, candlesData, formatFn);
 
     expect(result).toEqual(expectedResult);
@@ -56,8 +57,8 @@ describe('updateCandles function', () => {
 
   it('should process an update', () => {
     const candlesData = {
-      '1m:ETHUSD': {
-        pair: 'ETHUSD',
+      '1m:ETH:USD': {
+        pair: ['ETH', 'USD'],
         interval: '1m',
         candles: [
           {
@@ -107,8 +108,8 @@ describe('updateCandles function', () => {
     ];
 
     const expectedResult = {
-      '1m:ETHUSD': {
-        pair: 'ETHUSD',
+      '1m:ETH:USD': {
+        pair: ['ETH', 'USD'],
         interval: '1m',
         candles: expectedCandles,
         meta: {
@@ -121,7 +122,7 @@ describe('updateCandles function', () => {
       },
     };
 
-    const update = ['ETHUSD', data, '1m'];
+    const update = [['ETH', 'USD'], data, '1m'];
     const result = updateCandles(update, candlesData, formatFn);
 
     expect(result).toEqual(expectedResult);
@@ -129,8 +130,8 @@ describe('updateCandles function', () => {
 
   it('should process a new candle', () => {
     const candlesData = {
-      '1m:ETHUSD': {
-        pair: 'ETHUSD',
+      '1m:ETH:USD': {
+        pair: ['ETH', 'USD'],
         interval: '1m',
         candles: [
           {
@@ -188,8 +189,8 @@ describe('updateCandles function', () => {
     ];
 
     const expectedResult = {
-      '1m:ETHUSD': {
-        pair: 'ETHUSD',
+      '1m:ETH:USD': {
+        pair: ['ETH', 'USD'],
         interval: '1m',
         candles: expectedCandles,
         meta: {
@@ -202,7 +203,7 @@ describe('updateCandles function', () => {
       },
     };
 
-    const update = ['ETHUSD', data, '1m'];
+    const update = [['ETH', 'USD'], data, '1m'];
     const result = updateCandles(update, candlesData, formatFn);
 
     expect(result).toEqual(expectedResult);

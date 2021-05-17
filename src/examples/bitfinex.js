@@ -1,4 +1,4 @@
-const candlesData = require('../index').default;
+const tvcd = require('../../dist').default;
 
 // const symbols = [
 //   ['BTC', 'USD'],
@@ -9,7 +9,7 @@ const candlesData = require('../index').default;
 
 // Initiate exchange
 
-const dataSource = candlesData('bitfinex');
+const dataSource = tvcd('bitfinex');
 const { options } = dataSource;
 
 // Add pairs with time frame

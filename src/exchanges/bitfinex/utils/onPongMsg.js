@@ -1,7 +1,13 @@
-const onPongMsg = (err, event) => {
-  const msg = JSON.parse(event.data);
+const onPongMsg = (event) => {
+  if (event.data) {
+    try {
+      const data = JSON.parse(event.data);
 
-  return msg.ts;
+      return data.ts;
+    } catch (_e) {
+      return null;
+    }
+  }
 };
 
 export default onPongMsg;

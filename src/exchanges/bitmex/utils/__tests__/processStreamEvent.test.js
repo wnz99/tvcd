@@ -21,7 +21,7 @@ const mockEvent = {
 };
 
 const expectedCandleData = [
-  'ETHUSD',
+  ['ETH', 'USD'],
   {
     timestamp: '2020-03-14T11:50:00.000Z',
     close: 131.15,
@@ -33,9 +33,17 @@ const expectedCandleData = [
   '1m',
 ];
 
+const mockTradingPairs = {
+  '1m:ETH:USD': {
+    ticker: 'ETHUSD',
+    intervalApi: '1m',
+    symbols: ['ETH', 'USD'],
+  },
+};
+
 describe('processStreamEvent bitmex function', () => {
   it('should process a new candle event correctly', () => {
-    const data = processStreamEvent(mockEvent);
+    const data = processStreamEvent(mockEvent, mockTradingPairs);
     expect(data).toEqual(expectedCandleData);
   });
 });

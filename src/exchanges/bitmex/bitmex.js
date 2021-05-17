@@ -15,6 +15,7 @@ import {
   fetchCandles,
   updateCandles,
   makePairConfig,
+  addChannelToCandlesData,
 } from '../../utils';
 import {
   ERROR,
@@ -32,7 +33,6 @@ import {
   makeSubs,
   removeTradingPair,
   processStreamEvent,
-  addChannelToCandlesData,
   wsInst,
 } from './utils';
 import { EXCHANGE_NAME } from '../../const';
@@ -102,7 +102,7 @@ const bitmex = (function bitmex() {
             const data = JSON.parse(streamEvent.data);
             return data.action === 'insert';
           }),
-          map((streamEvent) => processStreamEvent(streamEvent)),
+          map((streamEvent) => processStreamEvent(streamEvent, tradingPairs)),
           filter((streamData) => streamData),
           map((streamData) => {
             candlesData = addChannelToCandlesData(candlesData, streamData);
@@ -176,11 +176,13 @@ const bitmex = (function bitmex() {
         limitDateToApiMinimun(end),
         limit,
         {
-          status,
-          options: {
-            ...options,
-            apiLimit: API_OPTIONS.apiLimit,
-            makeChunkCalls: true,
+          formatFn: options.format,
+          isUdf: status.isUdf,
+          makeChunks: true,
+          apiLimit: API_OPTIONS.apiLimit,
+          debug: {
+            exchangeName: status.exchange.name,
+            isDebug: status.debug,
           },
           makeCandlesUrlFn,
         }
@@ -213,22 +215,23 @@ const bitmex = (function bitmex() {
       if (!Object.keys(API_RESOLUTIONS_MAP).includes(pairConf.interval)) {
         return debugError(ERROR.INTERVAL_NOT_SUPPORTED, status.debug);
       }
+
       const conf = makePairConfig(pairConf, API_RESOLUTIONS_MAP);
       const ticker = `${pair[0]}${pair[1]}`;
-      const channelName = `${conf.interval}:${ticker}`;
-      const channelArgs = { ...conf, symbols: pair, ticker };
+      const channelName = `${conf.interval}:${pair[0]}:${pair[1]}`;
+      const Pair = { ...conf, symbols: pair, ticker };
 
       if (tradingPairs[channelName]) {
         return debugError(ERROR.PAIR_ALREADY_DEFINED, status.debug);
       }
 
+      const newPair = { [channelName]: Pair };
+
+      tradingPairs = { ...tradingPairs, ...newPair };
+
       if (ws && ws.readyState === 1) {
-        tradingPairs = addTradingPair(
-          ws,
-          tradingPairs,
-          channelName,
-          channelArgs
-        );
+        addTradingPair(ws, tradingPairs, newPair);
+
         return null;
       }
 
@@ -240,14 +243,9 @@ const bitmex = (function bitmex() {
           take(1)
         )
         .subscribe(() => {
-          tradingPairs = addTradingPair(
-            ws,
-            tradingPairs,
-            channelName,
-            channelArgs
-          );
+          addTradingPair(ws, newPair);
 
-          return tradingPairs;
+          return null;
         });
 
       return null;
@@ -262,7 +260,7 @@ const bitmex = (function bitmex() {
         return debugError(ERROR.NO_TIME_FRAME_PROVIDED, status.debug);
       }
 
-      const channel = `${interval}:${pair[0]}${pair[1]}`;
+      const channel = `${interval}:${pair[0]}:${pair[1]}`;
 
       if (!tradingPairs[channel]) {
         return debugError(ERROR.PAIR_NOT_DEFINED, status.debug);

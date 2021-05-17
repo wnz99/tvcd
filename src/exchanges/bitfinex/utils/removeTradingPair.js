@@ -4,8 +4,14 @@ import { unsubPairs } from './wsUtils';
 const removeTradingPair = (ws, pairs, channel, candlesData) => {
   if (ws && pairs[channel]) {
     const { intervalApi, symbols } = pairs[channel];
+
+    const ticker =
+      symbols[0].length !== 3 || symbols[1].length !== 3
+        ? `t${symbols[0]}:${symbols[1]}`
+        : `t${symbols[0]}${symbols[1]}`;
+
     const subscription = Object.values(ws.subs).filter(
-      (sub) => sub.key === `trade:${intervalApi}:t${symbols[0]}${symbols[1]}`
+      (sub) => sub.key === `trade:${intervalApi}:${ticker}`
     );
 
     if (subscription.length) {

@@ -1,4 +1,4 @@
-const onPongMsg = (err, event) => {
+const onPongMsg = (event) => {
   if (event.data === 'pong') {
     return new Date().getTime();
   }

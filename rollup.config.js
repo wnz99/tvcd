@@ -1,19 +1,33 @@
+import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
-import builtins from 'rollup-plugin-node-builtins';
-import globals from 'rollup-plugin-node-globals';
+import typescript from 'rollup-plugin-typescript2';
+
+// this override is needed because Module format cjs does not support top-level await
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const packageJson = require('./package.json');
+
+const globals = {
+  ...packageJson.devDependencies,
+};
 
 export default {
-  input: 'src/tvcd.js',
+  input: 'src/index.ts',
   output: {
     file: 'dist/index.js',
-    format: 'umd',
+    format: 'cjs',
     name: 'tvcd',
+    sourcemap: true,
+    exports: 'named',
   },
   plugins: [
-    resolve({ browser: true, preferBuiltins: true }),
+    peerDepsExternal(),
     commonjs(),
-    globals(),
-    builtins(),
+    // resolve({ browser: true, preferBuiltins: true }),
+    typescript({
+      objectHashIgnoreUnknownHack: true,
+      abortOnError: false,
+    }),
   ],
+  external: Object.keys(globals),
 };

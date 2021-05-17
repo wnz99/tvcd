@@ -25,7 +25,7 @@ describe('pingWs function', () => {
 
     expect(spySendFn).toHaveBeenCalledTimes(10);
 
-    expect(spySendFn).toHaveBeenLastCalledWith(JSON.stringify(pingMsg.msg));
+    expect(spySendFn).toHaveBeenLastCalledWith(pingMsg.msg);
 
     expect(spyCbFn).toHaveBeenCalledTimes(10);
   });

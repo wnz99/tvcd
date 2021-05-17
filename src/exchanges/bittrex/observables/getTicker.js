@@ -17,7 +17,8 @@ const getTicker$ = (channel, restRootUrl) => {
         const responseBody = await response.json();
 
         return [
-          `${symbols[0]}${symbols[1]}`,
+          // `${symbols[0]}${symbols[1]}`,
+          symbols,
           responseBody.result[0],
           intervalApi,
         ];

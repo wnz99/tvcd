@@ -4,7 +4,7 @@ export const WS_ROOT_URL = ' wss://stream.binance.com:9443';
 export const REST_ROOT_URL = `https://api.binance.com/api/v1`;
 export const makeCustomApiUrl = (rootUrl) => `${rootUrl}/binance/api/v1`;
 
-// Maps exchange API resolutions to TVCD starndard resolutions
+// Maps TVCD standard resolutions to exchange API resolutions
 // https://binance-docs.github.io/apidocs/spot/en/#public-api-definitions
 
 export const API_RESOLUTIONS_MAP = {

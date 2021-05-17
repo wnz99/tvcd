@@ -28,7 +28,7 @@ coverage/
 .env
 .directory
 .tmp
-.vscode/*
+.vscode/
 ./directory
 audit.log
 *.code-workspace

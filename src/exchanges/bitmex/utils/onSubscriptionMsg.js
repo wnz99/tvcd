@@ -1,6 +1,6 @@
 import omit from 'lodash/omit';
 
-const onSubscriptionMsg = (err, event, subs) => {
+const onSubscriptionMsg = (event, subs) => {
   try {
     const msg = JSON.parse(event.data);
 

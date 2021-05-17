@@ -6,7 +6,7 @@ export const REST_ROOT_URL_UDF = 'https://www.bitmex.com/api/udf';
 export const makeCustomApiUrl = (rootUrl, isUdf) =>
   isUdf ? `${rootUrl}/bitmex/api/udf` : `${rootUrl}/bitmex/api/v1`;
 
-// Maps exchange API resolutions to TVCD starndard resolutions
+// Maps TVCD standard resolutions to exchange API resolutions
 // https://www.bitmex.com/api/explorer/#!/Trade/Trade_getBucketed
 
 export const API_RESOLUTIONS_MAP = {
@@ -26,7 +26,7 @@ export const API_RESOLUTIONS_MAP_UDF = {
 };
 
 export const API_OPTIONS = {
-  apiLimit: 3000,
+  apiLimit: 999,
 };
 
 export const ERROR = {

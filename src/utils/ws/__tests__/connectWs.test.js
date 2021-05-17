@@ -17,7 +17,7 @@ const spyCbFn = {
   onPongCb: jest.fn(),
 };
 
-const onSubscriptionMsg = (err, event, subs) => {
+const onSubscriptionMsg = (event, subs) => {
   const msg = JSON.parse(event.data);
 
   switch (msg.event) {
@@ -137,11 +137,13 @@ describe('connectWs function', () => {
   it('pings success', (done) => {
     const connOpts = {
       ...spyCbFn,
-      keepAlive: { msg: { event: 'ping' } },
+      keepAlive: true,
+      keepAliveMsg: JSON.stringify({ event: 'ping' }),
     };
     mockServer.on('connection', (socket) => {
       socket.on('message', (data) => {
         const msg = JSON.parse(data);
+
         if (msg.event === 'ping') {
           socket.send(
             JSON.stringify({
@@ -175,7 +177,7 @@ describe('open event', () => {
   });
 
   it('event listener open success', (done) => {
-    const initSubs = [
+    const initMsg = [
       {
         event: 'subscribe',
         channel: 'ticker',
@@ -189,8 +191,9 @@ describe('open event', () => {
     ];
     const connOpts = {
       ...spyCbFn,
-      keepAlive: { msg: { event: 'ping' } },
-      initSubs,
+      keepAlive: true,
+      keepAliveMsg: JSON.stringify({ event: 'ping' }),
+      initMsg,
     };
     const expectedMsg = [
       { event: 'subscribe', channel: 'ticker', symbol: 'tNECETH' },
@@ -213,7 +216,7 @@ describe('open event', () => {
   });
 
   it('resubscribe on open success', (done) => {
-    const initSubs = [
+    const initMsg = [
       {
         event: 'subscribe',
         channel: 'ticker',
@@ -234,8 +237,9 @@ describe('open event', () => {
     };
     const connOpts = {
       ...spyCbFn,
-      initSubs,
-      keepAlive: { msg: { event: 'ping' } },
+      initMsg,
+      keepAlive: true,
+      keepAliveMsg: JSON.stringify({ event: 'ping' }),
       subs,
     };
     const expectedMsg = [
@@ -261,7 +265,8 @@ describe('open event', () => {
   it('keeps connection alive success', (done) => {
     const connOpts = {
       ...spyCbFn,
-      keepAlive: { msg: { event: 'ping' } },
+      keepAlive: true,
+      keepAliveMsg: JSON.stringify({ event: 'ping' }),
     };
     const expectedMsg = [
       { event: 'ping' },
