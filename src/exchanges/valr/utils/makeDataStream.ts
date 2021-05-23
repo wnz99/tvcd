@@ -3,7 +3,7 @@ import { Observable, Subject } from 'rxjs';
 import { filter, takeUntil, repeat } from 'rxjs/operators';
 import { WSInstance, WsEvent } from '../../../utils/ws/types';
 import { connectWs } from '../../../utils/ws';
-import { onPongMsg } from '.';
+import { onSubscriptionMsg, onPongMsg } from '.';
 import { TradingPairs } from '../../../types';
 import { WsSubscriptions } from '../types';
 
@@ -15,7 +15,7 @@ type Options = {
   wsInstance$: Subject<WSInstance>;
   debug: boolean;
   initialPairs?: TradingPairs;
-  subscriptions?: WsSubscriptions;
+  subscriptions: WsSubscriptions;
 };
 /**
  * Connects to ws and emits ws events. It also handles automatic re-connection.
@@ -28,15 +28,17 @@ const makeDataStream = (
   wsUrl: string,
   options: Options
 ): Observable<WsEvent> => {
-  const { wsInstance$, debug } = options;
+  const { subscriptions, wsInstance$, debug } = options;
 
   ws = connectWs(wsUrl, {
+    // initMsg: initialPairs ? makeSubs(initialPairs) : [],
     keepAlive: false,
     keepAliveMsg: JSON.stringify({
       time: new Date().valueOf(),
       channel: 'spot.ping',
     }),
     onPongCb: onPongMsg,
+    onSubscriptionCb: onSubscriptionMsg(subscriptions),
     onReconnectCb: (wsInstance) => {
       ws = wsInstance;
 

@@ -10,7 +10,8 @@ import { WSInstance } from '../../../utils/ws/types';
  * @param  {WSInstance} ws
  * @param  {Pair} pair
  * @return (WsSubscriptions | undefined)
- */
+ * */
+
 const addTradingPair = (
   ws: WSInstance,
   pair: Pair

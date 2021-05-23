@@ -6,6 +6,8 @@ export const EXCHANGE_NOT_SUPPORTED = 'Exchange not supported';
 export const GATEIO = 'gateio';
 export const KAIKO = 'kaiko';
 export const POLONIEX = 'poloniex';
+export const VALR = 'valr';
+export const KUCOIN = 'kucoin';
 
 export const EXCHANGE_NAME = {
   BINANCE,
@@ -15,6 +17,8 @@ export const EXCHANGE_NAME = {
   GATEIO,
   KAIKO,
   POLONIEX,
+  VALR,
+  KUCOIN,
 };
 
 export const ERROR = {

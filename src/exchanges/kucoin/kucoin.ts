@@ -1,5 +1,5 @@
 import _omit from 'lodash/omit';
-import { Subject, Observable, interval as rxInterval, of } from 'rxjs';
+import { Subject, Observable, interval as rxInterval, of, defer } from 'rxjs';
 import {
   map,
   multicast,
@@ -8,10 +8,12 @@ import {
   skipUntil,
   take,
   catchError,
+  switchMap,
 } from 'rxjs/operators';
-import { GATEIO } from '../../const';
-import { Options } from '../../types/exchanges';
+import axios from 'axios';
 
+import { KUCOIN } from '../../const';
+import { Options } from '../../types/exchanges';
 import {
   debugError,
   fetchCandles,
@@ -46,11 +48,11 @@ import {
   API_RESOLUTIONS_MAP,
   makeCustomApiUrl,
 } from './const';
-import { CandlesStreamData, UpdateData, GateIoCandle } from './types';
+import { CandlesStreamData, UpdateData, KucoinCandle } from './types';
 import BaseExchange from '../base/baseExchange';
 
-class GateIo extends BaseExchange implements IExchange<GateIoCandle> {
-  _options!: ClientOptions<GateIoCandle>;
+class Kucoin extends BaseExchange implements IExchange<KucoinCandle> {
+  _options!: ClientOptions<KucoinCandle>;
 
   _dataSource$: Observable<WsEvent> | undefined = undefined;
 
@@ -59,12 +61,25 @@ class GateIo extends BaseExchange implements IExchange<GateIoCandle> {
       return debugError(ClientError.SERVICE_IS_RUNNING, this._status.debug);
     }
 
-    this._options = makeOptions<GateIoCandle>(opts, formatter);
+    this._options = makeOptions<KucoinCandle>(opts, formatter);
 
-    this._dataSource$ = makeDataStream(this._status.wsRootUrl, {
-      wsInstance$: this._wsInstance$,
-      debug: this._status.debug,
-    });
+    this._dataSource$ = defer(() =>
+      axios.post(`${this._status.restRootUrl}/bullet-public`)
+    ).pipe(
+      switchMap((result) => {
+        const connectId = new Date().valueOf();
+
+        const { endpoint } = result.data.data.instanceServers[0];
+
+        const wsUrl = `${endpoint}?token=${result.data.data.token}&[connectId=${connectId}]`;
+
+        return makeDataStream(wsUrl, {
+          wsInstance$: this._wsInstance$,
+          debug: this._status.debug,
+          connectId,
+        });
+      })
+    );
 
     this._wsInstance$.subscribe((instance) => {
       this._ws = instance;
@@ -77,20 +92,22 @@ class GateIo extends BaseExchange implements IExchange<GateIoCandle> {
         ),
         filter((streamEvent) => !!streamEvent),
         map((streamData) =>
-          mapToStandardInterval<UpdateData['result']>(
+          mapToStandardInterval<UpdateData['data']['candles']>(
             streamData,
             API_RESOLUTIONS_MAP
           )
         ),
         map((streamData) => {
-          this._candlesData = addChannelToCandlesData<UpdateData['result']>(
-            this._candlesData,
-            streamData
-          );
+          this._candlesData = addChannelToCandlesData<
+            UpdateData['data']['candles']
+          >(this._candlesData, streamData);
           return streamData;
         }),
         map((streamData) => {
-          this._candlesData = updateCandles<UpdateData['result'], GateIoCandle>(
+          this._candlesData = updateCandles<
+            UpdateData['data']['candles'],
+            KucoinCandle
+          >(
             streamData,
             this._candlesData,
             this._options.format,
@@ -145,17 +162,17 @@ class GateIo extends BaseExchange implements IExchange<GateIoCandle> {
         this._status.exchange.name,
         this._status.restRootUrl,
         {
-          currency_pair: makePair(symbols[0], symbols[1]),
-          interval: API_RESOLUTIONS_MAP[timeInterval] as string,
-          from: Math.ceil(startTime / 1000),
-          to: Math.ceil(endTime / 1000),
+          symbol: makePair(symbols),
+          type: API_RESOLUTIONS_MAP[timeInterval] as string,
+          startAt: Math.ceil(startTime / 1000),
+          endAt: Math.ceil(endTime / 1000),
         }
       );
 
-    return fetchCandles<GateIoCandle>(pair, interval, start, end, limit, {
+    return fetchCandles<KucoinCandle>(pair, interval, start, end, limit, {
       formatFn: this._options.format,
       makeChunks: true,
-      apiLimit: 999,
+      apiLimit: 1500,
       debug: {
         exchangeName: this._status.exchange.name,
         isDebug: this._status.debug,
@@ -168,16 +185,16 @@ class GateIo extends BaseExchange implements IExchange<GateIoCandle> {
     pair: TokensSymbols,
     pairConf: PairConf
   ): string | undefined => {
-    let newPair: Pair;
+    let addedPair: Pair;
 
     try {
-      newPair = this._addTradingPair(pair, pairConf);
+      addedPair = this._addTradingPair(pair, pairConf);
     } catch (err) {
       return err.message;
     }
 
     if (this._ws && this._ws.readyState === 1) {
-      addTradingPair(this._ws, newPair);
+      addTradingPair(this._ws, addedPair);
 
       return undefined;
     }
@@ -196,7 +213,7 @@ class GateIo extends BaseExchange implements IExchange<GateIoCandle> {
           return;
         }
 
-        addTradingPair(this._ws, newPair);
+        addTradingPair(this._ws, addedPair);
       });
 
     return undefined;
@@ -204,12 +221,12 @@ class GateIo extends BaseExchange implements IExchange<GateIoCandle> {
 
   removeTradingPair = (
     pair: TokensSymbols,
-    intervalApi: string
+    interval: string
   ): string | undefined => {
     let removedPair;
 
     try {
-      removedPair = this._removeTradingPair(pair, intervalApi);
+      removedPair = this._removeTradingPair(pair, interval);
     } catch (err) {
       return err.message;
     }
@@ -228,10 +245,10 @@ class GateIo extends BaseExchange implements IExchange<GateIoCandle> {
   };
 }
 
-export default new GateIo({
+export default new Kucoin({
   wsRootUrl: WS_ROOT_URL,
   restRootUrl: REST_ROOT_URL,
-  exchangeName: GATEIO,
+  exchangeName: KUCOIN,
   apiResolutionsMap: API_RESOLUTIONS_MAP,
   makeCustomApiUrl,
 });

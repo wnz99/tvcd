@@ -1,6 +1,6 @@
-import { Subject, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 
-import { WSInstance, WsEvent } from '../utils/ws/types';
+import { WsEvent } from '../utils/ws/types';
 
 export type Intervals = {
   [key: string]: string | [string, string];
@@ -9,15 +9,40 @@ export type Intervals = {
 
 export type TokensSymbols = [string, string];
 
-export type StreamData<T> = [[string, string], T, string];
+export type Interval = string;
 
-// export type RealtimeInterval = [string, string];
+export type StreamData<T> = [[string, string], T, Interval];
+
+export type PublicOptions = {
+  debug: boolean;
+  intervals: Intervals;
+};
+
+export type Status = {
+  isRunning: boolean;
+  exchange: { name: string };
+  debug: boolean;
+  wsRootUrl: string;
+  restRootUrl: string;
+};
+
+export type ExchangeConf = {
+  exchangeName: string;
+  wsRootUrl: string;
+  restRootUrl: string;
+  apiResolutionsMap: Intervals;
+  makeCustomApiUrl: (rootUrl: string) => string;
+};
 
 export type Pair = {
   ticker: string;
   interval: string;
   intervalApi: string;
   symbols: TokensSymbols;
+  ws?: {
+    subMsg: { [key: string]: { [key: string]: unknown } } | string;
+    unsubMsg?: { [key: string]: { [key: string]: unknown } } | string;
+  };
 };
 
 export type TradingPairs = {
@@ -91,14 +116,7 @@ export interface IExchange<T> {
     intervals: ApiResolutionsMap;
   };
   _options: ClientOptions<T>;
-  _status: ExchangeStatus;
-  _ws: WSInstance | undefined;
-  _wsInstance$: Subject<WSInstance>;
-  _dataSource$: Observable<WsEvent> | undefined;
-  _dataStream$: Subject<CandlesData>;
-  _closeStream$: Subject<boolean>;
-  _tradingPairs: TradingPairs;
-  _candlesData: CandlesData;
+  _dataSource$?: Observable<WsEvent> | undefined;
   start: (options?: Options) => unknown;
   stop: () => void;
   fetchCandles: (
@@ -107,11 +125,11 @@ export interface IExchange<T> {
     start: number,
     end: number,
     limit: number
-  ) => Promise<unknown>;
-  getTradingPairs: () => TradingPairs;
-  getStatus: () => ExchangeStatus;
-  setDebug: () => void;
-  setApiUrl: (apiUrl: string) => void;
+  ) => Promise<Candle[]>;
+  getTradingPairs?: () => TradingPairs;
+  getStatus?: () => ExchangeStatus;
+  setDebug?: () => void;
+  setApiUrl?: (apiUrl: string) => void;
   addTradingPair: (
     pair: TokensSymbols,
     pairConf: PairConf
@@ -120,5 +138,4 @@ export interface IExchange<T> {
     pair: TokensSymbols,
     intervalApi: string
   ) => string | undefined;
-  _resetConf: () => void;
 }

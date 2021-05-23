@@ -5,9 +5,9 @@ import conf from './env';
 import pingWs from './pingWs';
 // eslint-disable-next-line import/no-cycle
 import reconnectWs from './reconnectWs';
-import { WsEvent, Options, WSInstance } from './types';
+import { WsEvent, Options, WSInstance, Subscription } from './types';
 
-function connectWs(url: string, opts: Partial<Options> = {}): WS | WebSocket {
+function connectWs(url: string, opts: Partial<Options> = {}): WSInstance {
   const defOpts: Options = {
     initMsg: [],
     keepAlive: false,
@@ -45,10 +45,10 @@ function connectWs(url: string, opts: Partial<Options> = {}): WS | WebSocket {
     keepAliveTimeout,
   } = connOpts;
 
-  const ws: WSInstance =
+  const ws =
     typeof window !== 'undefined' && window.WebSocket
-      ? new WebSocket(url)
-      : new WS(url);
+      ? (new WebSocket(url) as WSInstance)
+      : (new WS(url) as WSInstance);
 
   let pongTime = new Date().getTime();
 
@@ -56,8 +56,10 @@ function connectWs(url: string, opts: Partial<Options> = {}): WS | WebSocket {
 
   const isStaleFn = (pingTime: number) => {
     if (pingTime - pongTime > keepAliveTimeout) {
-      if (ws.readyState === 1) {
+      try {
         ws.close(3000, 'Connection timeout.');
+      } catch (e) {
+        console.warn(e.message);
       }
 
       if (td) {
@@ -67,6 +69,14 @@ function connectWs(url: string, opts: Partial<Options> = {}): WS | WebSocket {
   };
 
   ws.subs = connOpts.subs || {};
+
+  ws.addSubscription = (subscription: Subscription) => {
+    ws.subs = { ...ws.subs, ...subscription };
+  };
+
+  ws.deleteSubscription = (subscriptionKey: string) => {
+    ws.subs = omit(ws.subs, subscriptionKey);
+  };
 
   // @ts-ignore
   ws.addEventListener('open', (event) => {
@@ -85,10 +95,12 @@ function connectWs(url: string, opts: Partial<Options> = {}): WS | WebSocket {
       });
     } else {
       subs.forEach((sub) => {
-        // @ts-ignore
-        ws.send(JSON.stringify(ws.subs[sub]));
+        const msg =
+          typeof ws.subs[sub] === 'object'
+            ? JSON.stringify(ws.subs[sub])
+            : ws.subs[sub];
 
-        ws.subs = omit(ws.subs, sub);
+        ws.send(msg);
       });
     }
 
@@ -110,7 +122,7 @@ function connectWs(url: string, opts: Partial<Options> = {}): WS | WebSocket {
         clearInterval(td);
       }
       // In Chrome ws.close(1000) will produce a close event with code 1006
-      if (event.code !== 1000 && event.code !== 1006) {
+      if (event.code !== 1000 || event.wasClean !== true) {
         reconnectWs(url, {
           ...connOpts,
           subs: {

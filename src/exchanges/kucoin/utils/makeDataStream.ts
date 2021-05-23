@@ -16,6 +16,7 @@ type Options = {
   debug: boolean;
   initialPairs?: TradingPairs;
   subscriptions?: WsSubscriptions;
+  connectId: number;
 };
 /**
  * Connects to ws and emits ws events. It also handles automatic re-connection.
@@ -31,10 +32,10 @@ const makeDataStream = (
   const { wsInstance$, debug } = options;
 
   ws = connectWs(wsUrl, {
-    keepAlive: false,
+    keepAlive: true,
     keepAliveMsg: JSON.stringify({
-      time: new Date().valueOf(),
-      channel: 'spot.ping',
+      id: options.connectId,
+      type: 'ping',
     }),
     onPongCb: onPongMsg,
     onReconnectCb: (wsInstance) => {
@@ -44,7 +45,7 @@ const makeDataStream = (
     },
     onOpenCb: () => {
       if (debug) {
-        console.log('tvcd => Gate.io WS opened');
+        console.log('tvcd => Kucoin WS opened');
       }
       wsInstance$.next(ws);
     },
@@ -63,11 +64,11 @@ const makeDataStream = (
       if (ws.readyState === 1) {
         ws.close(1000, 'Close handle was called');
         if (debug) {
-          console.log('tvcd => Gate.io WS closed');
+          console.log('tvcd => Kucoin WS closed');
         }
       }
       if (debug) {
-        console.log('tvcd => Gate.io dataFeed$ closed');
+        console.log('tvcd => Kucoin dataFeed$ closed');
       }
     };
   }).pipe(

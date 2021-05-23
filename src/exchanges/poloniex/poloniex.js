@@ -67,7 +67,7 @@ const poloniex = (function poloniex() {
       timer(0, 5000)
         .pipe(
           switchMap(() => {
-            const tickers = Object.keys(pairs).map((channel) => {
+            const fecthFn = Object.keys(pairs).map((channel) => {
               const { symbols, interval } = pairs[channel];
               const start = moment().subtract(5, 'minute').valueOf();
               const end = moment().valueOf();
@@ -89,7 +89,7 @@ const poloniex = (function poloniex() {
               );
             });
 
-            return merge(...tickers).pipe(
+            return merge(...fecthFn).pipe(
               map((streamData) => {
                 candlesData = addChannelToCandlesData(candlesData, streamData);
 
