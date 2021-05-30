@@ -1,3 +1,3 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`tvcd function should throw error on unsupported exchange succes 1`] = `"test not supported."`;
+exports[`tvcd function should throw error on unsupported exchange succes 1`] = `"test not supported"`;

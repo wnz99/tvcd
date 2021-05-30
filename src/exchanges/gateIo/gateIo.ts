@@ -9,9 +9,8 @@ import {
   take,
   catchError,
 } from 'rxjs/operators';
-import { GATEIO } from '../../const';
-import { Options } from '../../types/exchanges';
 
+import { GATEIO } from '../../const';
 import {
   debugError,
   fetchCandles,
@@ -38,32 +37,44 @@ import {
   PairConf,
   Pair,
   TokensSymbols,
+  Candle,
+  Options,
 } from '../../types';
-
 import {
   WS_ROOT_URL,
   REST_ROOT_URL,
   API_RESOLUTIONS_MAP,
   makeCustomApiUrl,
 } from './const';
-import { CandlesStreamData, UpdateData, GateIoCandle } from './types';
+import { UpdateData, GateIoCandle } from './types';
 import BaseExchange from '../base/baseExchange';
+import { filterNullish } from '../../observables';
 
 class GateIo extends BaseExchange implements IExchange<GateIoCandle> {
+  constructor() {
+    super({
+      wsRootUrl: WS_ROOT_URL,
+      restRootUrl: REST_ROOT_URL,
+      exchangeName: GATEIO,
+      apiResolutionsMap: API_RESOLUTIONS_MAP,
+      makeCustomApiUrl,
+    });
+  }
+
   _options!: ClientOptions<GateIoCandle>;
 
   _dataSource$: Observable<WsEvent> | undefined = undefined;
 
-  start = (opts: Options = { format: 'tradingview' }) => {
+  start = (opts: Options = { format: 'tradingview' }): undefined | string => {
     if (this._status.isRunning) {
-      return debugError(ClientError.SERVICE_IS_RUNNING, this._status.debug);
+      return debugError(ClientError.SERVICE_IS_RUNNING, this._status.isDebug);
     }
 
     this._options = makeOptions<GateIoCandle>(opts, formatter);
 
-    this._dataSource$ = makeDataStream(this._status.wsRootUrl, {
+    this._dataSource$ = makeDataStream(this._exchangeConf.wsRootUrl, {
       wsInstance$: this._wsInstance$,
-      debug: this._status.debug,
+      debug: this._status.isDebug,
     });
 
     this._wsInstance$.subscribe((instance) => {
@@ -72,16 +83,15 @@ class GateIo extends BaseExchange implements IExchange<GateIoCandle> {
 
     this._dataSource$
       .pipe(
-        map(
-          (streamEvent) => processStreamEvent(streamEvent) as CandlesStreamData
-        ),
-        filter((streamEvent) => !!streamEvent),
+        map((streamEvent) => processStreamEvent(streamEvent)),
+        filterNullish(),
         map((streamData) =>
           mapToStandardInterval<UpdateData['result']>(
             streamData,
-            API_RESOLUTIONS_MAP
+            this.options.intervals
           )
         ),
+        filterNullish(),
         map((streamData) => {
           this._candlesData = addChannelToCandlesData<UpdateData['result']>(
             this._candlesData,
@@ -94,18 +104,14 @@ class GateIo extends BaseExchange implements IExchange<GateIoCandle> {
             streamData,
             this._candlesData,
             this._options.format,
-            this._status.debug
+            this._status.isDebug
           );
           this._dataStream$.next(this._candlesData);
 
           return this._candlesData;
         }),
         takeUntil(this._closeStream$),
-        catchError((error) => {
-          console.warn(error);
-
-          return of(error);
-        }),
+        catchError((error) => of(error)),
         multicast(() => new Subject<CandlesData>())
       )
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -114,10 +120,10 @@ class GateIo extends BaseExchange implements IExchange<GateIoCandle> {
 
     this._status.isRunning = true;
 
-    return this._status;
+    return undefined;
   };
 
-  stop = () => {
+  stop = (): void => {
     if (this._ws) {
       this._closeStream$.next(true);
       this._closeStream$.complete();
@@ -134,7 +140,7 @@ class GateIo extends BaseExchange implements IExchange<GateIoCandle> {
     start: number,
     end: number,
     limit: number
-  ) => {
+  ): Promise<Candle[]> => {
     const makeCandlesUrlFn = (
       symbols: TokensSymbols,
       timeInterval: string,
@@ -142,11 +148,11 @@ class GateIo extends BaseExchange implements IExchange<GateIoCandle> {
       endTime: number
     ) =>
       makeCandlesRestApiUrl(
-        this._status.exchange.name,
-        this._status.restRootUrl,
+        this._exchangeConf.exchangeName,
+        this._exchangeConf.restRootUrl,
         {
           currency_pair: makePair(symbols[0], symbols[1]),
-          interval: API_RESOLUTIONS_MAP[timeInterval] as string,
+          interval: this.options.intervals[timeInterval] as string,
           from: Math.ceil(startTime / 1000),
           to: Math.ceil(endTime / 1000),
         }
@@ -157,8 +163,8 @@ class GateIo extends BaseExchange implements IExchange<GateIoCandle> {
       makeChunks: true,
       apiLimit: 999,
       debug: {
-        exchangeName: this._status.exchange.name,
-        isDebug: this._status.debug,
+        exchangeName: this._exchangeConf.exchangeName,
+        isDebug: this._status.isDebug,
       },
       makeCandlesUrlFn,
     });
@@ -228,10 +234,4 @@ class GateIo extends BaseExchange implements IExchange<GateIoCandle> {
   };
 }
 
-export default new GateIo({
-  wsRootUrl: WS_ROOT_URL,
-  restRootUrl: REST_ROOT_URL,
-  exchangeName: GATEIO,
-  apiResolutionsMap: API_RESOLUTIONS_MAP,
-  makeCustomApiUrl,
-});
+export default GateIo;

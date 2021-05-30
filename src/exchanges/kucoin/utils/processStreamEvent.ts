@@ -9,44 +9,34 @@ import { UpdateData, CandlesStreamData } from '../types';
  * Example update event data:
  *
  * ```json
- * {
- * "id": 1234,
- * "time": 1606292600,
- * "channel": "spot.candlesticks",
- * "event": "update",
- * "result": {
- *   "t": "1606292580",
- *   "v": "2362.32035",
- *   "c": "19128.1",
- *   "h": "19128.1",
- *   "l": "19128.1",
- *   "o": "19128.1",
- *   "n": "1m_BTC_USDT"
- *  }
- * }
+{
+    "type":"message",
+    "topic":"/market/candles:BTC-USDT_1hour",
+    "subject":"trade.candles.update",
+    "data":{
+
+        "symbol":"BTC-USDT",    // symbol
+        "candles":[
+
+            "1589968800",   // Start time of the candle cycle
+            "9786.9",       // open price
+            "9740.8",       // close price
+            "9806.1",       // high price
+            "9732",         // low price
+            "27.45649579",  // Transaction volume
+            "268280.09830877"   // Transaction amount
+        ],
+        "time":1589970010253893337  // now（us）
+    }
+}
  * ```
  *
- * Example subscribe event data:
- *
- * ```json
- * {
- * "id": 1234
- * "time": 1606292600,
- * "channel": "spot.candlesticks",
- * "event": "subscribe",
- * "result": {
- *   "status": "success",
- *  }
- * }
- * ```
  *
  * @param  {WsEvent} event
  * @return (null | CandlesStreamData)
  */
 const processStreamEvent = (event: WsEvent): undefined | CandlesStreamData => {
   const msg: UpdateData = JSON.parse(event.data);
-
-  console.log(msg);
 
   if (msg.subject === 'trade.candles.update') {
     const [pair, interval] = msg.topic

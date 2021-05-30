@@ -62,7 +62,8 @@ const makeDataStream = (
 
     return () => {
       if (ws.readyState === 1) {
-        ws.close(1000, 'Close handle was called');
+        ws.closeConnection();
+
         if (debug) {
           console.log('tvcd => Kucoin WS closed');
         }

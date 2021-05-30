@@ -23,8 +23,6 @@ describe('makeCandlesRestApiUrl function', () => {
       EXCHANGE_NAME.BITFINEX,
       'https://api.com',
       {
-        // symbol: 'BTCUSD',
-        // interval: '1m',
         ...params,
       }
     );

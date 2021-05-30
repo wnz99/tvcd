@@ -1,7 +1,8 @@
 import _omit from 'lodash/omit';
-import { Subject, Observable } from 'rxjs';
+import { Subject, Observable, interval as rxInterval } from 'rxjs';
+import { skipUntil, take, filter, map } from 'rxjs/operators';
 
-import { debugError, makePairConfig } from '../../utils';
+import { debugError, makePairConfig, makePairData } from '../../utils';
 import {
   ClientError,
   TradingPairs,
@@ -12,6 +13,7 @@ import {
   Status,
   PublicOptions,
   CandlesData,
+  WsConf,
 } from '../../types';
 import { data$ } from '../../observables';
 import { WSInstance } from '../../utils/ws/types';
@@ -20,19 +22,19 @@ class BaseExchange {
   constructor(conf: ExchangeConf) {
     this._status = {
       isRunning: false,
-      exchange: { name: conf.exchangeName },
-      debug: false,
-      wsRootUrl: conf.wsRootUrl,
-      restRootUrl: conf.restRootUrl,
+      isDebug: conf.isDebug ?? false,
     };
+
+    this._wsConf = conf.wsConf;
 
     this._exchangeConf = {
       ...conf,
+      isUdf: conf.isUdf ?? false,
     };
 
     this.options = {
-      debug: false,
       intervals: conf.apiResolutionsMap,
+      intervalsUdf: conf.apiResolutionsUdfMap,
     };
   }
 
@@ -52,7 +54,82 @@ class BaseExchange {
 
   protected _tradingPairs: TradingPairs = {};
 
+  protected _wsConf?: WsConf = undefined;
+
   options: PublicOptions;
+
+  protected _isWsActive = this._ws && this._wsConf;
+
+  protected _stop = (): void => {
+    if (this._ws) {
+      this._closeStream$.next(true);
+      this._closeStream$.complete();
+    }
+  };
+
+  private _subscribePair(pair: { [key: string]: Pair }): Pair['ws'] {
+    if (!this._wsConf) {
+      return undefined;
+    }
+
+    const [key, pairData] = Object.entries(pair)[0];
+
+    const subscriptions = {
+      subMsg: this._wsConf.makeWsMsg('subscribe', pairData),
+    };
+
+    if (this._ws?.readyState === 1 && subscriptions.subMsg) {
+      this._ws.addSubscription({ [key]: subscriptions.subMsg });
+
+      this._ws.send(JSON.stringify(subscriptions.subMsg));
+
+      return subscriptions;
+    }
+
+    rxInterval(200)
+      .pipe(
+        map((value, i) => {
+          if (this._status.isDebug) {
+            console.log(`tvcd => Waiting for ws connection: ${i}`);
+          }
+
+          return value;
+        }),
+        skipUntil(
+          this._wsInstance$.pipe(
+            filter((instance) => instance.readyState === 1)
+          )
+        ),
+        take(1)
+      )
+      .subscribe(() => {
+        if (!this._ws || !subscriptions.subMsg) {
+          return;
+        }
+
+        this._ws.addSubscription({ [key]: subscriptions.subMsg });
+
+        this._ws.send(JSON.stringify(subscriptions.subMsg));
+      });
+
+    return subscriptions;
+  }
+
+  private _unsubscribePair(pair: { [key: string]: Pair }): void {
+    if (!this._ws || !this._wsConf) {
+      return undefined;
+    }
+
+    const [key, pairData] = Object.entries(pair)[0];
+
+    this._ws.deleteSubscription(key);
+
+    const unsubMsg = this._wsConf.makeWsMsg('unsubscribe', pairData);
+
+    this._ws.send(JSON.stringify(unsubMsg));
+
+    return undefined;
+  }
 
   protected _resetInstance = (): void => {
     this._closeStream$ = new Subject();
@@ -72,19 +149,19 @@ class BaseExchange {
   ): Pair => {
     if (!pairConf) {
       throw Error(
-        debugError(ClientError.NO_CONFIGURATION_PROVIDED, this._status.debug)
+        debugError(ClientError.NO_CONFIGURATION_PROVIDED, this._status.isDebug)
       );
     }
 
     if (pairConf && !pairConf.interval) {
       throw Error(
-        debugError(ClientError.NO_TIME_FRAME_PROVIDED, this._status.debug)
+        debugError(ClientError.NO_TIME_FRAME_PROVIDED, this._status.isDebug)
       );
     }
 
     if (!Array.isArray(pair)) {
       throw Error(
-        debugError(ClientError.PAIR_IS_NOT_ARRAY, this._status.debug)
+        debugError(ClientError.PAIR_IS_NOT_ARRAY, this._status.isDebug)
       );
     }
 
@@ -94,25 +171,25 @@ class BaseExchange {
       )
     ) {
       throw Error(
-        debugError(ClientError.INTERVAL_NOT_SUPPORTED, this._status.debug)
+        debugError(ClientError.INTERVAL_NOT_SUPPORTED, this._status.isDebug)
       );
     }
 
     const conf = makePairConfig(pairConf, this._exchangeConf.apiResolutionsMap);
 
-    const ticker = `${pair[0]}:${pair[1]}`;
-
-    const pairKey = `${conf.interval}:${ticker}`;
-
-    const newPair: { [key: string]: Pair } = {
-      [pairKey]: { ...conf, symbols: [...pair], ticker },
-    };
+    const { pairKey, pairData } = makePairData(pair, conf);
 
     if (this._tradingPairs[pairKey]) {
       throw Error(
-        debugError(ClientError.PAIR_ALREADY_DEFINED, this._status.debug)
+        debugError(ClientError.PAIR_ALREADY_DEFINED, this._status.isDebug)
       );
     }
+
+    const wsSubscriptions = this._subscribePair({ [pairKey]: pairData });
+
+    const newPair = {
+      [pairKey]: { ...pairData, ws: { ...pairData.ws, ...wsSubscriptions } },
+    };
 
     this._tradingPairs = {
       ...this._tradingPairs,
@@ -128,23 +205,27 @@ class BaseExchange {
   ): Pair => {
     if (!Array.isArray(pair)) {
       throw Error(
-        debugError(ClientError.PAIR_IS_NOT_ARRAY, this._status.debug)
+        debugError(ClientError.PAIR_IS_NOT_ARRAY, this._status.isDebug)
       );
     }
 
     if (!interval) {
       throw Error(
-        debugError(ClientError.NO_TIME_FRAME_PROVIDED, this._status.debug)
+        debugError(ClientError.NO_TIME_FRAME_PROVIDED, this._status.isDebug)
       );
     }
 
     const channel = `${interval}:${pair[0]}${pair[1]}`;
 
     if (!this._tradingPairs[channel]) {
-      throw Error(debugError(ClientError.PAIR_NOT_DEFINED, this._status.debug));
+      throw Error(
+        debugError(ClientError.PAIR_NOT_DEFINED, this._status.isDebug)
+      );
     }
 
     const removedPair = { ...this._tradingPairs[channel] };
+
+    this._unsubscribePair({ [channel]: removedPair });
 
     this._tradingPairs = _omit(this._tradingPairs, channel);
 
@@ -156,11 +237,16 @@ class BaseExchange {
   getStatus = (): Status => this._status;
 
   setDebug = (isDebug = false): void => {
-    this._status.debug = isDebug;
+    this._status.isDebug = isDebug;
   };
 
-  setApiUrl = (apiUrl: string): void => {
-    this._status.restRootUrl = this._exchangeConf.makeCustomApiUrl(apiUrl);
+  setApiUrl = (apiUrl: string, isUdf?: boolean): void => {
+    this._exchangeConf.isUdf = isUdf;
+
+    this._exchangeConf.restRootUrl = this._exchangeConf.makeCustomApiUrl(
+      apiUrl,
+      isUdf
+    );
   };
 
   data$ = (channels: string[]): Observable<CandlesData> =>

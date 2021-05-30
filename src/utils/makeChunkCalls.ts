@@ -10,7 +10,7 @@ import { TokensSymbols } from '../types';
 export type FetchCandlesOptions<T> = {
   makeCandlesUrlFn: (...args: any) => string;
   makeChunks?: boolean;
-  apiLimit: number;
+  apiLimit?: number;
   debug?: {
     exchangeName: string;
     isDebug: boolean;
@@ -25,16 +25,11 @@ const makeChunkCalls = <T>(
   interval: string,
   start: number,
   end: number,
-  limit: number,
+  limit: number | undefined,
   opts: FetchCandlesOptions<T>
 ): Observable<T>[] => {
-  const {
-    makeCandlesUrlFn,
-    requestOptions,
-    makeChunks,
-    apiLimit,
-    debug,
-  } = opts;
+  const { makeCandlesUrlFn, requestOptions, makeChunks, apiLimit, debug } =
+    opts;
 
   if (!makeChunks) {
     return [

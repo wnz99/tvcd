@@ -1,22 +1,49 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-
 import * as exchanges from './exchanges';
-import tvcdBase from './tvcdBase';
 import { IExchange } from './types';
 
-let instance: IExchange<any>;
-let selectedExchange: any;
+type Exchanges =
+  | 'binance'
+  | 'binanceCoinFutures'
+  | 'binanceUsdFutures'
+  | 'bitfinex'
+  | 'bitmex'
+  | 'bittrex'
+  | 'deversifi'
+  | 'gateio'
+  | 'kucoin'
+  | 'poloniex'
+  | 'valr';
 
-const tvcd = (exchange: string): IExchange<any> =>
+let instance: IExchange<
+  | exchanges.BinanceCandle
+  | exchanges.GateIoCandle
+  | exchanges.KucoinCandle
+  | exchanges.ValrCandle
+  | exchanges.BitfinexCandle
+>;
+
+let selectedExchange: Exchanges;
+
+const tvcd = (
+  exchange: Exchanges
+): IExchange<
+  | exchanges.BinanceCandle
+  | exchanges.GateIoCandle
+  | exchanges.KucoinCandle
+  | exchanges.ValrCandle
+  | exchanges.DeversifiCandle
+> =>
   (() => {
     // @ts-ignore
     if (!exchanges[exchange]) {
-      throw new Error(`${exchange} not supported.`);
+      throw new Error(`${exchange} not supported`);
     }
 
     if (!instance || selectedExchange !== exchange) {
       // @ts-ignore
-      instance = { ...tvcdBase, ...exchanges[exchange] };
+      instance = exchanges[exchange];
+
       selectedExchange = exchange;
 
       return instance;

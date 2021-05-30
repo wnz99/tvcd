@@ -51,7 +51,7 @@ describe('connectWs function', () => {
 
   afterEach(() => {
     mockServer.close();
-    ws.close();
+    ws.closeConnection();
     jest.clearAllTimers();
   });
 
@@ -172,7 +172,7 @@ describe('open event', () => {
 
   afterEach(() => {
     mockServer.close();
-    ws.close();
+    ws.closeConnection();
     jest.clearAllTimers();
   });
 
@@ -299,20 +299,21 @@ describe('close event', () => {
 
   afterEach(() => {
     mockServer.close();
-    ws.close();
+    ``;
+    ws.closeConnection();
     jest.clearAllTimers();
   });
 
-  it('event listener clean close success', (done) => {
+  it.only('event listener clean close success', (done) => {
     const connOpts = {
       ...spyCbFn,
       keepAlive: { msg: { event: 'ping' } },
     };
-    connectWs(wsUrl, connOpts);
+    ws = connectWs(wsUrl, connOpts);
     jest.runTimersToTime(100);
     mockServer.close();
     jest.runTimersToTime(100);
-    expect(connOpts.onCloseCb).toHaveBeenCalledTimes(1);
+    expect(connOpts.onCloseCb).not.toHaveBeenCalled();
     expect(reconnectWs).not.toHaveBeenCalled();
     done();
   });
@@ -321,12 +322,14 @@ describe('close event', () => {
     const connOpts = {
       ...spyCbFn,
     };
-    connectWs(wsUrl, connOpts);
+    ws = connectWs(wsUrl, connOpts);
     jest.runTimersToTime(100);
     mockServer.close({
       code: 3000,
       reason: 'Error',
+      wasClean: false,
     });
+    // mockServer.close(3000, 'error');
     jest.runTimersToTime(100);
     expect(connOpts.onCloseCb).toHaveBeenCalledTimes(1);
     expect(reconnectWs).toHaveBeenCalled();

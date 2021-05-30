@@ -54,6 +54,6 @@
     "outDir": "./",
     "moduleResolution": "node"
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "src/exchanges/.old/poloniex_bak"],
   "exclude": ["node_modules"]
 }

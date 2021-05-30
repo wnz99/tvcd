@@ -40,6 +40,7 @@ import {
   PairConf,
   Pair,
   TokensSymbols,
+  Candle,
 } from '../../types';
 
 import {
@@ -48,23 +49,34 @@ import {
   API_RESOLUTIONS_MAP,
   makeCustomApiUrl,
 } from './const';
-import { CandlesStreamData, UpdateData, KucoinCandle } from './types';
+import { UpdateData, KucoinCandle } from './types';
 import BaseExchange from '../base/baseExchange';
+import { filterNullish } from '../../observables';
 
 class Kucoin extends BaseExchange implements IExchange<KucoinCandle> {
+  constructor() {
+    super({
+      wsRootUrl: WS_ROOT_URL,
+      restRootUrl: REST_ROOT_URL,
+      exchangeName: KUCOIN,
+      apiResolutionsMap: API_RESOLUTIONS_MAP,
+      makeCustomApiUrl,
+    });
+  }
+
   _options!: ClientOptions<KucoinCandle>;
 
   _dataSource$: Observable<WsEvent> | undefined = undefined;
 
-  start = (opts: Options = { format: 'tradingview' }) => {
+  start = (opts: Options = { format: 'tradingview' }): undefined | string => {
     if (this._status.isRunning) {
-      return debugError(ClientError.SERVICE_IS_RUNNING, this._status.debug);
+      return debugError(ClientError.SERVICE_IS_RUNNING, this._status.isDebug);
     }
 
     this._options = makeOptions<KucoinCandle>(opts, formatter);
 
     this._dataSource$ = defer(() =>
-      axios.post(`${this._status.restRootUrl}/bullet-public`)
+      axios.post(`${this._exchangeConf.restRootUrl}/bullet-public`)
     ).pipe(
       switchMap((result) => {
         const connectId = new Date().valueOf();
@@ -75,7 +87,7 @@ class Kucoin extends BaseExchange implements IExchange<KucoinCandle> {
 
         return makeDataStream(wsUrl, {
           wsInstance$: this._wsInstance$,
-          debug: this._status.debug,
+          debug: this._status.isDebug,
           connectId,
         });
       })
@@ -87,16 +99,15 @@ class Kucoin extends BaseExchange implements IExchange<KucoinCandle> {
 
     this._dataSource$
       .pipe(
-        map(
-          (streamEvent) => processStreamEvent(streamEvent) as CandlesStreamData
-        ),
-        filter((streamEvent) => !!streamEvent),
+        map((streamEvent) => processStreamEvent(streamEvent)),
+        filterNullish(),
         map((streamData) =>
           mapToStandardInterval<UpdateData['data']['candles']>(
             streamData,
-            API_RESOLUTIONS_MAP
+            this.options.intervals
           )
         ),
+        filterNullish(),
         map((streamData) => {
           this._candlesData = addChannelToCandlesData<
             UpdateData['data']['candles']
@@ -111,7 +122,7 @@ class Kucoin extends BaseExchange implements IExchange<KucoinCandle> {
             streamData,
             this._candlesData,
             this._options.format,
-            this._status.debug
+            this._status.isDebug
           );
           this._dataStream$.next(this._candlesData);
 
@@ -131,10 +142,10 @@ class Kucoin extends BaseExchange implements IExchange<KucoinCandle> {
 
     this._status.isRunning = true;
 
-    return this._status;
+    return undefined;
   };
 
-  stop = () => {
+  stop = (): void => {
     if (this._ws) {
       this._closeStream$.next(true);
       this._closeStream$.complete();
@@ -151,7 +162,7 @@ class Kucoin extends BaseExchange implements IExchange<KucoinCandle> {
     start: number,
     end: number,
     limit: number
-  ) => {
+  ): Promise<Candle[]> => {
     const makeCandlesUrlFn = (
       symbols: TokensSymbols,
       timeInterval: string,
@@ -159,11 +170,11 @@ class Kucoin extends BaseExchange implements IExchange<KucoinCandle> {
       endTime: number
     ) =>
       makeCandlesRestApiUrl(
-        this._status.exchange.name,
-        this._status.restRootUrl,
+        this._exchangeConf.exchangeName,
+        this._exchangeConf.restRootUrl,
         {
           symbol: makePair(symbols),
-          type: API_RESOLUTIONS_MAP[timeInterval] as string,
+          type: this.options.intervals[timeInterval] as string,
           startAt: Math.ceil(startTime / 1000),
           endAt: Math.ceil(endTime / 1000),
         }
@@ -174,8 +185,8 @@ class Kucoin extends BaseExchange implements IExchange<KucoinCandle> {
       makeChunks: true,
       apiLimit: 1500,
       debug: {
-        exchangeName: this._status.exchange.name,
-        isDebug: this._status.debug,
+        exchangeName: this._exchangeConf.exchangeName,
+        isDebug: this._status.isDebug,
       },
       makeCandlesUrlFn,
     });
@@ -245,10 +256,4 @@ class Kucoin extends BaseExchange implements IExchange<KucoinCandle> {
   };
 }
 
-export default new Kucoin({
-  wsRootUrl: WS_ROOT_URL,
-  restRootUrl: REST_ROOT_URL,
-  exchangeName: KUCOIN,
-  apiResolutionsMap: API_RESOLUTIONS_MAP,
-  makeCustomApiUrl,
-});
+export default Kucoin;

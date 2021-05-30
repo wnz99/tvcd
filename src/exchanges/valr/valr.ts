@@ -2,8 +2,8 @@ import _omit from 'lodash/omit';
 import { Subject, merge, from, timer } from 'rxjs';
 import { map, multicast, takeUntil, filter, switchMap } from 'rxjs/operators';
 import moment from 'moment';
-import { VALR } from '../../const';
 
+import { VALR } from '../../const';
 import {
   debugError,
   fetchCandles,
@@ -12,6 +12,7 @@ import {
   makeCandlesRestApiUrl,
   addChannelToCandlesData,
   makeChannelFromDataStream,
+  mapToStandardInterval,
 } from '../../utils';
 import { formatter, makePair } from './utils';
 import {
@@ -31,15 +32,25 @@ import {
   makeCustomApiUrl,
 } from './const';
 import { ValrCandle } from './types';
-
 import BaseExchange from '../base/baseExchange';
+import { filterNullish } from '../../observables';
 
 class Valr extends BaseExchange implements IExchange<ValrCandle> {
+  constructor() {
+    super({
+      wsRootUrl: WS_ROOT_URL,
+      restRootUrl: REST_ROOT_URL,
+      exchangeName: VALR,
+      apiResolutionsMap: API_RESOLUTIONS_MAP,
+      makeCustomApiUrl,
+    });
+  }
+
   _options!: ClientOptions<ValrCandle>;
 
-  start = (opts: Options = { format: 'tradingview' }) => {
+  start = (opts: Options = { format: 'tradingview' }): undefined | string => {
     if (this._status.isRunning) {
-      return debugError(ClientError.SERVICE_IS_RUNNING, this._status.debug);
+      return debugError(ClientError.SERVICE_IS_RUNNING, this._status.isDebug);
     }
 
     this._options = makeOptions<ValrCandle>(opts, formatter);
@@ -67,22 +78,27 @@ class Valr extends BaseExchange implements IExchange<ValrCandle> {
           });
 
           return merge(...fecthFn).pipe(
+            map((streamData) =>
+              mapToStandardInterval<Candle>(streamData, this.options.intervals)
+            ),
+            filterNullish(),
             map((streamData) => {
-              this._candlesData = addChannelToCandlesData(
+              this._candlesData = addChannelToCandlesData<Candle>(
                 this._candlesData,
                 streamData
               );
 
               return streamData;
             }),
+            filterNullish(),
             map((ticker) => {
               const channel = makeChannelFromDataStream(ticker);
 
-              this._candlesData = updateCandles(
+              this._candlesData = updateCandles<Candle, ValrCandle>(
                 ticker,
                 this._candlesData,
                 this._options.format,
-                this._status.debug
+                this._status.isDebug
               );
 
               if (this._candlesData[channel].meta.isNewCandle) {
@@ -102,10 +118,10 @@ class Valr extends BaseExchange implements IExchange<ValrCandle> {
 
     this._status.isRunning = true;
 
-    return this._status;
+    return undefined;
   };
 
-  stop = () => {
+  stop = (): void => {
     this._resetInstance();
 
     this._status.isRunning = false;
@@ -117,7 +133,7 @@ class Valr extends BaseExchange implements IExchange<ValrCandle> {
     start: number,
     end: number,
     limit: number
-  ) => {
+  ): Promise<Candle[]> => {
     const makeCandlesUrlFn = (
       symbols: TokensSymbols,
       timeInterval: string,
@@ -125,11 +141,11 @@ class Valr extends BaseExchange implements IExchange<ValrCandle> {
       endTime: number
     ) =>
       makeCandlesRestApiUrl(
-        this._status.exchange.name,
-        this._status.restRootUrl,
+        this._exchangeConf.exchangeName,
+        this._exchangeConf.restRootUrl,
         {
           pair: makePair(symbols[0], symbols[1]),
-          periodSeconds: API_RESOLUTIONS_MAP[timeInterval] as string,
+          periodSeconds: this.options.intervals[timeInterval] as string,
           startTime: Math.ceil(startTime / 1000),
           endTime: Math.ceil(endTime / 1000),
         }
@@ -140,8 +156,8 @@ class Valr extends BaseExchange implements IExchange<ValrCandle> {
       makeChunks: true,
       apiLimit: 300,
       debug: {
-        exchangeName: this._status.exchange.name,
-        isDebug: this._status.debug,
+        exchangeName: this._exchangeConf.exchangeName,
+        isDebug: this._status.isDebug,
       },
       makeCandlesUrlFn,
     });
@@ -174,10 +190,4 @@ class Valr extends BaseExchange implements IExchange<ValrCandle> {
   };
 }
 
-export default new Valr({
-  wsRootUrl: WS_ROOT_URL,
-  restRootUrl: REST_ROOT_URL,
-  exchangeName: VALR,
-  apiResolutionsMap: API_RESOLUTIONS_MAP,
-  makeCustomApiUrl,
-});
+export default Valr;

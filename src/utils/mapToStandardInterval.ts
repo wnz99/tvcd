@@ -1,9 +1,9 @@
 import _omit from 'lodash/omit';
 
 import { REAL_TIME } from '../const';
-import { StreamData } from '../types/exchanges';
+import { StreamData, Intervals } from '../types/exchanges';
 /**
- * Replaces API interval with standard inbterval
+ * Replaces API interval with standard interval
  *
  * @template T
  * @param  {StreamData<T>} streamData
@@ -12,8 +12,8 @@ import { StreamData } from '../types/exchanges';
  */
 const mapToStandardInterval = <T>(
   streamData: StreamData<T>,
-  apiResolutionsMap: { [key: string]: unknown }
-): StreamData<T> => {
+  apiResolutionsMap: Intervals
+): StreamData<T> | undefined => {
   const [ticker, data, intervalApi] = streamData;
 
   const intervals = _omit(apiResolutionsMap, [REAL_TIME]);
@@ -26,7 +26,7 @@ const mapToStandardInterval = <T>(
     return [ticker, data, interval];
   }
 
-  return streamData;
+  return undefined;
 };
 
 export default mapToStandardInterval;

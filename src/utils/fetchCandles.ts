@@ -17,7 +17,7 @@ const fetchCandles = async <T>(
   interval: string,
   start: number,
   end: number,
-  limit: number,
+  limit: number | undefined = undefined,
   opts: FetchCandlesOptions<T>
 ): Promise<Candle[]> => {
   const { debug, isUdf, formatFn } = opts;

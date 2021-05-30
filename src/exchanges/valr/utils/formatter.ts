@@ -26,6 +26,7 @@ const formatter: Formatter<ValrCandle> = {
    * @param  {any} data
    * @return
    */
+
   tradingview: (data: ValrCandle): Candle => {
     const { startTime, open, close, high, low, volume } = data;
 

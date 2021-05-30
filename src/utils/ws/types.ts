@@ -4,16 +4,20 @@ interface WSInstanceA extends WebSocket {
   subs: {
     [key: string]: any;
   };
+  isShutDown: boolean;
   addSubscription: (subscription: Subscription) => void;
   deleteSubscription: (subscriptionKey: string) => void;
+  closeConnection: () => void;
 }
 
 type WSInstanceB = WS & {
   subs: {
     [key: string]: any;
   };
+  isShutDown: boolean;
   addSubscription: (subscription: Subscription) => void;
   deleteSubscription: (subscriptionKey: string) => void;
+  closeConnection: () => void;
 };
 
 export type WSInstance = WSInstanceA | WSInstanceB;

@@ -70,6 +70,8 @@ function connectWs(url: string, opts: Partial<Options> = {}): WSInstance {
 
   ws.subs = connOpts.subs || {};
 
+  ws.isShutDown = false;
+
   ws.addSubscription = (subscription: Subscription) => {
     ws.subs = { ...ws.subs, ...subscription };
   };
@@ -122,7 +124,11 @@ function connectWs(url: string, opts: Partial<Options> = {}): WSInstance {
         clearInterval(td);
       }
       // In Chrome ws.close(1000) will produce a close event with code 1006
-      if (event.code !== 1000 || event.wasClean !== true) {
+      if (event.wasClean || ws.isShutDown) {
+        return;
+      }
+
+      if (event.code !== 1000 && event.code !== 1006) {
         reconnectWs(url, {
           ...connOpts,
           subs: {
@@ -164,6 +170,12 @@ function connectWs(url: string, opts: Partial<Options> = {}): WSInstance {
       onMessageCb(event);
     }
   });
+
+  ws.closeConnection = () => {
+    ws.isShutDown = true;
+
+    ws.close(1000, 'Close handle was called');
+  };
 
   return ws;
 }

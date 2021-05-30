@@ -14,24 +14,35 @@ export type Interval = string;
 export type StreamData<T> = [[string, string], T, Interval];
 
 export type PublicOptions = {
-  debug: boolean;
   intervals: Intervals;
+  intervalsUdf?: Intervals;
 };
 
 export type Status = {
   isRunning: boolean;
-  exchange: { name: string };
-  debug: boolean;
-  wsRootUrl: string;
-  restRootUrl: string;
+  isDebug: boolean;
 };
 
+export type WsConf = {
+  makeWsMsg: (
+    messageType: string,
+    pair: Pair
+  ) => { [key: string]: unknown } | string | undefined;
+};
+
+export type MakeCustomApiUrl = (rootUrl: string, isUdf?: boolean) => string;
+
 export type ExchangeConf = {
+  isDebug?: boolean;
   exchangeName: string;
   wsRootUrl: string;
   restRootUrl: string;
   apiResolutionsMap: Intervals;
-  makeCustomApiUrl: (rootUrl: string) => string;
+  apiResolutionsUdfMap?: Intervals;
+  makeCustomApiUrl: MakeCustomApiUrl;
+  wsConf?: WsConf;
+  isUdf?: boolean;
+  apiLimit?: number;
 };
 
 export type Pair = {
@@ -40,8 +51,9 @@ export type Pair = {
   intervalApi: string;
   symbols: TokensSymbols;
   ws?: {
-    subMsg: { [key: string]: { [key: string]: unknown } } | string;
-    unsubMsg?: { [key: string]: { [key: string]: unknown } } | string;
+    subMsg?: { [key: string]: unknown } | string;
+    unsubMsg?: { [key: string]: unknown } | string;
+    meta?: { [key: string]: unknown };
   };
 };
 
@@ -59,18 +71,6 @@ export enum ClientError {
   PAIR_NOT_DEFINED = 'Pair not defined.',
   SERVICE_IS_RUNNING = 'tdcv is already running.',
 }
-
-type ApiResolutionsMap = {
-  [key: string]: string | string[];
-};
-
-type ExchangeStatus = {
-  isRunning: boolean;
-  exchange: { name: string };
-  debug: boolean;
-  wsRootUrl: string;
-  restRootUrl: string;
-};
 
 export type Candle = {
   time: number;
@@ -112,22 +112,23 @@ export type ClientOptions<T> = { format: (data: T) => Candle };
 
 export interface IExchange<T> {
   options: {
-    debug: boolean;
-    intervals: ApiResolutionsMap;
+    intervals: Intervals;
+    intervalsUdf?: Intervals;
   };
   _options: ClientOptions<T>;
   _dataSource$?: Observable<WsEvent> | undefined;
-  start: (options?: Options) => unknown;
+  start: (options?: Options) => undefined | string;
   stop: () => void;
   fetchCandles: (
     pair: TokensSymbols,
     interval: string,
     start: number,
     end: number,
-    limit: number
+    limit: number,
+    opt?: { [key: string]: string | number | undefined | boolean }
   ) => Promise<Candle[]>;
   getTradingPairs?: () => TradingPairs;
-  getStatus?: () => ExchangeStatus;
+  getStatus?: () => Status;
   setDebug?: () => void;
   setApiUrl?: (apiUrl: string) => void;
   addTradingPair: (
