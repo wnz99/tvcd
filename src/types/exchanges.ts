@@ -1,6 +1,6 @@
-import { Subject, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 
-import { WSInstance, WsEvent } from '../utils/ws/types';
+import { WsEvent } from '../utils/ws/types';
 
 export type Intervals = {
   [key: string]: string | [string, string];
@@ -9,15 +9,52 @@ export type Intervals = {
 
 export type TokensSymbols = [string, string];
 
-export type StreamData<T> = [[string, string], T, string];
+export type Interval = string;
 
-// export type RealtimeInterval = [string, string];
+export type StreamData<T> = [[string, string], T, Interval];
+
+export type PublicOptions = {
+  intervals: Intervals;
+  intervalsUdf?: Intervals;
+};
+
+export type Status = {
+  isRunning: boolean;
+  isDebug: boolean;
+};
+
+export type WsConf = {
+  makeWsMsg: (
+    messageType: string,
+    pair: Pair
+  ) => { [key: string]: unknown } | string | undefined;
+};
+
+export type MakeCustomApiUrl = (rootUrl: string, isUdf?: boolean) => string;
+
+export type ExchangeConf = {
+  isDebug?: boolean;
+  exchangeName: string;
+  wsRootUrl: string;
+  restRootUrl: string;
+  apiResolutionsMap: Intervals;
+  apiResolutionsUdfMap?: Intervals;
+  makeCustomApiUrl: MakeCustomApiUrl;
+  wsConf?: WsConf;
+  isUdf?: boolean;
+  apiLimit?: number;
+};
 
 export type Pair = {
   ticker: string;
   interval: string;
   intervalApi: string;
   symbols: TokensSymbols;
+  ws?: {
+    subMsg?: { [key: string]: unknown } | string;
+    unsubMsg?: { [key: string]: unknown } | string;
+    meta?: { [key: string]: unknown };
+  };
 };
 
 export type TradingPairs = {
@@ -34,18 +71,6 @@ export enum ClientError {
   PAIR_NOT_DEFINED = 'Pair not defined.',
   SERVICE_IS_RUNNING = 'tdcv is already running.',
 }
-
-type ApiResolutionsMap = {
-  [key: string]: string | string[];
-};
-
-type ExchangeStatus = {
-  isRunning: boolean;
-  exchange: { name: string };
-  debug: boolean;
-  wsRootUrl: string;
-  restRootUrl: string;
-};
 
 export type Candle = {
   time: number;
@@ -87,31 +112,25 @@ export type ClientOptions<T> = { format: (data: T) => Candle };
 
 export interface IExchange<T> {
   options: {
-    debug: boolean;
-    intervals: ApiResolutionsMap;
+    intervals: Intervals;
+    intervalsUdf?: Intervals;
   };
   _options: ClientOptions<T>;
-  _status: ExchangeStatus;
-  _ws: WSInstance | undefined;
-  _wsInstance$: Subject<WSInstance>;
-  _dataSource$: Observable<WsEvent> | undefined;
-  _dataStream$: Subject<CandlesData>;
-  _closeStream$: Subject<boolean>;
-  _tradingPairs: TradingPairs;
-  _candlesData: CandlesData;
-  start: (options?: Options) => unknown;
+  _dataSource$?: Observable<WsEvent> | undefined;
+  start: (options?: Options) => undefined | string;
   stop: () => void;
   fetchCandles: (
     pair: TokensSymbols,
     interval: string,
     start: number,
     end: number,
-    limit: number
-  ) => Promise<unknown>;
-  getTradingPairs: () => TradingPairs;
-  getStatus: () => ExchangeStatus;
-  setDebug: () => void;
-  setApiUrl: (apiUrl: string) => void;
+    limit: number,
+    opt?: { [key: string]: string | number | undefined | boolean }
+  ) => Promise<Candle[]>;
+  getTradingPairs?: () => TradingPairs;
+  getStatus?: () => Status;
+  setDebug?: () => void;
+  setApiUrl?: (apiUrl: string) => void;
   addTradingPair: (
     pair: TokensSymbols,
     pairConf: PairConf
@@ -120,5 +139,4 @@ export interface IExchange<T> {
     pair: TokensSymbols,
     intervalApi: string
   ) => string | undefined;
-  _resetConf: () => void;
 }

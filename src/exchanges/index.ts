@@ -1,6 +1,40 @@
-export { default as binance } from './binance';
-export { default as bitfinex } from './bitfinex';
-export { default as bitmex } from './bitmex';
-export { default as bittrex } from './bittrex';
-export { default as poloniex } from './poloniex';
-export { default as gateio } from './gateIo';
+import Binance from './binance';
+import Bitfinex from './bitfinex';
+import Bitmex from './bitmex';
+import Bittrex from './bittrex';
+import Deversifi from './deversifi';
+import Ftx from './ftx';
+import GateIo from './gateIo';
+import Kucoin from './kucoin';
+import Poloniex from './poloniex';
+import Valr from './valr';
+
+// export { default as binance } from './binance_bak';
+// export { default as bitfinex } from './bitfinex_bak';
+// export { default as bitmex } from './bitmex';
+// export { default as bittrex } from './bittrex_bak';
+// export { default as poloniex } from './poloniex_bak';
+
+export type BinanceCandle = import('./binance/types').BinanceCandle;
+export type BitfinexCandle = import('./bitfinex/types').BitfinexCandle;
+export type BitmexCandle = import('./bitmex/types').BitmexCandle;
+export type BittrexCandle = import('./bittrex/types').BittrexCandle;
+export type DeversifiCandle = import('./deversifi/types').DeversifiCandle;
+export type FtxCandle = import('./ftx/types').FtxCandle;
+export type GateIoCandle = import('./gateIo/types').GateIoCandle;
+export type KucoinCandle = import('./kucoin/types').KucoinCandle;
+export type PoloniexCandle = import('./poloniex/types').PoloniexCandle;
+export type ValrCandle = import('./valr/types').ValrCandle;
+
+export const binance = new Binance({ dataSet: 'spot' });
+export const binancefuturescoin = new Binance({ dataSet: 'coinFutures' });
+export const binancefuturesusd = new Binance({ dataSet: 'usdFutures' });
+export const bitfinex = new Bitfinex();
+export const bitmex = new Bitmex();
+export const bittrex = new Bittrex();
+export const deversifi = new Deversifi();
+export const ftx = new Ftx();
+export const gateio = new GateIo();
+export const kucoin = new Kucoin();
+export const poloniex = new Poloniex();
+export const valr = new Valr();

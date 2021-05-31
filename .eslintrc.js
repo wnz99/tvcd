@@ -4,8 +4,6 @@ module.exports = {
   plugins: ['@typescript-eslint', 'jest'],
   extends: [
     'airbnb-typescript/base',
-    // 'eslint:recommended',
-    // 'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended',
     'prettier',
   ],
@@ -26,6 +24,7 @@ module.exports = {
     project: './tsconfig.json',
   },
   settings: {
+    'import/core-modules': ['rxjs/operators'],
     'import/resolver': {
       node: {
         extensions: ['.js', '.jsx', '.ts', '.tsx'],

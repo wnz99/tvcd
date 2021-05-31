@@ -1,9 +1,29 @@
 import WS from 'ws';
 
-export type WSInstance = (WebSocket | WS) & {
-  subs?: {
+interface WSInstanceA extends WebSocket {
+  subs: {
     [key: string]: any;
   };
+  isShutDown: boolean;
+  addSubscription: (subscription: Subscription) => void;
+  deleteSubscription: (subscriptionKey: string) => void;
+  closeConnection: () => void;
+}
+
+type WSInstanceB = WS & {
+  subs: {
+    [key: string]: any;
+  };
+  isShutDown: boolean;
+  addSubscription: (subscription: Subscription) => void;
+  deleteSubscription: (subscriptionKey: string) => void;
+  closeConnection: () => void;
+};
+
+export type WSInstance = WSInstanceA | WSInstanceB;
+
+export type Subscription = {
+  [key: string]: { [key: string]: unknown } | string;
 };
 
 export type SendFn = (msg: string) => void;

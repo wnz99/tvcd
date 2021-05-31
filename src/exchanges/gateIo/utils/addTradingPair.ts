@@ -2,24 +2,27 @@
 import { Pair } from '../../../types';
 import { WsSubscriptions } from '../types';
 import makeSubs from './makeSubs';
+import { WSInstance } from '../../../utils/ws/types';
+
 /**
  * Subscribe pair to API ws
  *
- * @param  {(msg: string) => void} sendFn
- * @param  {string} channelName
- * @param  {Pair} Pair
- * @return void
+ * @param  {WSInstance} ws
+ * @param  {Pair} pair
+ * @return (WsSubscriptions | undefined)
  */
 const addTradingPair = (
-  sendFn: (msg: string) => void,
-  pair: { [key: string]: Pair }
+  ws: WSInstance,
+  pair: Pair
 ): WsSubscriptions | undefined => {
   try {
-    const msgs = makeSubs(pair);
+    const msgs = makeSubs({ channel: pair });
 
     Object.values(msgs).forEach((msg) => {
-      sendFn(JSON.stringify(msg));
+      ws.send(JSON.stringify(msg));
     });
+
+    ws.addSubscription(msgs);
 
     return msgs;
   } catch (e) {

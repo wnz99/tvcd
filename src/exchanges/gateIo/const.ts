@@ -20,6 +20,7 @@ export const API_RESOLUTIONS_MAP: Intervals = {
   '8h': '8h',
   '1D': '1d',
   '7D': '7d',
+  '1W': '7d',
   [REAL_TIME]: ['10s', '10s'], // Format: [tvcd_resolution, api_resolution]
 };
 

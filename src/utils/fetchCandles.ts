@@ -17,9 +17,9 @@ const fetchCandles = async <T>(
   interval: string,
   start: number,
   end: number,
-  limit: number,
+  limit: number | undefined = undefined,
   opts: FetchCandlesOptions<T>
-): Promise<Candle[] | undefined> => {
+): Promise<Candle[]> => {
   const { debug, isUdf, formatFn } = opts;
 
   if (debug?.isDebug) {
@@ -40,7 +40,7 @@ const fetchCandles = async <T>(
   return concat(...fetchCallsArray)
     .pipe(
       map((data) =>
-        isUdf ? processUdfData((data as unknown) as UdfData) : data
+        isUdf ? processUdfData(data as unknown as UdfData) : data
       ),
       filter((data: any) => data[0] && data[0].date !== 0),
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment

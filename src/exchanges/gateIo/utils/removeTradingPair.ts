@@ -1,4 +1,5 @@
 import { Pair } from '../../../types';
+import { WSInstance } from '../../../utils/ws/types';
 
 /**
  * Unsubscribes pair from API ws.
@@ -18,7 +19,7 @@ import { Pair } from '../../../types';
  * @param  {Pair} pair
  * @return {void}
  */
-const removeTradingPair = (sendFn: (msg: string) => void, pair: Pair): void => {
+const removeTradingPair = (ws: WSInstance, pair: Pair): void => {
   const { intervalApi, symbols } = pair;
 
   const msg = {
@@ -28,7 +29,11 @@ const removeTradingPair = (sendFn: (msg: string) => void, pair: Pair): void => {
     payload: [intervalApi, `${symbols[0]}${symbols[1]}`],
   };
 
-  sendFn(JSON.stringify(msg));
+  ws.send(JSON.stringify(msg));
+
+  const key = `${intervalApi}:${symbols[0]}:${symbols[1]}`;
+
+  ws.deleteSubscription(key);
 };
 
 export default removeTradingPair;
