@@ -160,7 +160,7 @@ class Poloniex extends BaseExchange implements IExchange<PoloniexCandle> {
         this._exchangeConf.exchangeName,
         this._exchangeConf.restRootUrl,
         {
-          currencyPair: makePair(symbols[0], symbols[1]),
+          currencyPair: makePair(symbols[1], symbols[0]),
           period: this.options.intervals[timeInterval] as string,
           start: moment(startTime).unix(),
           end: moment(endTime).unix(),
