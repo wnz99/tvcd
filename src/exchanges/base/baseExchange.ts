@@ -249,7 +249,7 @@ class BaseExchange {
     );
   };
 
-  data$ = (channels: string[]): Observable<CandlesData> =>
+  data$ = (channels?: string[]): Observable<CandlesData> =>
     data$(channels, this._dataStream$);
 }
 

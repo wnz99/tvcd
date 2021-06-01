@@ -9,11 +9,15 @@ import Kucoin from './kucoin';
 import Poloniex from './poloniex';
 import Valr from './valr';
 
-// export { default as binance } from './binance_bak';
-// export { default as bitfinex } from './bitfinex_bak';
-// export { default as bitmex } from './bitmex';
-// export { default as bittrex } from './bittrex_bak';
-// export { default as poloniex } from './poloniex_bak';
+export type IBinance = Binance;
+export type IBitfinex = Bitfinex;
+export type IBitmex = Bitmex;
+export type IBittrex = Bittrex;
+export type IDeversifi = Deversifi;
+export type IGateIo = GateIo;
+export type IKucoin = Kucoin;
+export type IPoloniex = Poloniex;
+export type IValr = Valr;
 
 export type BinanceCandle = import('./binance/types').BinanceCandle;
 export type BitfinexCandle = import('./bitfinex/types').BitfinexCandle;

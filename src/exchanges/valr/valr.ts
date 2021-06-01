@@ -44,6 +44,8 @@ class Valr extends BaseExchange implements IExchange<ValrCandle> {
       apiResolutionsMap: API_RESOLUTIONS_MAP,
       makeCustomApiUrl,
     });
+
+    this._options = { format: formatter.tradingview };
   }
 
   _options!: ClientOptions<ValrCandle>;

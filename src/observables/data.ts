@@ -6,12 +6,12 @@ import { CandlesData } from '../types';
 import { isChannelChanged } from '../utils';
 
 const data$ = (
-  channels: string[],
+  channels: string[] = [],
   stream$: Subject<CandlesData>
 ): Observable<CandlesData> =>
   stream$.pipe(
     map((data) => {
-      if (channels && channels.length) return _pick(data, channels);
+      if (channels.length !== 0) return _pick(data, channels);
 
       return data;
     }),

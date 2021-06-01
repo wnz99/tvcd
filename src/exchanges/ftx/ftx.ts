@@ -32,6 +32,8 @@ class Ftx extends BaseExchange implements IExchange<FtxCandle> {
   constructor() {
     // super({ ...getExchangeConf(), wsConf: { makeWsMsg } });
     super({ ...getExchangeConf() });
+
+    this._options = { format: formatter.tradingview };
   }
 
   _options!: ClientOptions<FtxCandle>;

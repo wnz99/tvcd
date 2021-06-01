@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import * as exchanges from './exchanges';
-import { IExchange } from './types';
 
 type Exchanges =
   | 'binance'
@@ -15,25 +14,20 @@ type Exchanges =
   | 'poloniex'
   | 'valr';
 
-let instance: IExchange<
-  | exchanges.BinanceCandle
-  | exchanges.GateIoCandle
-  | exchanges.KucoinCandle
-  | exchanges.ValrCandle
-  | exchanges.BitfinexCandle
->;
+let instance:
+  | exchanges.IBinance
+  | exchanges.IBitfinex
+  | exchanges.IBitmex
+  | exchanges.IBittrex
+  | exchanges.IDeversifi
+  | exchanges.IGateIo
+  | exchanges.IKucoin
+  | exchanges.IPoloniex
+  | exchanges.IValr;
 
 let selectedExchange: Exchanges;
 
-const tvcd = (
-  exchange: Exchanges
-): IExchange<
-  | exchanges.BinanceCandle
-  | exchanges.GateIoCandle
-  | exchanges.KucoinCandle
-  | exchanges.ValrCandle
-  | exchanges.DeversifiCandle
-> =>
+const tvcd = (exchange: Exchanges) =>
   (() => {
     // @ts-ignore
     if (!exchanges[exchange]) {

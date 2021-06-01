@@ -39,6 +39,8 @@ class Poloniex extends BaseExchange implements IExchange<PoloniexCandle> {
   constructor() {
     // super({ ...getExchangeConf(), wsConf: { makeWsMsg } });
     super({ ...getExchangeConf() });
+
+    this._options = { format: formatter.tradingview };
   }
 
   _options!: ClientOptions<PoloniexCandle>;

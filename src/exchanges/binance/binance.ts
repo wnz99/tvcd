@@ -37,6 +37,8 @@ import { filterNullish } from '../../observables';
 class Binance extends BaseExchange implements IExchange<BinanceCandle> {
   constructor(conf: { dataSet: 'spot' | 'usdFutures' | 'coinFutures' }) {
     super({ ...getExchangeConf(conf.dataSet), wsConf: { makeWsMsg } });
+
+    this._options = { format: formatter.tradingview };
   }
 
   _options!: ClientOptions<BinanceCandle>;

@@ -59,6 +59,8 @@ class GateIo extends BaseExchange implements IExchange<GateIoCandle> {
       apiResolutionsMap: API_RESOLUTIONS_MAP,
       makeCustomApiUrl,
     });
+
+    this._options = { format: formatter.tradingview };
   }
 
   _options!: ClientOptions<GateIoCandle>;

@@ -43,6 +43,8 @@ import { filterNullish } from '../../observables';
 class Bittrex extends BaseExchange implements IExchange<BittrexCandle> {
   constructor() {
     super({ ...getExchangeConf() });
+
+    this._options = { format: formatter.tradingview };
   }
 
   _availableDataForThePeriod: {

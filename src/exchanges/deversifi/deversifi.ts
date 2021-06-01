@@ -39,6 +39,8 @@ import { filterNullish } from '../../observables';
 class Deverifi extends BaseExchange implements IExchange<DeversifiCandle> {
   constructor() {
     super({ ...getExchangeConf(), wsConf: { makeWsMsg } });
+
+    this._options = { format: formatter.tradingview };
   }
 
   _options!: ClientOptions<DeversifiCandle>;

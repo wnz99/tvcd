@@ -62,6 +62,8 @@ class Kucoin extends BaseExchange implements IExchange<KucoinCandle> {
       apiResolutionsMap: API_RESOLUTIONS_MAP,
       makeCustomApiUrl,
     });
+
+    this._options = { format: formatter.tradingview };
   }
 
   _options!: ClientOptions<KucoinCandle>;

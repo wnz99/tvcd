@@ -39,6 +39,8 @@ import { filterNullish } from '../../observables';
 class Bitmex extends BaseExchange implements IExchange<BitmexCandle> {
   constructor() {
     super({ ...getExchangeConf(), wsConf: { makeWsMsg } });
+
+    this._options = { format: formatter.tradingview };
   }
 
   _options!: ClientOptions<BitmexCandle>;
