@@ -1,5 +1,6 @@
 import { Observable } from 'rxjs';
 import moment from 'moment';
+import { AxiosRequestConfig } from 'axios';
 
 import { FormatFn } from '../types/exchanges';
 import { debugError, makeTimeChunks } from '.';
@@ -17,7 +18,7 @@ export type FetchCandlesOptions<T> = {
   };
   isUdf?: boolean;
   formatFn: FormatFn<T>;
-  requestOptions?: { [key: string]: string | number };
+  requestOptions?: AxiosRequestConfig;
 };
 
 const makeChunkCalls = <T>(
