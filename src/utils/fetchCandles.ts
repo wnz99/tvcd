@@ -17,16 +17,21 @@ const fetchCandles = async <T>(
   interval: string,
   start: number,
   end: number,
-  limit: number | undefined = undefined,
   opts: FetchCandlesOptions<T>
 ): Promise<Candle[]> => {
-  const { debug, isUdf, formatFn } = opts;
+  const { debug, isUdf, formatFn, apiLimit } = opts;
 
   if (debug?.isDebug) {
     console.log(
-      `tvcd => ${debug.exchangeName} fetchCandles(${pair}, ${interval}, ${start}, ${end}, ${limit})`
+      `tvcd => ${
+        debug.exchangeName
+      } fetchCandles(${pair}, ${interval}, ${start}, ${end}, ${
+        apiLimit ?? 1000
+      })`
     );
   }
+
+  const limit = apiLimit ?? 1000;
 
   const fetchCallsArray = makeChunkCalls<T>(
     pair,

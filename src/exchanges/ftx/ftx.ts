@@ -66,8 +66,7 @@ class Ftx extends BaseExchange implements IExchange<FtxCandle> {
               symbols,
               interval,
               start,
-              end,
-              5000
+              end
             );
 
             return from(candlesApiCall).pipe<Candle[], StreamData<Candle>>(
@@ -136,8 +135,7 @@ class Ftx extends BaseExchange implements IExchange<FtxCandle> {
     pair: TokensSymbols,
     interval: string,
     start: number,
-    end: number,
-    limit: number
+    end: number
   ): Promise<Candle[]> => {
     const makeCandlesUrlFn = (
       symbols: TokensSymbols,
@@ -156,7 +154,7 @@ class Ftx extends BaseExchange implements IExchange<FtxCandle> {
         }
       );
 
-    return fetchCandles<FtxCandle>(pair, interval, start, end, limit, {
+    return fetchCandles<FtxCandle>(pair, interval, start, end, {
       formatFn: this._options.format,
       makeChunks: true,
       debug: {

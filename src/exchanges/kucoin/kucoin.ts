@@ -162,8 +162,7 @@ class Kucoin extends BaseExchange implements IExchange<KucoinCandle> {
     pair: TokensSymbols,
     interval: string,
     start: number,
-    end: number,
-    limit: number
+    end: number
   ): Promise<Candle[]> => {
     const makeCandlesUrlFn = (
       symbols: TokensSymbols,
@@ -182,7 +181,7 @@ class Kucoin extends BaseExchange implements IExchange<KucoinCandle> {
         }
       );
 
-    return fetchCandles<KucoinCandle>(pair, interval, start, end, limit, {
+    return fetchCandles<KucoinCandle>(pair, interval, start, end, {
       formatFn: this._options.format,
       makeChunks: true,
       apiLimit: 1500,

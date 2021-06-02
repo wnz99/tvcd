@@ -82,7 +82,6 @@ class Bittrex extends BaseExchange implements IExchange<BittrexCandle> {
               interval,
               start,
               end,
-              5000,
               { latest: true }
             );
 
@@ -158,7 +157,6 @@ class Bittrex extends BaseExchange implements IExchange<BittrexCandle> {
     interval: string,
     start: number,
     end: number,
-    limit: number,
     opt?: { [key: string]: string | number | undefined | boolean }
   ): Promise<Candle[]> => {
     const channel = `${interval}:${pair[0]}:${pair[1]}`;
@@ -185,7 +183,7 @@ class Bittrex extends BaseExchange implements IExchange<BittrexCandle> {
           }
         );
 
-      return fetchCandles<BittrexCandle>(pair, interval, start, end, limit, {
+      return fetchCandles<BittrexCandle>(pair, interval, start, end, {
         formatFn: this._options.format,
         makeChunks: false,
         debug: {

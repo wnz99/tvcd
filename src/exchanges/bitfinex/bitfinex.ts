@@ -135,8 +135,7 @@ class Bitfinex extends BaseExchange implements IExchange<BitfinexCandle> {
     pair: TokensSymbols,
     interval: string,
     start: number,
-    end: number,
-    limit: number
+    end: number
   ): Promise<Candle[]> => {
     const makeCandlesUrlFn = (
       symbols: TokensSymbols,
@@ -154,8 +153,9 @@ class Bitfinex extends BaseExchange implements IExchange<BitfinexCandle> {
           end: endTime,
         }
       );
+    console.log('fetchCandles: ', pair, interval, start, end);
 
-    return fetchCandles<BitfinexCandle>(pair, interval, start, end, limit, {
+    return fetchCandles<BitfinexCandle>(pair, interval, start, end, {
       formatFn: this._options.format,
       makeChunks: true,
       debug: {

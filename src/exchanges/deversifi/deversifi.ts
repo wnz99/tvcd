@@ -93,8 +93,6 @@ class Deverifi extends BaseExchange implements IExchange<DeversifiCandle> {
           return streamData;
         }),
         map((streamData) => {
-          console.log(streamData);
-
           if (streamData[1].length) {
             this._candlesData = updateCandles<UpdateData[1], DeversifiCandle>(
               streamData,
@@ -110,7 +108,10 @@ class Deverifi extends BaseExchange implements IExchange<DeversifiCandle> {
         }),
         takeUntil(this._closeStream$),
         catchError((error) => {
-          console.warn(error);
+          if (this._status.isDebug) {
+            debugError(error.message);
+          }
+
           return of(error);
         }),
         multicast(() => new Subject<CandlesData>())
@@ -139,8 +140,7 @@ class Deverifi extends BaseExchange implements IExchange<DeversifiCandle> {
     pair: TokensSymbols,
     interval: string,
     start: number,
-    end: number,
-    limit: number
+    end: number
   ): Promise<Candle[]> => {
     const makeCandlesUrlFn = (
       symbols: TokensSymbols,
@@ -159,14 +159,14 @@ class Deverifi extends BaseExchange implements IExchange<DeversifiCandle> {
         }
       );
 
-    return fetchCandles<DeversifiCandle>(pair, interval, start, end, limit, {
+    return fetchCandles<DeversifiCandle>(pair, interval, start, end, {
       formatFn: this._options.format,
       makeChunks: true,
       debug: {
         exchangeName: this._exchangeConf.exchangeName,
         isDebug: this._status.isDebug,
       },
-      apiLimit: 1000,
+      apiLimit: 10000,
       makeCandlesUrlFn,
     });
   };

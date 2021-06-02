@@ -130,8 +130,7 @@ class Binance extends BaseExchange implements IExchange<BinanceCandle> {
     pair: TokensSymbols,
     interval: string,
     start: number,
-    end: number,
-    limit: number
+    end: number
   ): Promise<Candle[]> => {
     const makeCandlesUrlFn = (
       symbols: TokensSymbols,
@@ -150,7 +149,7 @@ class Binance extends BaseExchange implements IExchange<BinanceCandle> {
         }
       );
 
-    return fetchCandles<BinanceCandle>(pair, interval, start, end, limit, {
+    return fetchCandles<BinanceCandle>(pair, interval, start, end, {
       formatFn: this._options.format,
       makeChunks: true,
       debug: {

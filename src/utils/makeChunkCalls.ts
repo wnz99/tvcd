@@ -26,11 +26,10 @@ const makeChunkCalls = <T>(
   interval: string,
   start: number,
   end: number,
-  limit: number | undefined,
+  limit: number,
   opts: FetchCandlesOptions<T>
 ): Observable<T>[] => {
-  const { makeCandlesUrlFn, requestOptions, makeChunks, apiLimit, debug } =
-    opts;
+  const { makeCandlesUrlFn, requestOptions, makeChunks, debug } = opts;
 
   if (!makeChunks) {
     return [
@@ -41,12 +40,6 @@ const makeChunkCalls = <T>(
     ];
   }
 
-  let dataPointLimit = limit ?? 1000;
-
-  if (apiLimit && limit) {
-    dataPointLimit = Math.min(apiLimit, limit);
-  }
-
   const timePeriod = timePeriods[interval.slice(-1)];
 
   const unixInterval = moment
@@ -55,7 +48,7 @@ const makeChunkCalls = <T>(
     .duration(Number(interval.slice(0, interval.length - 1)), timePeriod)
     .asMilliseconds();
 
-  const chunksSize = Math.ceil(dataPointLimit * unixInterval);
+  const chunksSize = Math.ceil(limit * unixInterval);
 
   const timeIntervalChunks = makeTimeChunks(start, end, chunksSize);
 

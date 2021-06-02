@@ -73,8 +73,7 @@ class Poloniex extends BaseExchange implements IExchange<PoloniexCandle> {
               symbols,
               interval,
               start,
-              end,
-              5000
+              end
             );
 
             return from(candlesApiCall).pipe<Candle[], StreamData<Candle>>(
@@ -149,8 +148,7 @@ class Poloniex extends BaseExchange implements IExchange<PoloniexCandle> {
     pair: TokensSymbols,
     interval: string,
     start: number,
-    end: number,
-    limit: number
+    end: number
   ): Promise<Candle[]> => {
     const makeCandlesUrlFn = (
       symbols: TokensSymbols,
@@ -170,7 +168,7 @@ class Poloniex extends BaseExchange implements IExchange<PoloniexCandle> {
         }
       );
 
-    return fetchCandles<PoloniexCandle>(pair, interval, start, end, limit, {
+    return fetchCandles<PoloniexCandle>(pair, interval, start, end, {
       formatFn: this._options.format,
       debug: {
         exchangeName: this._exchangeConf.exchangeName,

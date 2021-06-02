@@ -9,6 +9,14 @@ export const fetchCandles$ = <T>(
   defer(() => axios.get(restApiUrl, requestOptions)).pipe(
     switchMap(async (response) => {
       if (response.status === 200) {
+        if (response.data.data) {
+          return response.data.data;
+        }
+
+        if (response.data.result) {
+          return response.data.result;
+        }
+
         if (response.data) {
           return response.data;
         }
@@ -16,10 +24,7 @@ export const fetchCandles$ = <T>(
 
       throw new Error(`Error ${response.status}`);
     }),
-    retryWhen((errors) => {
-      console.log(errors);
-      return errors.pipe(delayWhen(() => timer(5000)));
-    })
+    retryWhen((errors) => errors.pipe(delayWhen(() => timer(5000))))
   );
 
 export default fetchCandles$;

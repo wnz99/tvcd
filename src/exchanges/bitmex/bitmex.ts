@@ -132,8 +132,7 @@ class Bitmex extends BaseExchange implements IExchange<BitmexCandle> {
     pair: TokensSymbols,
     interval: string,
     start: number,
-    end: number,
-    limit: number
+    end: number
   ): Promise<Candle[]> => {
     const limitDateToApiMinimun = (date: number) => {
       if (moment(date).isBefore('2010-01-01')) {
@@ -183,7 +182,6 @@ class Bitmex extends BaseExchange implements IExchange<BitmexCandle> {
       interval,
       limitDateToApiMinimun(start),
       limitDateToApiMinimun(end),
-      limit,
       {
         formatFn: this._options.format,
         isUdf: this._exchangeConf.isUdf,

@@ -69,8 +69,7 @@ class Valr extends BaseExchange implements IExchange<ValrCandle> {
               symbols,
               interval,
               start,
-              end,
-              300
+              end
             );
 
             return from(candlesApiCall).pipe<Candle[], StreamData<Candle>>(
@@ -133,8 +132,7 @@ class Valr extends BaseExchange implements IExchange<ValrCandle> {
     pair: TokensSymbols,
     interval: string,
     start: number,
-    end: number,
-    limit: number
+    end: number
   ): Promise<Candle[]> => {
     const makeCandlesUrlFn = (
       symbols: TokensSymbols,
@@ -153,7 +151,7 @@ class Valr extends BaseExchange implements IExchange<ValrCandle> {
         }
       );
 
-    return fetchCandles<ValrCandle>(pair, interval, start, end, limit, {
+    return fetchCandles<ValrCandle>(pair, interval, start, end, {
       formatFn: this._options.format,
       makeChunks: true,
       apiLimit: 300,

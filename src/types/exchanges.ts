@@ -124,7 +124,6 @@ export interface IExchange<T> {
     interval: string,
     start: number,
     end: number,
-    limit: number,
     opt?: { [key: string]: string | number | undefined | boolean }
   ) => Promise<Candle[]>;
   getTradingPairs?: () => TradingPairs;

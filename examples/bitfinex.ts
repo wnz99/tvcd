@@ -31,13 +31,7 @@ console.log('Supported resolutions: ', options.intervals);
 // dataSource.start();
 
 dataSource
-  .fetchCandles(
-    ['BTC', 'USD'],
-    '1m',
-    1622391865 * 1000,
-    new Date().valueOf(),
-    1000
-  )
+  .fetchCandles(['BTC', 'USD'], '1m', 1622391865 * 1000, new Date().valueOf())
   .then((result) => {
     console.log('result');
     console.log(result);

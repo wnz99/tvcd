@@ -140,8 +140,7 @@ class GateIo extends BaseExchange implements IExchange<GateIoCandle> {
     pair: TokensSymbols,
     interval: string,
     start: number,
-    end: number,
-    limit: number
+    end: number
   ): Promise<Candle[]> => {
     const makeCandlesUrlFn = (
       symbols: TokensSymbols,
@@ -160,7 +159,7 @@ class GateIo extends BaseExchange implements IExchange<GateIoCandle> {
         }
       );
 
-    return fetchCandles<GateIoCandle>(pair, interval, start, end, limit, {
+    return fetchCandles<GateIoCandle>(pair, interval, start, end, {
       formatFn: this._options.format,
       makeChunks: true,
       apiLimit: 999,

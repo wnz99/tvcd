@@ -81,6 +81,9 @@
     "ts-node-dev": "^1.1.6",
     "tsc": "^1.20150623.0",
     "tslib": "^2.2.0",
-    "typescript": "^4.2.2"
+    "typescript": "^4.2.2",
+    "webpack": "^5.38.1",
+    "webpack-bundle-analyzer": "^4.4.2",
+    "webpack-cli": "^4.7.0"
   }
 }
