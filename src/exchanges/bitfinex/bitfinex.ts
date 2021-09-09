@@ -153,7 +153,6 @@ class Bitfinex extends BaseExchange implements IExchange<BitfinexCandle> {
           end: endTime,
         }
       );
-    console.log('fetchCandles: ', pair, interval, start, end);
 
     return fetchCandles<BitfinexCandle>(pair, interval, start, end, {
       formatFn: this._options.format,
