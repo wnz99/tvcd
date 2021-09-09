@@ -2,6 +2,19 @@ import { Observable } from 'rxjs';
 
 import { WsEvent } from '../utils/ws/types';
 
+export type Exchanges =
+  | 'binance'
+  | 'binanceCoinFutures'
+  | 'binanceUsdFutures'
+  | 'bitfinex'
+  | 'bitmex'
+  | 'bittrex'
+  | 'deversifi'
+  | 'gateio'
+  | 'kucoin'
+  | 'poloniex'
+  | 'valr';
+
 export type Intervals = {
   [key: string]: string | [string, string];
   realtime: [string, string];

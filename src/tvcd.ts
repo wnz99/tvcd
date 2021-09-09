@@ -1,18 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import * as exchanges from './exchanges';
-
-type Exchanges =
-  | 'binance'
-  | 'binanceCoinFutures'
-  | 'binanceUsdFutures'
-  | 'bitfinex'
-  | 'bitmex'
-  | 'bittrex'
-  | 'deversifi'
-  | 'gateio'
-  | 'kucoin'
-  | 'poloniex'
-  | 'valr';
+import { Exchanges } from './types';
 
 let instance:
   | exchanges.IBinance
