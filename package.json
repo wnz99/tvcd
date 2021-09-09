@@ -9,7 +9,7 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage --colors",
     "prettify": "prettier --write \"**/*.js\"",
-    "release": "npm run build && git fetch && np"
+    "release": "npm run build && git fetch && npx np"
   },
   "repository": {
     "type": "git",
