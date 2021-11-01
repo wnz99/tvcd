@@ -6,7 +6,7 @@ export const REST_ROOT_FUTURES_USD_URL = `https://fapi.binance.com/fapi/v1`;
 export const REST_ROOT_SPOT_URL = `https://api.binance.com/api/v1`;
 export const WS_ROOT_FUTURES_COIN_URL = 'wss://dstream.binance.com/stream';
 export const WS_ROOT_FUTURES_USD_URL = 'wss://fstream.binance.com/stream';
-export const WS_ROOT_SPOT_URL = ' wss://stream.binance.com:9443/stream';
+export const WS_ROOT_SPOT_URL = 'wss://stream.binance.com:9443/stream';
 // Maps TVCD standard resolutions to exchange API resolutions
 
 export const API_RESOLUTIONS_MAP: Intervals = {

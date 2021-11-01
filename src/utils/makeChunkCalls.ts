@@ -32,12 +32,13 @@ const makeChunkCalls = <T>(
   const { makeCandlesUrlFn, requestOptions, makeChunks, debug } = opts;
 
   if (!makeChunks) {
-    return [
-      fetchCandles$<T>(
-        makeCandlesUrlFn(pair, interval, start, end),
-        requestOptions
-      ),
-    ];
+    const url = makeCandlesUrlFn(pair, interval, start, end);
+
+    if (debug?.isDebug) {
+      console.log(`tvcd => fetching ${url})`);
+    }
+
+    return [fetchCandles$<T>(url, requestOptions)];
   }
 
   const timePeriod = timePeriods[interval.slice(-1)];
@@ -59,6 +60,13 @@ const makeChunkCalls = <T>(
       } catch (e) {
         return debugError(e.message, debug?.isDebug);
       }
+    })
+    .map((url) => {
+      if (debug?.isDebug) {
+        console.log(`tvcd => fetching ${url})`);
+      }
+
+      return url;
     })
     .map((url) => fetchCandles$(url, requestOptions));
 };
