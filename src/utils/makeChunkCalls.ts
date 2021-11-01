@@ -35,7 +35,7 @@ const makeChunkCalls = <T>(
     const url = makeCandlesUrlFn(pair, interval, start, end);
 
     if (debug?.isDebug) {
-      console.log(`tvcd => fetching ${url})`);
+      console.log(`tvcd => fetching ${url}`);
     }
 
     return [fetchCandles$<T>(url, requestOptions)];
@@ -63,7 +63,7 @@ const makeChunkCalls = <T>(
     })
     .map((url) => {
       if (debug?.isDebug) {
-        console.log(`tvcd => fetching ${url})`);
+        console.log(`tvcd => fetching ${url}`);
       }
 
       return url;
