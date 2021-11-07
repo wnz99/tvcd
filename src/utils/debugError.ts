@@ -1,7 +1,10 @@
 /* eslint-disable no-console */
 import { ClientError } from '../types/exchanges';
 
-const debugError = (message: ClientError, isDebug?: boolean): string => {
+const debugError = (
+  message: ClientError | string,
+  isDebug?: boolean
+): string => {
   if (isDebug) {
     console.log(`tvcd => ${message}`);
   }

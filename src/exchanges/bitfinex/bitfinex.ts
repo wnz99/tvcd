@@ -173,7 +173,9 @@ class Bitfinex extends BaseExchange implements IExchange<BitfinexCandle> {
     try {
       this._addTradingPair(pair, pairConf);
     } catch (err) {
-      return err.message;
+      if (err instanceof Error) {
+        return err.message;
+      }
     }
 
     return undefined;
@@ -186,7 +188,9 @@ class Bitfinex extends BaseExchange implements IExchange<BitfinexCandle> {
     try {
       this._removeTradingPair(pair, interval);
     } catch (err) {
-      return err.message;
+      if (err instanceof Error) {
+        return err.message;
+      }
     }
 
     return undefined;

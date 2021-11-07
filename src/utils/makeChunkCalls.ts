@@ -58,7 +58,9 @@ const makeChunkCalls = <T>(
       try {
         return makeCandlesUrlFn(pair, interval, chunk.fromTime, chunk.toTime);
       } catch (e) {
-        return debugError(e.message, debug?.isDebug);
+        if (e instanceof Error) {
+          debugError(e.message, debug?.isDebug);
+        }
       }
     })
     .map((url) => {
@@ -68,7 +70,9 @@ const makeChunkCalls = <T>(
 
       return url;
     })
-    .map((url) => fetchCandles$(url, requestOptions));
+    .map((url) => {
+      return fetchCandles$(url || '', requestOptions);
+    });
 };
 
 export default makeChunkCalls;

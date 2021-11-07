@@ -197,16 +197,22 @@ class Kucoin extends BaseExchange implements IExchange<KucoinCandle> {
     pair: TokensSymbols,
     pairConf: PairConf
   ): string | undefined => {
-    let addedPair: Pair;
+    let newPair: Pair | undefined = undefined;
 
     try {
-      addedPair = this._addTradingPair(pair, pairConf);
+      newPair = this._addTradingPair(pair, pairConf);
     } catch (err) {
-      return err.message;
+      if (err instanceof Error) {
+        return err.message;
+      }
+    }
+
+    if (!newPair) {
+      return;
     }
 
     if (this._ws && this._ws.readyState === 1) {
-      addTradingPair(this._ws, addedPair);
+      addTradingPair(this._ws, newPair);
 
       return undefined;
     }
@@ -221,11 +227,11 @@ class Kucoin extends BaseExchange implements IExchange<KucoinCandle> {
         take(1)
       )
       .subscribe(() => {
-        if (!this._ws) {
+        if (!this._ws || !newPair) {
           return;
         }
 
-        addTradingPair(this._ws, addedPair);
+        addTradingPair(this._ws, newPair);
       });
 
     return undefined;
@@ -240,7 +246,9 @@ class Kucoin extends BaseExchange implements IExchange<KucoinCandle> {
     try {
       removedPair = this._removeTradingPair(pair, interval);
     } catch (err) {
-      return err.message;
+      if (err instanceof Error) {
+        return err.message;
+      }
     }
 
     if (!this._ws) {
@@ -248,6 +256,10 @@ class Kucoin extends BaseExchange implements IExchange<KucoinCandle> {
     }
 
     if (!this._ws.subs) {
+      return undefined;
+    }
+
+    if (!removedPair) {
       return undefined;
     }
 

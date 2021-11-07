@@ -185,7 +185,9 @@ class Poloniex extends BaseExchange implements IExchange<PoloniexCandle> {
     try {
       this._addTradingPair(pair, pairConf);
     } catch (err) {
-      return err.message;
+      if (err instanceof Error) {
+        return err.message;
+      }
     }
 
     return undefined;
@@ -198,7 +200,9 @@ class Poloniex extends BaseExchange implements IExchange<PoloniexCandle> {
     try {
       this._removeTradingPair(pair, interval);
     } catch (err) {
-      return err.message;
+      if (err instanceof Error) {
+        return err.message;
+      }
     }
 
     return undefined;

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import omit from 'lodash/omit';
-import WS from 'ws';
+// import WS from 'ws';
 import conf from './env';
 import pingWs from './pingWs';
 // eslint-disable-next-line import/no-cycle
@@ -48,7 +48,7 @@ function connectWs(url: string, opts: Partial<Options> = {}): WSInstance {
   const ws =
     typeof window !== 'undefined' && window.WebSocket
       ? (new WebSocket(url) as WSInstance)
-      : (new WS(url) as WSInstance);
+      : (new WebSocket(url) as WSInstance);
 
   let pongTime = new Date().getTime();
 
@@ -59,7 +59,9 @@ function connectWs(url: string, opts: Partial<Options> = {}): WSInstance {
       try {
         ws.close(3000, 'Connection timeout.');
       } catch (e) {
-        console.warn(e.message);
+        if (e instanceof Error) {
+          console.warn(e.message);
+        }
       }
 
       if (td) {

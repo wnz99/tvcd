@@ -175,12 +175,18 @@ class GateIo extends BaseExchange implements IExchange<GateIoCandle> {
     pair: TokensSymbols,
     pairConf: PairConf
   ): string | undefined => {
-    let newPair: Pair;
+    let newPair: Pair | undefined = undefined;
 
     try {
       newPair = this._addTradingPair(pair, pairConf);
     } catch (err) {
-      return err.message;
+      if (err instanceof Error) {
+        return err.message;
+      }
+    }
+
+    if (!newPair) {
+      return;
     }
 
     if (this._ws && this._ws.readyState === 1) {
@@ -199,7 +205,7 @@ class GateIo extends BaseExchange implements IExchange<GateIoCandle> {
         take(1)
       )
       .subscribe(() => {
-        if (!this._ws) {
+        if (!this._ws || !newPair) {
           return;
         }
 
@@ -213,12 +219,14 @@ class GateIo extends BaseExchange implements IExchange<GateIoCandle> {
     pair: TokensSymbols,
     intervalApi: string
   ): string | undefined => {
-    let removedPair;
+    let removedPair: Pair | undefined = undefined;
 
     try {
       removedPair = this._removeTradingPair(pair, intervalApi);
     } catch (err) {
-      return err.message;
+      if (err instanceof Error) {
+        return err.message;
+      }
     }
 
     if (!this._ws) {
@@ -226,6 +234,10 @@ class GateIo extends BaseExchange implements IExchange<GateIoCandle> {
     }
 
     if (!this._ws.subs) {
+      return undefined;
+    }
+
+    if (!removedPair) {
       return undefined;
     }
 

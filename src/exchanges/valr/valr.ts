@@ -172,7 +172,9 @@ class Valr extends BaseExchange implements IExchange<ValrCandle> {
 
       return undefined;
     } catch (err) {
-      return err.message;
+      if (err instanceof Error) {
+        return err.message;
+      }
     }
   };
 
@@ -183,7 +185,9 @@ class Valr extends BaseExchange implements IExchange<ValrCandle> {
     try {
       this._removeTradingPair(pair, intervalApi);
     } catch (err) {
-      return err.message;
+      if (err instanceof Error) {
+        return err.message;
+      }
     }
 
     return undefined;
