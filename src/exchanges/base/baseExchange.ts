@@ -14,6 +14,7 @@ import {
   PublicOptions,
   CandlesData,
   WsConf,
+  CandlesStream,
 } from '../../types';
 import { data$ } from '../../observables';
 import { WSInstance } from '../../utils/ws/types';
@@ -249,7 +250,7 @@ class BaseExchange {
     );
   };
 
-  data$ = (channels?: string[]): Observable<CandlesData> =>
+  data$ = (channels?: string[]): CandlesStream =>
     data$(channels, this._dataStream$);
 }
 
