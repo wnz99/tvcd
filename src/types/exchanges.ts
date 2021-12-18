@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 import { WsEvent } from '../utils/ws/types';
 
@@ -123,7 +123,11 @@ export type Options = { format: 'tradingview' };
 
 export type ClientOptions<T> = { format: (data: T) => Candle };
 
-export interface IExchange<T> {
+export type CandleSubscription = Subscription;
+
+export type CandlesStream = Observable<CandlesData>;
+
+export interface IExchange<T = any> {
   options: {
     intervals: Intervals;
     intervalsUdf?: Intervals;
@@ -139,7 +143,7 @@ export interface IExchange<T> {
     end: number,
     opt?: { [key: string]: string | number | undefined | boolean }
   ) => Promise<Candle[]>;
-  getTradingPairs?: () => TradingPairs;
+  getTradingPairs: () => TradingPairs;
   getStatus?: () => Status;
   setDebug?: () => void;
   setApiUrl?: (apiUrl: string) => void;
@@ -151,4 +155,5 @@ export interface IExchange<T> {
     pair: TokensSymbols,
     intervalApi: string
   ) => string | undefined;
+  data$: (channels?: string[]) => CandlesStream;
 }
