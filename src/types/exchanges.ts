@@ -145,8 +145,8 @@ export interface IExchange<T = any> {
   ) => Promise<Candle[]>;
   getTradingPairs: () => TradingPairs;
   getStatus: () => Status;
-  setDebug: () => void;
-  setApiUrl: (apiUrl: string) => void;
+  setDebug: (status: boolean) => void;
+  setApiUrl: (apiUrl: string, isUdf?: boolean) => void;
   addTradingPair: (
     pair: TokensSymbols,
     pairConf: PairConf
