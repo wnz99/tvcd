@@ -6,8 +6,8 @@
     "strict": true,
     "allowSyntheticDefaultImports": true,
     "declaration": true,
-    "declarationDir": "./",
-    "outDir": "./",
+    "declarationDir": "dist",
+    "outDir": "dist",
     "moduleResolution": "node"
   },
   "include": ["src/**/*"],

@@ -19,7 +19,7 @@ export default {
     file: 'dist/index.js',
     format: 'umd',
     name: 'tvcd',
-    sourcemap: true,
+    sourcemap: false,
     exports: 'named',
   },
   plugins: [
