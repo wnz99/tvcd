@@ -12,8 +12,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
+          # Make sure the actual branch is checked out when running on pull requests
+          ref: ${{ github.head_ref }}
+          # This is important to fetch the changes to the previous commit
           fetch-depth: 0
-          ref: ${{ github.ref }}
 
       - uses: actions/setup-node@v2
         with:
@@ -21,7 +23,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org/'
           scope: '@wnz99'
           cache: 'yarn'
-          ref: ${{ github.ref }}
+          ref: ${{ github.head_ref }}
 
       - name: 'cat package.json'
         run: cat ./package.json
