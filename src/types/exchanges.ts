@@ -2,18 +2,19 @@ import { Observable, Subscription } from 'rxjs';
 
 import { WsEvent } from '../utils/ws/types';
 
-export type Exchanges =
-  | 'binance'
-  | 'binanceCoinFutures'
-  | 'binanceUsdFutures'
-  | 'bitfinex'
-  | 'bitmex'
-  | 'bittrex'
-  | 'deversifi'
-  | 'gateio'
-  | 'kucoin'
-  | 'poloniex'
-  | 'valr';
+export enum Exchanges {
+  'binance' = 'binance',
+  'binancefuturescoin' = 'binancefuturescoin',
+  'binancefuturesusd' = 'binancefuturesusd',
+  'bitfinex' = 'bitfinex',
+  'bitmex' = 'bitmex',
+  'bittrex' = 'bittrex',
+  'deversifi' = 'deversifi',
+  'gateio' = 'gateio',
+  'kucoin' = 'kucoin',
+  'poloniex' = 'poloniex',
+  'valr' = 'valr',
+}
 
 export type Intervals = {
   [key: string]: string | [string, string];
