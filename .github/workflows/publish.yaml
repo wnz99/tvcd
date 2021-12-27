@@ -42,7 +42,7 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: 'Build'
-        run: yarn build:tsc
+        run: yarn build
 
       - name: 'Publish'
         run: |

@@ -1,9 +1,6 @@
-import peerDepsExternal from 'rollup-plugin-peer-deps-external';
-import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import typescript from 'rollup-plugin-typescript2';
 import nodePolyfills from 'rollup-plugin-polyfill-node';
-import { babel } from '@rollup/plugin-babel';
 
 // this override is needed because Module format cjs does not support top-level await
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -23,10 +20,8 @@ export default {
     exports: 'named',
   },
   plugins: [
-    peerDepsExternal(),
     commonjs({ transformMixedEsModules: true }),
     nodePolyfills(),
-    resolve({ browser: true, preferBuiltins: true }),
     typescript({
       objectHashIgnoreUnknownHack: true,
       abortOnError: false,
