@@ -61,6 +61,8 @@ const makeChunkCalls = <T>(
         if (e instanceof Error) {
           debugError(e.message, debug?.isDebug)
         }
+
+        throw e
       }
     })
     .map((url) => {

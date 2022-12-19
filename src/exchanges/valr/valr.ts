@@ -168,13 +168,13 @@ class Valr extends BaseExchange implements IExchange<ValrCandle> {
   ): string | undefined => {
     try {
       this._addTradingPair(pair, pairConf)
-
-      return undefined
     } catch (err) {
       if (err instanceof Error) {
         return err.message
       }
     }
+
+    return undefined
   }
 
   removeTradingPair = (
