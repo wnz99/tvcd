@@ -21,7 +21,7 @@ describe('pingWs function', () => {
 
     expect(td).not.toBeNaN();
 
-    jest.runTimersToTime(10000);
+    jest.advanceTimersByTime(10000);
 
     expect(spySendFn).toHaveBeenCalledTimes(10);
 

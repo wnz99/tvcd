@@ -1,5 +1,5 @@
-const { TestScheduler } = require('rxjs/testing');
-const { data$ } = require('../');
+import { TestScheduler } from 'rxjs/testing';
+import { data$ } from '../';
 
 let testScheduler;
 

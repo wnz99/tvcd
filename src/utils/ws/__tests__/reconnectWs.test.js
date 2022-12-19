@@ -34,7 +34,7 @@ describe('reconnectWs function', () => {
 
     reconnectWs(url, connOpts);
 
-    jest.runTimersToTime(runTime);
+    jest.advanceTimersByTime(runTime);
 
     expect(connectWs).not.toHaveBeenCalled();
 
@@ -51,7 +51,7 @@ describe('reconnectWs function', () => {
 
     reconnectWs(url, connOpts);
 
-    jest.runTimersToTime(runTime);
+    jest.advanceTimersByTime(runTime);
 
     expect(connectWs).toHaveBeenCalledTimes(1);
 
@@ -71,7 +71,7 @@ describe('reconnectWs function', () => {
 
     reconnectWs(url, connOpts);
 
-    jest.runTimersToTime(runTime);
+    jest.advanceTimersByTime(runTime);
 
     expect(connectWs).toHaveBeenCalledTimes(1);
 
