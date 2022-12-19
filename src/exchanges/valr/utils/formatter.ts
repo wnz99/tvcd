@@ -1,7 +1,7 @@
-import moment from 'moment';
+import moment from 'moment'
 
-import { Formatter, Candle } from '../../../types';
-import { ValrCandle } from '../types';
+import { Candle, Formatter } from '../../../types'
+import { ValrCandle } from '../types'
 
 const formatter: Formatter<ValrCandle> = {
   /**
@@ -28,7 +28,7 @@ const formatter: Formatter<ValrCandle> = {
    */
 
   tradingview: (data: ValrCandle): Candle => {
-    const { startTime, open, close, high, low, volume } = data;
+    const { startTime, open, close, high, low, volume } = data
 
     return {
       time: moment(startTime).valueOf(),
@@ -37,8 +37,8 @@ const formatter: Formatter<ValrCandle> = {
       high: Number(high),
       low: Number(low),
       volume: Number(volume),
-    };
+    }
   },
-};
+}
 
-export default formatter;
+export default formatter

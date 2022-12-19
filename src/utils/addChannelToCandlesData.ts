@@ -1,13 +1,13 @@
-import { StreamData, CandlesData } from '../types/exchanges';
+import { CandlesData, StreamData } from '../types/exchanges'
 
 const addChannelToCandlesData = <T>(
   candlesData: CandlesData,
   data: StreamData<T>
 ): CandlesData => {
-  const channel = `${data[2]}:${data[0][0]}:${data[0][1]}`;
+  const channel = `${data[2]}:${data[0][0]}:${data[0][1]}`
 
   if (candlesData[channel]) {
-    return candlesData;
+    return candlesData
   }
 
   return {
@@ -24,7 +24,7 @@ const addChannelToCandlesData = <T>(
         updateIndex: undefined,
       },
     },
-  };
-};
+  }
+}
 
-export default addChannelToCandlesData;
+export default addChannelToCandlesData

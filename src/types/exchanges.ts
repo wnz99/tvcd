@@ -1,6 +1,6 @@
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs'
 
-import { WsEvent } from '../utils/ws/types';
+import { WsEvent } from '../utils/ws/types'
 
 export enum Exchanges {
   'binance' = 'binance',
@@ -17,63 +17,63 @@ export enum Exchanges {
 }
 
 export type Intervals = {
-  [key: string]: string | [string, string];
-  realtime: [string, string];
-};
+  [key: string]: string | [string, string]
+  realtime: [string, string]
+}
 
-export type TokensSymbols = [string, string];
+export type TokensSymbols = [string, string]
 
-export type Interval = string;
+export type Interval = string
 
-export type StreamData<T> = [[string, string], T, Interval];
+export type StreamData<T> = [[string, string], T, Interval]
 
 export type PublicOptions = {
-  intervals: Intervals;
-  intervalsUdf?: Intervals;
-};
+  intervals: Intervals
+  intervalsUdf?: Intervals
+}
 
 export type Status = {
-  isRunning: boolean;
-  isDebug: boolean;
-};
+  isRunning: boolean
+  isDebug: boolean
+}
 
 export type WsConf = {
   makeWsMsg: (
     messageType: string,
     pair: Pair
-  ) => { [key: string]: unknown } | string | undefined;
-};
+  ) => { [key: string]: unknown } | string | undefined
+}
 
-export type MakeCustomApiUrl = (rootUrl: string, isUdf?: boolean) => string;
+export type MakeCustomApiUrl = (rootUrl: string, isUdf?: boolean) => string
 
 export type ExchangeConf = {
-  isDebug?: boolean;
-  exchangeName: string;
-  wsRootUrl: string;
-  restRootUrl: string;
-  apiResolutionsMap: Intervals;
-  apiResolutionsUdfMap?: Intervals;
-  makeCustomApiUrl: MakeCustomApiUrl;
-  wsConf?: WsConf;
-  isUdf?: boolean;
-  apiLimit?: number;
-};
+  isDebug?: boolean
+  exchangeName: string
+  wsRootUrl: string
+  restRootUrl: string
+  apiResolutionsMap: Intervals
+  apiResolutionsUdfMap?: Intervals
+  makeCustomApiUrl: MakeCustomApiUrl
+  wsConf?: WsConf
+  isUdf?: boolean
+  apiLimit?: number
+}
 
 export type Pair = {
-  ticker: string;
-  interval: string;
-  intervalApi: string;
-  symbols: TokensSymbols;
+  ticker: string
+  interval: string
+  intervalApi: string
+  symbols: TokensSymbols
   ws?: {
-    subMsg?: { [key: string]: unknown } | string;
-    unsubMsg?: { [key: string]: unknown } | string;
-    meta?: { [key: string]: unknown };
-  };
-};
+    subMsg?: { [key: string]: unknown } | string
+    unsubMsg?: { [key: string]: unknown } | string
+    meta?: { [key: string]: unknown }
+  }
+}
 
 export type TradingPairs = {
-  [key: string]: Pair;
-};
+  [key: string]: Pair
+}
 
 export enum ClientError {
   INTERVAL_NOT_SUPPORTED = 'Interval is not supported',
@@ -87,74 +87,74 @@ export enum ClientError {
 }
 
 export type Candle = {
-  time: number;
-  open: number;
-  close: number;
-  high: number;
-  low: number;
-  volume: number;
-};
+  time: number
+  open: number
+  close: number
+  high: number
+  low: number
+  volume: number
+}
 
 export type CandlesData = {
   [key: string]: {
-    pair: [string, string];
-    interval: string;
-    candles: Candle[];
-    seq: number;
+    pair: [string, string]
+    interval: string
+    candles: Candle[]
+    seq: number
     meta: {
-      isSnapshot: boolean;
-      isNewCandle: boolean;
-      updateIndex: number | undefined;
-      isUpdateCandle: boolean;
-    };
-  };
-};
-
-export type PairConf = {
-  interval: string;
-};
-
-export type FormatFn<T> = (data: T) => Candle;
-
-export interface Formatter<T> {
-  [key: string]: FormatFn<T>;
+      isSnapshot: boolean
+      isNewCandle: boolean
+      updateIndex: number | undefined
+      isUpdateCandle: boolean
+    }
+  }
 }
 
-export type Options = { format: 'tradingview' };
+export type PairConf = {
+  interval: string
+}
 
-export type ClientOptions<T> = { format: (data: T) => Candle };
+export type FormatFn<T> = (data: T) => Candle
 
-export type CandleSubscription = Subscription;
+export interface Formatter<T> {
+  [key: string]: FormatFn<T>
+}
 
-export type CandlesStream = Observable<CandlesData>;
+export type Options = { format: 'tradingview' }
+
+export type ClientOptions<T> = { format: (data: T) => Candle }
+
+export type CandleSubscription = Subscription
+
+export type CandlesStream = Observable<CandlesData>
 
 export interface IExchange<T = any> {
   options: {
-    intervals: Intervals;
-    intervalsUdf?: Intervals;
-  };
-  _options: ClientOptions<T>;
-  _dataSource$?: Observable<WsEvent> | undefined;
-  start: (options?: Options) => undefined | string;
-  stop: () => void;
+    intervals: Intervals
+    intervalsUdf?: Intervals
+  }
+  _options: ClientOptions<T>
+  _dataSource$?: Observable<WsEvent> | undefined
+  start: (options?: Options) => undefined | string
+  stop: () => void
   fetchCandles: (
     pair: TokensSymbols,
     interval: string,
     start: number,
     end: number,
     opt?: { [key: string]: string | number | undefined | boolean }
-  ) => Promise<Candle[]>;
-  getTradingPairs: () => TradingPairs;
-  getStatus: () => Status;
-  setDebug: (status: boolean) => void;
-  setApiUrl: (apiUrl: string, isUdf?: boolean) => void;
+  ) => Promise<Candle[]>
+  getTradingPairs: () => TradingPairs
+  getStatus: () => Status
+  setDebug: (status: boolean) => void
+  setApiUrl: (apiUrl: string, isUdf?: boolean) => void
   addTradingPair: (
     pair: TokensSymbols,
     pairConf: PairConf
-  ) => string | undefined;
+  ) => string | undefined
   removeTradingPair: (
     pair: TokensSymbols,
     intervalApi: string
-  ) => string | undefined;
-  data$: (channels?: string[]) => CandlesStream;
+  ) => string | undefined
+  data$: (channels?: string[]) => CandlesStream
 }

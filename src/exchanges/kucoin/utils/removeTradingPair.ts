@@ -1,5 +1,5 @@
-import { Pair } from '../../../types';
-import { WSInstance } from '../../../utils/ws/types';
+import { Pair } from '../../../types'
+import { WSInstance } from '../../../utils/ws/types'
 
 /**
  * Unsubscribes pair from API ws.
@@ -21,7 +21,7 @@ import { WSInstance } from '../../../utils/ws/types';
  * @return {void}
  */
 const removeTradingPair = (ws: WSInstance, pair: Pair): void => {
-  const { intervalApi, symbols } = pair;
+  const { intervalApi, symbols } = pair
 
   const msg = {
     id: new Date().valueOf(),
@@ -29,13 +29,13 @@ const removeTradingPair = (ws: WSInstance, pair: Pair): void => {
     topic: `/market/candles:${symbols[0]}-${symbols[1]}_${intervalApi}`,
     privateChannel: false,
     response: true,
-  };
+  }
 
-  ws.send(JSON.stringify(msg));
+  ws.send(JSON.stringify(msg))
 
-  const key = `${intervalApi}:${symbols[0]}:${symbols[1]}`;
+  const key = `${intervalApi}:${symbols[0]}:${symbols[1]}`
 
-  ws.deleteSubscription(key);
-};
+  ws.deleteSubscription(key)
+}
 
-export default removeTradingPair;
+export default removeTradingPair

@@ -1,10 +1,10 @@
-import { REAL_TIME } from '../../const';
-import { Intervals } from '../../types';
+import { REAL_TIME } from '../../const'
+import { Intervals } from '../../types'
 
-export const WS_ROOT_URL = 'wss://api.gateio.ws/ws/v4/';
-export const REST_ROOT_URL = `https://api.kucoin.com/api/v1`;
+export const WS_ROOT_URL = 'wss://api.gateio.ws/ws/v4/'
+export const REST_ROOT_URL = `https://api.kucoin.com/api/v1`
 export const makeCustomApiUrl = (rootUrl: string): string =>
-  `${rootUrl}/kucoin/api/v1`;
+  `${rootUrl}/kucoin/api/v1`
 
 // Maps TVCD standard resolutions to exchange API resolutions
 // https://docs.kucoin.com/#get-klines
@@ -24,7 +24,7 @@ export const API_RESOLUTIONS_MAP: Intervals = {
   '1D': '1day',
   '1W': '1week',
   [REAL_TIME]: ['1m', '1min'], // Format: [tvcd_resolution, api_resolution]
-};
+}
 
 // Maps exchange API resolutions to TVCD standard resolutions
 
@@ -40,7 +40,7 @@ export const TVCV_RESOLUTIONS_MAP = {
   '1d': '1D',
   '7d': '7D',
   [REAL_TIME]: ['10', '10'], // Format: [tvcd_resolution, api_resolution]
-};
+}
 
 export const ERROR = {
   INTERVAL_NOT_SUPPORTED: 'Interval is not supported',
@@ -51,4 +51,4 @@ export const ERROR = {
   PAIR_IS_NOT_ARRAY: 'Pair must be an array with base ccy and quote ccy.',
   PAIR_NOT_DEFINED: 'Pair not defined.',
   SERVICE_IS_RUNNING: 'tdcv is already running.',
-};
+}

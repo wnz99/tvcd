@@ -1,5 +1,5 @@
-import { Subject } from 'rxjs';
+import { Subject } from 'rxjs'
 
-global.mocksClear = (mocks) => mocks.forEach((mock) => mock.mockClear());
+global.mocksClear = (mocks) => mocks.forEach((mock) => mock.mockClear())
 
-global.wsTestInstance$ = new Subject();
+global.wsTestInstance$ = new Subject()

@@ -1,7 +1,7 @@
-import moment from 'moment';
+import moment from 'moment'
 
-import { Formatter, Candle } from '../../../types';
-import { BittrexCandle } from '../types';
+import { Candle, Formatter } from '../../../types'
+import { BittrexCandle } from '../types'
 
 const formatter: Formatter<BittrexCandle> = {
   /**
@@ -12,7 +12,7 @@ const formatter: Formatter<BittrexCandle> = {
    */
   tradingview: (data: BittrexCandle): Candle => {
     if (data.time) {
-      const { time, open, close, high, low, volume } = data;
+      const { time, open, close, high, low, volume } = data
 
       return {
         time,
@@ -21,10 +21,10 @@ const formatter: Formatter<BittrexCandle> = {
         high,
         low,
         volume,
-      };
+      }
     }
 
-    const { T, O, C, H, L, V } = data;
+    const { T, O, C, H, L, V } = data
 
     return {
       time: moment(T).startOf('minute').valueOf(),
@@ -33,8 +33,8 @@ const formatter: Formatter<BittrexCandle> = {
       high: Number(H),
       low: Number(L),
       volume: Number(V),
-    };
+    }
   },
-};
+}
 
-export default formatter;
+export default formatter

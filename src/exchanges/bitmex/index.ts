@@ -1,2 +1,2 @@
 // eslint-disable-next-line import/prefer-default-export
-export { default } from './bitmex';
+export { default } from './bitmex'

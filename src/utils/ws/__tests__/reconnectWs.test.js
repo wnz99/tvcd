@@ -1,80 +1,80 @@
-import reconnectWs from '../reconnectWs';
-import connectWs from '../connectWs';
+import connectWs from '../connectWs'
+import reconnectWs from '../reconnectWs'
 
-jest.mock('../connectWs');
-connectWs.mockReturnValue('success');
+jest.mock('../connectWs')
+connectWs.mockReturnValue('success')
 
 const spyCbFn = {
   onReconnectCb: jest.fn(),
-};
-const url = 'test';
+}
+const url = 'test'
 
 beforeEach(() => {
-  connectWs.mockClear();
+  connectWs.mockClear()
 
   Object.keys(spyCbFn).forEach((fn) => {
-    spyCbFn[fn].mockClear();
-  });
-});
+    spyCbFn[fn].mockClear()
+  })
+})
 
 afterEach(() => {
-  jest.clearAllTimers();
-});
+  jest.clearAllTimers()
+})
 
 describe('reconnectWs function', () => {
   it('does not run before retryDelay success', () => {
-    const runTime = 1000;
-    const retryDelay = 2000;
+    const runTime = 1000
+    const retryDelay = 2000
     const connOpts = {
       ...spyCbFn,
       retryDelay,
-    };
+    }
 
-    jest.useFakeTimers();
+    jest.useFakeTimers()
 
-    reconnectWs(url, connOpts);
+    reconnectWs(url, connOpts)
 
-    jest.advanceTimersByTime(runTime);
+    jest.advanceTimersByTime(runTime)
 
-    expect(connectWs).not.toHaveBeenCalled();
+    expect(connectWs).not.toHaveBeenCalled()
 
-    expect(spyCbFn.onReconnectCb).not.toHaveBeenCalled();
-  });
+    expect(spyCbFn.onReconnectCb).not.toHaveBeenCalled()
+  })
   it('does run after retryDelay success', () => {
-    const runTime = 10000;
-    const retryDelay = 2000;
+    const runTime = 10000
+    const retryDelay = 2000
     const connOpts = {
       ...spyCbFn,
       retryDelay,
-    };
-    jest.useFakeTimers();
+    }
+    jest.useFakeTimers()
 
-    reconnectWs(url, connOpts);
+    reconnectWs(url, connOpts)
 
-    jest.advanceTimersByTime(runTime);
+    jest.advanceTimersByTime(runTime)
 
-    expect(connectWs).toHaveBeenCalledTimes(1);
+    expect(connectWs).toHaveBeenCalledTimes(1)
 
-    expect(spyCbFn.onReconnectCb).toHaveBeenCalledTimes(1);
+    expect(spyCbFn.onReconnectCb).toHaveBeenCalledTimes(1)
 
-    expect(spyCbFn.onReconnectCb).toHaveBeenCalledWith('success');
-  });
+    expect(spyCbFn.onReconnectCb).toHaveBeenCalledWith('success')
+  })
   it('does not call cb success', () => {
-    const runTime = 10000;
+    const runTime = 10000
 
-    const retryDelay = 2000;
+    const retryDelay = 2000
 
     const connOpts = {
       retryDelay,
-    };
-    jest.useFakeTimers();
+    }
+    jest.useFakeTimers()
 
-    reconnectWs(url, connOpts);
+    reconnectWs(url, connOpts)
 
-    jest.advanceTimersByTime(runTime);
+    jest.advanceTimersByTime(runTime)
 
-    expect(connectWs).toHaveBeenCalledTimes(1);
+    expect(connectWs).toHaveBeenCalledTimes(1)
 
-    expect(spyCbFn.onReconnectCb).not.toHaveBeenCalled();
-  });
-});
+    expect(spyCbFn.onReconnectCb).not.toHaveBeenCalled()
+  })
+})

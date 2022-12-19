@@ -1,3 +1,3 @@
-const makeCustomApiUrl = (rootUrl: string): string => `${rootUrl}/ftx`;
+const makeCustomApiUrl = (rootUrl: string): string => `${rootUrl}/ftx`
 
-export default makeCustomApiUrl;
+export default makeCustomApiUrl

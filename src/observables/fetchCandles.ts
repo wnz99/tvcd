@@ -1,6 +1,6 @@
-import { timer, defer, Observable } from 'rxjs';
-import { delayWhen, retryWhen, switchMap, map } from 'rxjs/operators';
-import axios, { AxiosRequestConfig } from 'axios';
+import axios, { AxiosRequestConfig } from 'axios'
+import { defer, Observable, timer } from 'rxjs'
+import { delayWhen, map, retryWhen, switchMap } from 'rxjs/operators'
 
 export const fetchCandles$ = <T>(
   restApiUrl: string,
@@ -10,32 +10,32 @@ export const fetchCandles$ = <T>(
     switchMap(async (response) => {
       if (response.status === 200) {
         if (response.data.data) {
-          return response.data.data;
+          return response.data.data
         }
 
         if (response.data.result) {
-          return response.data.result;
+          return response.data.result
         }
 
         if (response.data) {
-          return response.data;
+          return response.data
         }
       }
 
-      throw new Error(`Error ${response.status}`);
+      throw new Error(`Error ${response.status}`)
     }),
     retryWhen((errors) =>
       errors.pipe(
         map((err, i) => {
           if (i > 2) {
-            throw err;
+            throw err
           }
 
-          return err;
+          return err
         }),
         delayWhen(() => timer(5000))
       )
     )
-  );
+  )
 
-export default fetchCandles$;
+export default fetchCandles$

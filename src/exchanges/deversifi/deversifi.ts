@@ -1,81 +1,76 @@
-import _omit from 'lodash/omit';
-import { Subject, Observable, of } from 'rxjs';
-import { map, multicast, takeUntil, catchError } from 'rxjs/operators';
+import { Observable, of, Subject } from 'rxjs'
+import { catchError, map, multicast, takeUntil } from 'rxjs/operators'
 
+import { filterNullish } from '../../observables'
 import {
-  debugError,
-  fetchCandles,
-  mapToStandardInterval,
-  updateCandles,
-  makeOptions,
-  makeCandlesRestApiUrl,
-  addChannelToCandlesData,
-} from '../../utils';
-import {
-  formatter,
-  makeDataStream,
-  processStreamEvent,
-  processSubMsg,
-  getExchangeConf,
-  makeWsMsg,
-  makePair,
-} from './utils';
-import { WsEvent } from '../../utils/ws/types';
-import {
-  IExchange,
+  Candle,
+  CandlesData,
   ClientError,
   ClientOptions,
+  IExchange,
+  Options,
   PairConf,
   TokensSymbols,
-  Candle,
-  Options,
-  CandlesData,
-} from '../../types';
-
-import { UpdateData, DeversifiCandle } from './types';
-import BaseExchange from '../base/baseExchange';
-import { filterNullish } from '../../observables';
+} from '../../types'
+import {
+  addChannelToCandlesData,
+  debugError,
+  fetchCandles,
+  makeCandlesRestApiUrl,
+  makeOptions,
+  mapToStandardInterval,
+  updateCandles,
+} from '../../utils'
+import { WsEvent } from '../../utils/ws/types'
+import BaseExchange from '../base/baseExchange'
+import { DeversifiCandle, UpdateData } from './types'
+import {
+  formatter,
+  getExchangeConf,
+  makeDataStream,
+  makePair,
+  makeWsMsg,
+  processStreamEvent,
+  processSubMsg,
+} from './utils'
 
 class Deverifi extends BaseExchange implements IExchange<DeversifiCandle> {
   constructor() {
-    super({ ...getExchangeConf(), wsConf: { makeWsMsg } });
+    super({ ...getExchangeConf(), wsConf: { makeWsMsg } })
 
-    this._options = { format: formatter.tradingview };
+    this._options = { format: formatter.tradingview }
   }
 
-  _options!: ClientOptions<DeversifiCandle>;
+  _options!: ClientOptions<DeversifiCandle>
 
-  _dataSource$: Observable<WsEvent> | undefined = undefined;
+  _dataSource$: Observable<WsEvent> | undefined = undefined
 
   start = (opts: Options = { format: 'tradingview' }): undefined | string => {
     if (this._status.isRunning) {
-      return debugError(ClientError.SERVICE_IS_RUNNING, this._status.isDebug);
+      return debugError(ClientError.SERVICE_IS_RUNNING, this._status.isDebug)
     }
 
-    this._options = makeOptions<DeversifiCandle>(opts, formatter);
+    this._options = makeOptions<DeversifiCandle>(opts, formatter)
 
     if (Object.keys(this._tradingPairs).length === 0) {
-      return debugError(
-        ClientError.NO_INIT_PAIRS_DEFINED,
-        this._status.isDebug
-      );
+      return debugError(ClientError.NO_INIT_PAIRS_DEFINED, this._status.isDebug)
     }
 
     this._dataSource$ = makeDataStream(this._exchangeConf.wsRootUrl, {
       wsInstance$: this._wsInstance$,
       isDebug: this._status.isDebug,
-    });
+    })
 
     this._wsInstance$.subscribe((instance) => {
-      this._ws = instance;
-    });
+      this._ws = instance
+    })
 
     this._dataSource$
       .pipe(
         map((streamEvent) => {
-          this._tradingPairs = processSubMsg(streamEvent, this._tradingPairs);
+          this._tradingPairs = processSubMsg(streamEvent, this._tradingPairs)
 
-          return processStreamEvent(streamEvent, this._tradingPairs);
+          return processStreamEvent(streamEvent, this._tradingPairs)
         }),
         filterNullish(),
         map((streamData) =>
@@ -89,8 +84,8 @@ class Deverifi extends BaseExchange implements IExchange<DeversifiCandle> {
           this._candlesData = addChannelToCandlesData<UpdateData[1]>(
             this._candlesData,
             streamData
-          );
-          return streamData;
+          )
+          return streamData
         }),
         map((streamData) => {
           if (streamData[1].length) {
@@ -99,42 +94,42 @@ class Deverifi extends BaseExchange implements IExchange<DeversifiCandle> {
               this._candlesData,
               this._options.format,
               this._status.isDebug
-            );
+            )
           }
 
-          this._dataStream$.next(this._candlesData);
+          this._dataStream$.next(this._candlesData)
 
-          return this._candlesData;
+          return this._candlesData
         }),
         takeUntil(this._closeStream$),
         catchError((error) => {
           if (this._status.isDebug) {
-            debugError(error.message);
+            debugError(error.message)
           }
 
-          return of(error);
+          return of(error)
         }),
         multicast(() => new Subject<CandlesData>())
       )
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      .connect();
+      .connect()
 
-    this._status.isRunning = true;
+    this._status.isRunning = true
 
-    return undefined;
-  };
+    return undefined
+  }
 
   stop = (): void => {
     if (this._ws) {
-      this._closeStream$.next(true);
-      this._closeStream$.complete();
+      this._closeStream$.next(true)
+      this._closeStream$.complete()
     }
 
-    this._dataSource$ = undefined;
-    this._resetInstance();
-    this._status.isRunning = false;
-  };
+    this._dataSource$ = undefined
+    this._resetInstance()
+    this._status.isRunning = false
+  }
 
   fetchCandles = async (
     pair: TokensSymbols,
@@ -157,7 +152,7 @@ class Deverifi extends BaseExchange implements IExchange<DeversifiCandle> {
           start: startTime,
           end: endTime,
         }
-      );
+      )
 
     return fetchCandles<DeversifiCandle>(pair, interval, start, end, {
       formatFn: this._options.format,
@@ -168,38 +163,38 @@ class Deverifi extends BaseExchange implements IExchange<DeversifiCandle> {
       },
       apiLimit: 10000,
       makeCandlesUrlFn,
-    });
-  };
+    })
+  }
 
   addTradingPair = (
     pair: TokensSymbols,
     pairConf: PairConf
   ): string | undefined => {
     try {
-      this._addTradingPair(pair, pairConf);
+      this._addTradingPair(pair, pairConf)
     } catch (err) {
       if (err instanceof Error) {
-        return err.message;
+        return err.message
       }
     }
 
-    return undefined;
-  };
+    return undefined
+  }
 
   removeTradingPair = (
     pair: TokensSymbols,
     interval: string
   ): string | undefined => {
     try {
-      this._removeTradingPair(pair, interval);
+      this._removeTradingPair(pair, interval)
     } catch (err) {
       if (err instanceof Error) {
-        return err.message;
+        return err.message
       }
     }
 
-    return undefined;
-  };
+    return undefined
+  }
 }
 
-export default Deverifi;
+export default Deverifi

@@ -1,11 +1,11 @@
-import { REAL_TIME } from '../../const';
-import { Intervals } from '../../types';
+import { REAL_TIME } from '../../const'
+import { Intervals } from '../../types'
 
-export const WS_ROOT_URL = 'wss://api-pub.bitfinex.com/ws/2';
-export const REST_ROOT_URL = `https://api-pub.bitfinex.com/v2`;
+export const WS_ROOT_URL = 'wss://api-pub.bitfinex.com/ws/2'
+export const REST_ROOT_URL = `https://api-pub.bitfinex.com/v2`
 // Maps TVCD standard resolutions to exchange API resolutions
 
-const LIVE = '1m';
+const LIVE = '1m'
 
 export const API_RESOLUTIONS_MAP: Intervals = {
   '1m': LIVE,
@@ -22,7 +22,7 @@ export const API_RESOLUTIONS_MAP: Intervals = {
   '14D': '14D',
   '1M': '1M',
   [REAL_TIME]: ['1m', LIVE], // Format: [tvcd_resolution, api_resolution]
-};
+}
 
 // Maps exchange API resolutions to TVCD standard resolutions
 
@@ -35,4 +35,4 @@ export const ERROR = {
   PAIR_IS_NOT_ARRAY: 'Pair must be an array with base ccy and quote ccy.',
   PAIR_NOT_DEFINED: 'Pair not defined.',
   SERVICE_IS_RUNNING: 'tdcv is already running.',
-};
+}

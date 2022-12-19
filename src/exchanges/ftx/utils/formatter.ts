@@ -1,5 +1,5 @@
-import { Formatter, Candle } from '../../../types';
-import { FtxCandle } from '../types';
+import { Candle, Formatter } from '../../../types'
+import { FtxCandle } from '../types'
 
 const formatter: Formatter<FtxCandle> = {
   /**
@@ -12,7 +12,7 @@ const formatter: Formatter<FtxCandle> = {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
 
-    const { close, high, low, open, startTime, volume } = data;
+    const { close, high, low, open, startTime, volume } = data
 
     return {
       time: new Date(startTime).valueOf(),
@@ -21,8 +21,8 @@ const formatter: Formatter<FtxCandle> = {
       high: Number(high),
       low: Number(low),
       volume: Number(volume),
-    };
+    }
   },
-};
+}
 
-export default formatter;
+export default formatter

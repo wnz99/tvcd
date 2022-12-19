@@ -1,72 +1,67 @@
-import _omit from 'lodash/omit';
-import { Subject, Observable, of } from 'rxjs';
-import { map, multicast, takeUntil, catchError } from 'rxjs/operators';
+import { Observable, of, Subject } from 'rxjs'
+import { catchError, map, multicast, takeUntil } from 'rxjs/operators'
 
+import { filterNullish } from '../../observables'
 import {
-  debugError,
-  fetchCandles,
-  mapToStandardInterval,
-  updateCandles,
-  makeOptions,
-  makeCandlesRestApiUrl,
-  addChannelToCandlesData,
-} from '../../utils';
-import {
-  formatter,
-  makeDataStream,
-  processStreamEvent,
-  getExchangeConf,
-  makeWsMsg,
-} from './utils';
-import { WsEvent } from '../../utils/ws/types';
-import {
-  IExchange,
+  Candle,
+  CandlesData,
   ClientError,
   ClientOptions,
+  IExchange,
+  Options,
   PairConf,
   TokensSymbols,
-  Candle,
-  Options,
-  CandlesData,
-} from '../../types';
-
-import { UpdateData, BinanceCandle } from './types';
-import BaseExchange from '../base/baseExchange';
-import { filterNullish } from '../../observables';
+} from '../../types'
+import {
+  addChannelToCandlesData,
+  debugError,
+  fetchCandles,
+  makeCandlesRestApiUrl,
+  makeOptions,
+  mapToStandardInterval,
+  updateCandles,
+} from '../../utils'
+import { WsEvent } from '../../utils/ws/types'
+import BaseExchange from '../base/baseExchange'
+import { BinanceCandle, UpdateData } from './types'
+import {
+  formatter,
+  getExchangeConf,
+  makeDataStream,
+  makeWsMsg,
+  processStreamEvent,
+} from './utils'
 
 class Binance extends BaseExchange implements IExchange<BinanceCandle> {
   constructor(conf: { dataSet: 'spot' | 'usdFutures' | 'coinFutures' }) {
-    super({ ...getExchangeConf(conf.dataSet), wsConf: { makeWsMsg } });
+    super({ ...getExchangeConf(conf.dataSet), wsConf: { makeWsMsg } })
 
-    this._options = { format: formatter.tradingview };
+    this._options = { format: formatter.tradingview }
   }
 
-  _options!: ClientOptions<BinanceCandle>;
+  _options!: ClientOptions<BinanceCandle>
 
-  _dataSource$: Observable<WsEvent> | undefined = undefined;
+  _dataSource$: Observable<WsEvent> | undefined = undefined
 
   start = (opts: Options = { format: 'tradingview' }): undefined | string => {
     if (this._status.isRunning) {
-      return debugError(ClientError.SERVICE_IS_RUNNING, this._status.isDebug);
+      return debugError(ClientError.SERVICE_IS_RUNNING, this._status.isDebug)
     }
 
-    this._options = makeOptions<BinanceCandle>(opts, formatter);
+    this._options = makeOptions<BinanceCandle>(opts, formatter)
 
     if (Object.keys(this._tradingPairs).length === 0) {
-      return debugError(
-        ClientError.NO_INIT_PAIRS_DEFINED,
-        this._status.isDebug
-      );
+      return debugError(ClientError.NO_INIT_PAIRS_DEFINED, this._status.isDebug)
     }
 
     this._dataSource$ = makeDataStream(this._exchangeConf.wsRootUrl, {
       wsInstance$: this._wsInstance$,
       isDebug: this._status.isDebug,
-    });
+    })
 
     this._wsInstance$.subscribe((instance) => {
-      this._ws = instance;
-    });
+      this._ws = instance
+    })
 
     this._dataSource$
       .pipe(
@@ -85,8 +80,8 @@ class Binance extends BaseExchange implements IExchange<BinanceCandle> {
           this._candlesData = addChannelToCandlesData<UpdateData['data']['k']>(
             this._candlesData,
             streamData
-          );
-          return streamData;
+          )
+          return streamData
         }),
         map((streamData) => {
           this._candlesData = updateCandles<
@@ -97,10 +92,10 @@ class Binance extends BaseExchange implements IExchange<BinanceCandle> {
             this._candlesData,
             this._options.format,
             this._status.isDebug
-          );
-          this._dataStream$.next(this._candlesData);
+          )
+          this._dataStream$.next(this._candlesData)
 
-          return this._candlesData;
+          return this._candlesData
         }),
         takeUntil(this._closeStream$),
         catchError((error) => of(error)),
@@ -108,23 +103,23 @@ class Binance extends BaseExchange implements IExchange<BinanceCandle> {
       )
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      .connect();
+      .connect()
 
-    this._status.isRunning = true;
+    this._status.isRunning = true
 
-    return undefined;
-  };
+    return undefined
+  }
 
   stop = (): void => {
     if (this._ws) {
-      this._closeStream$.next(true);
-      this._closeStream$.complete();
+      this._closeStream$.next(true)
+      this._closeStream$.complete()
     }
 
-    this._dataSource$ = undefined;
-    this._resetInstance();
-    this._status.isRunning = false;
-  };
+    this._dataSource$ = undefined
+    this._resetInstance()
+    this._status.isRunning = false
+  }
 
   fetchCandles = async (
     pair: TokensSymbols,
@@ -147,7 +142,7 @@ class Binance extends BaseExchange implements IExchange<BinanceCandle> {
           startTime,
           endTime,
         }
-      );
+      )
 
     return fetchCandles<BinanceCandle>(pair, interval, start, end, {
       formatFn: this._options.format,
@@ -158,40 +153,40 @@ class Binance extends BaseExchange implements IExchange<BinanceCandle> {
       },
       apiLimit: 1000,
       makeCandlesUrlFn,
-    });
-  };
+    })
+  }
 
   addTradingPair = (
     pair: TokensSymbols,
     pairConf: PairConf
   ): string | undefined => {
     try {
-      this._addTradingPair(pair, pairConf);
+      this._addTradingPair(pair, pairConf)
     } catch (err) {
       if (err instanceof Error) {
         if (err instanceof Error) {
-          return err.message;
+          return err.message
         }
       }
     }
 
-    return undefined;
-  };
+    return undefined
+  }
 
   removeTradingPair = (
     pair: TokensSymbols,
     interval: string
   ): string | undefined => {
     try {
-      this._removeTradingPair(pair, interval);
+      this._removeTradingPair(pair, interval)
     } catch (err) {
       if (err instanceof Error) {
-        return err.message;
+        return err.message
       }
     }
 
-    return undefined;
-  };
+    return undefined
+  }
 }
 
-export default Binance;
+export default Binance

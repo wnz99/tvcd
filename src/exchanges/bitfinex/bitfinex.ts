@@ -1,81 +1,76 @@
-import _omit from 'lodash/omit';
-import { Subject, Observable, of } from 'rxjs';
-import { map, multicast, takeUntil, catchError } from 'rxjs/operators';
+import { Observable, of, Subject } from 'rxjs'
+import { catchError, map, multicast, takeUntil } from 'rxjs/operators'
 
+import { filterNullish } from '../../observables'
 import {
-  debugError,
-  fetchCandles,
-  mapToStandardInterval,
-  updateCandles,
-  makeOptions,
-  makeCandlesRestApiUrl,
-  addChannelToCandlesData,
-} from '../../utils';
-import {
-  formatter,
-  makeDataStream,
-  processStreamEvent,
-  processSubMsg,
-  getExchangeConf,
-  makeWsMsg,
-  makePair,
-} from './utils';
-import { WsEvent } from '../../utils/ws/types';
-import {
-  IExchange,
+  Candle,
+  CandlesData,
   ClientError,
   ClientOptions,
+  IExchange,
+  Options,
   PairConf,
   TokensSymbols,
-  Candle,
-  Options,
-  CandlesData,
-} from '../../types';
-
-import { UpdateData, BitfinexCandle } from './types';
-import BaseExchange from '../base/baseExchange';
-import { filterNullish } from '../../observables';
+} from '../../types'
+import {
+  addChannelToCandlesData,
+  debugError,
+  fetchCandles,
+  makeCandlesRestApiUrl,
+  makeOptions,
+  mapToStandardInterval,
+  updateCandles,
+} from '../../utils'
+import { WsEvent } from '../../utils/ws/types'
+import BaseExchange from '../base/baseExchange'
+import { BitfinexCandle, UpdateData } from './types'
+import {
+  formatter,
+  getExchangeConf,
+  makeDataStream,
+  makePair,
+  makeWsMsg,
+  processStreamEvent,
+  processSubMsg,
+} from './utils'
 
 class Bitfinex extends BaseExchange implements IExchange<BitfinexCandle> {
   constructor() {
-    super({ ...getExchangeConf(), wsConf: { makeWsMsg } });
+    super({ ...getExchangeConf(), wsConf: { makeWsMsg } })
 
-    this._options = { format: formatter.tradingview };
+    this._options = { format: formatter.tradingview }
   }
 
-  _options!: ClientOptions<BitfinexCandle>;
+  _options!: ClientOptions<BitfinexCandle>
 
-  _dataSource$: Observable<WsEvent> = new Observable();
+  _dataSource$: Observable<WsEvent> = new Observable()
 
   start = (opts: Options = { format: 'tradingview' }): undefined | string => {
     if (this._status.isRunning) {
-      return debugError(ClientError.SERVICE_IS_RUNNING, this._status.isDebug);
+      return debugError(ClientError.SERVICE_IS_RUNNING, this._status.isDebug)
     }
 
-    this._options = makeOptions<BitfinexCandle>(opts, formatter);
+    this._options = makeOptions<BitfinexCandle>(opts, formatter)
 
     if (Object.keys(this._tradingPairs).length === 0) {
-      return debugError(
-        ClientError.NO_INIT_PAIRS_DEFINED,
-        this._status.isDebug
-      );
+      return debugError(ClientError.NO_INIT_PAIRS_DEFINED, this._status.isDebug)
     }
 
     this._dataSource$ = makeDataStream(this._exchangeConf.wsRootUrl, {
       wsInstance$: this._wsInstance$,
       isDebug: this._status.isDebug,
-    });
+    })
 
     this._wsInstance$.subscribe((instance) => {
-      this._ws = instance;
-    });
+      this._ws = instance
+    })
 
     this._dataSource$
       .pipe(
         map((streamEvent) => {
-          this._tradingPairs = processSubMsg(streamEvent, this._tradingPairs);
+          this._tradingPairs = processSubMsg(streamEvent, this._tradingPairs)
 
-          return processStreamEvent(streamEvent, this._tradingPairs);
+          return processStreamEvent(streamEvent, this._tradingPairs)
         }),
         filterNullish(),
         map((streamData) =>
@@ -89,8 +84,8 @@ class Bitfinex extends BaseExchange implements IExchange<BitfinexCandle> {
           this._candlesData = addChannelToCandlesData<UpdateData[1]>(
             this._candlesData,
             streamData
-          );
-          return streamData;
+          )
+          return streamData
         }),
         map((streamData) => {
           this._candlesData = updateCandles<UpdateData[1], BitfinexCandle>(
@@ -98,38 +93,38 @@ class Bitfinex extends BaseExchange implements IExchange<BitfinexCandle> {
             this._candlesData,
             this._options.format,
             this._status.isDebug
-          );
+          )
 
-          this._dataStream$.next(this._candlesData);
+          this._dataStream$.next(this._candlesData)
 
-          return this._candlesData;
+          return this._candlesData
         }),
         takeUntil(this._closeStream$),
         catchError((error) => {
-          console.warn(error);
-          return of(error);
+          console.warn(error)
+          return of(error)
         }),
         multicast(() => new Subject<CandlesData>())
       )
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      .connect();
+      .connect()
 
-    this._status.isRunning = true;
+    this._status.isRunning = true
 
-    return undefined;
-  };
+    return undefined
+  }
 
   stop = (): void => {
     if (this._ws) {
-      this._closeStream$.next(true);
-      this._closeStream$.complete();
+      this._closeStream$.next(true)
+      this._closeStream$.complete()
     }
 
-    this._dataSource$ = new Observable();
-    this._resetInstance();
-    this._status.isRunning = false;
-  };
+    this._dataSource$ = new Observable()
+    this._resetInstance()
+    this._status.isRunning = false
+  }
 
   fetchCandles = async (
     pair: TokensSymbols,
@@ -152,7 +147,7 @@ class Bitfinex extends BaseExchange implements IExchange<BitfinexCandle> {
           start: startTime,
           end: endTime,
         }
-      );
+      )
 
     return fetchCandles<BitfinexCandle>(pair, interval, start, end, {
       formatFn: this._options.format,
@@ -163,38 +158,38 @@ class Bitfinex extends BaseExchange implements IExchange<BitfinexCandle> {
       },
       apiLimit: 5000,
       makeCandlesUrlFn,
-    });
-  };
+    })
+  }
 
   addTradingPair = (
     pair: TokensSymbols,
     pairConf: PairConf
   ): string | undefined => {
     try {
-      this._addTradingPair(pair, pairConf);
+      this._addTradingPair(pair, pairConf)
     } catch (err) {
       if (err instanceof Error) {
-        return err.message;
+        return err.message
       }
     }
 
-    return undefined;
-  };
+    return undefined
+  }
 
   removeTradingPair = (
     pair: TokensSymbols,
     interval: string
   ): string | undefined => {
     try {
-      this._removeTradingPair(pair, interval);
+      this._removeTradingPair(pair, interval)
     } catch (err) {
       if (err instanceof Error) {
-        return err.message;
+        return err.message
       }
     }
 
-    return undefined;
-  };
+    return undefined
+  }
 }
 
-export default Bitfinex;
+export default Bitfinex

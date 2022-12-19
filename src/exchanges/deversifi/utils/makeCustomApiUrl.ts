@@ -1,3 +1,3 @@
-const makeCustomApiUrl = (rootUrl: string): string => `${rootUrl}/deversifi`;
+const makeCustomApiUrl = (rootUrl: string): string => `${rootUrl}/deversifi`
 
-export default makeCustomApiUrl;
+export default makeCustomApiUrl

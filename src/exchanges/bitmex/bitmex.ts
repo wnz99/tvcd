@@ -1,81 +1,77 @@
-import _omit from 'lodash/omit';
-import { Subject, Observable, of } from 'rxjs';
-import { map, multicast, takeUntil, catchError, filter } from 'rxjs/operators';
-import moment from 'moment';
+import moment from 'moment'
+import { Observable, of, Subject } from 'rxjs'
+import { catchError, filter, map, multicast, takeUntil } from 'rxjs/operators'
 
+import { filterNullish } from '../../observables'
 import {
-  debugError,
-  fetchCandles,
-  mapToStandardInterval,
-  updateCandles,
-  makeOptions,
-  makeCandlesRestApiUrl,
-  addChannelToCandlesData,
-} from '../../utils';
-import {
-  formatter,
-  makeDataStream,
-  processStreamEvent,
-  getExchangeConf,
-  makeWsMsg,
-  makePair,
-} from './utils';
-import { WsEvent } from '../../utils/ws/types';
-import {
-  IExchange,
+  Candle,
+  CandlesData,
   ClientError,
   ClientOptions,
-  PairConf,
-  TokensSymbols,
-  Candle,
+  IExchange,
   Options,
-  CandlesData,
+  PairConf,
   Status,
-} from '../../types';
-import { BitmexCandle, WsApiCandle } from './types';
-import BaseExchange from '../base/baseExchange';
-import { filterNullish } from '../../observables';
+  TokensSymbols,
+} from '../../types'
+import {
+  addChannelToCandlesData,
+  debugError,
+  fetchCandles,
+  makeCandlesRestApiUrl,
+  makeOptions,
+  mapToStandardInterval,
+  updateCandles,
+} from '../../utils'
+import { WsEvent } from '../../utils/ws/types'
+import BaseExchange from '../base/baseExchange'
+import { BitmexCandle, WsApiCandle } from './types'
+import {
+  formatter,
+  getExchangeConf,
+  makeDataStream,
+  makePair,
+  makeWsMsg,
+  processStreamEvent,
+} from './utils'
 
 class Bitmex extends BaseExchange implements IExchange<BitmexCandle> {
   constructor() {
-    super({ ...getExchangeConf(), wsConf: { makeWsMsg } });
+    super({ ...getExchangeConf(), wsConf: { makeWsMsg } })
 
-    this._options = { format: formatter.tradingview };
+    this._options = { format: formatter.tradingview }
   }
 
-  _options!: ClientOptions<BitmexCandle>;
+  _options!: ClientOptions<BitmexCandle>
 
-  _dataSource$: Observable<WsEvent> | undefined = undefined;
+  _dataSource$: Observable<WsEvent> | undefined = undefined
 
   start = (opts: Options = { format: 'tradingview' }): undefined | string => {
     if (this._status.isRunning) {
-      return debugError(ClientError.SERVICE_IS_RUNNING, this._status.isDebug);
+      return debugError(ClientError.SERVICE_IS_RUNNING, this._status.isDebug)
     }
 
-    this._options = makeOptions<BitmexCandle>(opts, formatter);
+    this._options = makeOptions<BitmexCandle>(opts, formatter)
 
     if (Object.keys(this._tradingPairs).length === 0) {
-      return debugError(
-        ClientError.NO_INIT_PAIRS_DEFINED,
-        this._status.isDebug
-      );
+      return debugError(ClientError.NO_INIT_PAIRS_DEFINED, this._status.isDebug)
     }
 
     this._dataSource$ = makeDataStream(this._exchangeConf.wsRootUrl, {
       wsInstance$: this._wsInstance$,
       isDebug: this._status.isDebug,
-    });
+    })
 
     this._wsInstance$.subscribe((instance) => {
-      this._ws = instance;
-    });
+      this._ws = instance
+    })
 
     this._dataSource$
       .pipe(
         filter((streamEvent) => {
-          const data = JSON.parse(streamEvent.data);
+          const data = JSON.parse(streamEvent.data)
 
-          return data.action === 'insert';
+          return data.action === 'insert'
         }),
         map((streamEvent) =>
           processStreamEvent(streamEvent, this._tradingPairs)
@@ -89,8 +85,8 @@ class Bitmex extends BaseExchange implements IExchange<BitmexCandle> {
           this._candlesData = addChannelToCandlesData<WsApiCandle>(
             this._candlesData,
             streamData
-          );
-          return streamData;
+          )
+          return streamData
         }),
         map((streamData) => {
           this._candlesData = updateCandles<WsApiCandle, BitmexCandle>(
@@ -98,35 +94,35 @@ class Bitmex extends BaseExchange implements IExchange<BitmexCandle> {
             this._candlesData,
             this._options.format,
             this._status.isDebug
-          );
+          )
 
-          this._dataStream$.next(this._candlesData);
+          this._dataStream$.next(this._candlesData)
 
-          return this._candlesData;
+          return this._candlesData
         }),
         takeUntil(this._closeStream$),
         catchError((error) => {
-          console.warn(error);
-          return of(error);
+          console.warn(error)
+          return of(error)
         }),
         multicast(() => new Subject<CandlesData>())
       )
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      .connect();
+      .connect()
 
-    this._status.isRunning = true;
+    this._status.isRunning = true
 
-    return undefined;
-  };
+    return undefined
+  }
 
   stop = (): void => {
-    this._stop();
+    this._stop()
 
-    this._dataSource$ = undefined;
-    this._resetInstance();
-    this._status.isRunning = false;
-  };
+    this._dataSource$ = undefined
+    this._resetInstance()
+    this._status.isRunning = false
+  }
 
   fetchCandles = async (
     pair: TokensSymbols,
@@ -136,11 +132,11 @@ class Bitmex extends BaseExchange implements IExchange<BitmexCandle> {
   ): Promise<Candle[]> => {
     const limitDateToApiMinimun = (date: number) => {
       if (moment(date).isBefore('2010-01-01')) {
-        return moment('2010-01-01').valueOf();
+        return moment('2010-01-01').valueOf()
       }
 
-      return date;
-    };
+      return date
+    }
 
     const makeCandlesUrlFn = (
       symbols: TokensSymbols,
@@ -165,17 +161,17 @@ class Bitmex extends BaseExchange implements IExchange<BitmexCandle> {
             startTime: moment(startTime).toISOString(),
             endTime: moment(endTime).toISOString(),
             count: this._exchangeConf.apiLimit,
-          };
+          }
       const restRootUrl = this._exchangeConf.isUdf
         ? `${this._exchangeConf.restRootUrl}/history`
-        : `${this._exchangeConf.restRootUrl}/trade/bucketed`;
+        : `${this._exchangeConf.restRootUrl}/trade/bucketed`
 
       return makeCandlesRestApiUrl(
         this._exchangeConf.exchangeName,
         restRootUrl,
         params
-      );
-    };
+      )
+    }
 
     return fetchCandles<BitmexCandle>(
       pair,
@@ -193,42 +189,42 @@ class Bitmex extends BaseExchange implements IExchange<BitmexCandle> {
         apiLimit: this._exchangeConf.apiLimit,
         makeCandlesUrlFn,
       }
-    );
-  };
+    )
+  }
 
   addTradingPair = (
     pair: TokensSymbols,
     pairConf: PairConf
   ): string | undefined => {
     try {
-      this._addTradingPair(pair, pairConf);
+      this._addTradingPair(pair, pairConf)
     } catch (err) {
       if (err instanceof Error) {
-        return err.message;
+        return err.message
       }
     }
 
-    return undefined;
-  };
+    return undefined
+  }
 
   removeTradingPair = (
     pair: TokensSymbols,
     interval: string
   ): string | undefined => {
     try {
-      this._removeTradingPair(pair, interval);
+      this._removeTradingPair(pair, interval)
     } catch (err) {
       if (err instanceof Error) {
-        return err.message;
+        return err.message
       }
     }
 
-    return undefined;
-  };
+    return undefined
+  }
 
   setStatus = (update: Partial<Status>): void => {
-    this._status = { ...this._status, ...update };
-  };
+    this._status = { ...this._status, ...update }
+  }
 }
 
-export default Bitmex;
+export default Bitmex

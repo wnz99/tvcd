@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import * as exchanges from './exchanges';
-import { Exchanges } from './types';
+import * as exchanges from './exchanges'
+import { Exchanges } from './types'
 
 let instance:
   | exchanges.IBinance
@@ -11,26 +11,26 @@ let instance:
   | exchanges.IGateIo
   | exchanges.IKucoin
   | exchanges.IPoloniex
-  | exchanges.IValr;
+  | exchanges.IValr
 
-let selectedExchange: Exchanges;
+let selectedExchange: Exchanges
 
 const tvcd = (exchange: Exchanges) =>
   (() => {
     // @ts-ignore
     if (!exchanges[exchange]) {
-      throw new Error(`${exchange} not supported`);
+      throw new Error(`${exchange} not supported`)
     }
 
     if (!instance || selectedExchange !== exchange) {
       // @ts-ignore
-      instance = exchanges[exchange];
+      instance = exchanges[exchange]
 
-      selectedExchange = exchange;
+      selectedExchange = exchange
 
-      return instance;
+      return instance
     }
-    return instance;
-  })();
+    return instance
+  })()
 
-export default tvcd;
+export default tvcd

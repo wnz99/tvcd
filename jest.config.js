@@ -13,4 +13,4 @@ module.exports = {
     '^.+\\.(js|jsx)$': 'babel-jest',
   },
   setupFiles: ['<rootDir>/setupTests.js'],
-};
+}

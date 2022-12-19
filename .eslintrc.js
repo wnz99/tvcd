@@ -1,36 +1,34 @@
 module.exports = {
   root: true,
   parser: '@typescript-eslint/parser',
-  plugins: ['@typescript-eslint', 'jest'],
+  parserOptions: {
+    project: 'tsconfig.json',
+  },
+  plugins: ['prettier', '@typescript-eslint', 'simple-import-sort', 'import'],
   extends: [
-    'airbnb-typescript/base',
+    'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended',
+    'plugin:jest/recommended',
     'prettier',
   ],
   rules: {
-    'implicit-arrow-linebreak': 'off',
-    'no-unused-vars': 'off',
-    '@typescript-eslint/no-unused-vars': 'off',
-    '@typescript-eslint/no-unused-vars-experimental': 'error',
-    'operator-linebreak': [
-      2,
-      'before',
-      { overrides: { '?': 'before', '=': 'after' } },
-    ],
-    'no-underscore-dangle': ['error', { allowAfterThis: true }],
+    'no-console': 'warn',
+    'prettier/prettier': 'error',
+    'simple-import-sort/imports': 'error',
+    'simple-import-sort/exports': 'error',
+    'import/first': 'error',
+    'import/newline-after-import': 'error',
+    'import/no-duplicates': 'error',
+    '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
   },
-  parserOptions: {
-    parser: '@typescript-eslint/parser',
-    project: './tsconfig.json',
-  },
-  settings: {
-    'import/core-modules': ['rxjs/operators'],
-    'import/resolver': {
-      node: {
-        extensions: ['.js', '.jsx', '.ts', '.tsx'],
+  overrides: [
+    {
+      files: ['*.js'],
+      rules: {
+        '@typescript-eslint/no-var-requires': 0,
       },
     },
-  },
+  ],
   env: {
     browser: true,
     jest: true,
@@ -39,4 +37,4 @@ module.exports = {
     cy: true,
     before: true,
   },
-};
+}

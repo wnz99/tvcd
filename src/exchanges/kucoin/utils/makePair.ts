@@ -6,6 +6,6 @@
  */
 
 const makePair = (symbols: [string, string]): string =>
-  `${symbols[0]}-${symbols[1]}`;
+  `${symbols[0]}-${symbols[1]}`
 
-export default makePair;
+export default makePair

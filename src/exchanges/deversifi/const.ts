@@ -1,8 +1,8 @@
-import { REAL_TIME } from '../../const';
-import { Intervals } from '../../types';
+import { REAL_TIME } from '../../const'
+import { Intervals } from '../../types'
 
-export const WS_ROOT_URL = 'wss://api.stg.deversifi.com/market-data/ws';
-export const REST_ROOT_URL = `https://api.stg.deversifi.com`;
+export const WS_ROOT_URL = 'wss://api.stg.deversifi.com/market-data/ws'
+export const REST_ROOT_URL = `https://api.stg.deversifi.com`
 // Maps TVCD standard resolutions to exchange API resolutions
 
 export const API_RESOLUTIONS_MAP: Intervals = {
@@ -20,7 +20,7 @@ export const API_RESOLUTIONS_MAP: Intervals = {
   '14D': '14D',
   '1M': '1M',
   [REAL_TIME]: ['1m', '1m'], // Format: [tvcd_resolution, api_resolution]
-};
+}
 
 // Maps exchange API resolutions to TVCD standard resolutions
 
@@ -33,4 +33,4 @@ export const ERROR = {
   PAIR_IS_NOT_ARRAY: 'Pair must be an array with base ccy and quote ccy.',
   PAIR_NOT_DEFINED: 'Pair not defined.',
   SERVICE_IS_RUNNING: 'tdcv is already running.',
-};
+}

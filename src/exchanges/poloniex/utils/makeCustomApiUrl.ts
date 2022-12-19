@@ -1,3 +1,3 @@
-const makeCustomApiUrl = (): string => `https://poloniex.com/public`;
+const makeCustomApiUrl = (): string => `https://poloniex.com/public`
 
-export default makeCustomApiUrl;
+export default makeCustomApiUrl

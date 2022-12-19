@@ -1,15 +1,15 @@
 /* eslint-disable no-console */
-import { ClientError } from '../types/exchanges';
+import { ClientError } from '../types/exchanges'
 
 const debugError = (
   message: ClientError | string,
   isDebug?: boolean
 ): string => {
   if (isDebug) {
-    console.log(`tvcd => ${message}`);
+    console.log(`tvcd => ${message}`)
   }
 
-  return message;
-};
+  return message
+}
 
-export default debugError;
+export default debugError

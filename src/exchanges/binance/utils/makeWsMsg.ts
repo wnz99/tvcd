@@ -1,12 +1,12 @@
-import { Pair } from '../../../types';
+import { Pair } from '../../../types'
 
 const makeWsMsg = (
   messageType: string,
   pair: Pair
 ): { [key: string]: unknown } | string | undefined => {
-  const { intervalApi, symbols } = pair;
+  const { intervalApi, symbols } = pair
 
-  const channel = `${symbols.join('').toLowerCase()}@kline_${intervalApi}`;
+  const channel = `${symbols.join('').toLowerCase()}@kline_${intervalApi}`
 
   switch (messageType) {
     case 'subscribe': {
@@ -14,7 +14,7 @@ const makeWsMsg = (
         method: 'SUBSCRIBE',
         params: [channel],
         id: new Date().valueOf(),
-      };
+      }
     }
 
     case 'unsubscribe': {
@@ -22,12 +22,12 @@ const makeWsMsg = (
         method: 'UNSUBSCRIBE',
         params: [channel],
         id: new Date().valueOf(),
-      };
+      }
     }
 
     default:
-      return undefined;
+      return undefined
   }
-};
+}
 
-export default makeWsMsg;
+export default makeWsMsg

@@ -1,11 +1,11 @@
-import _omit from 'lodash/omit';
-import _findKey from 'lodash/findKey';
+import _findKey from 'lodash/findKey'
+import _omit from 'lodash/omit'
 
-import { WsEvent } from '../../../utils/ws/types';
-import { UpdateData, CandlesStreamData, SubscribeData } from '../types';
-import { Pair, TradingPairs } from '../../../types/exchanges';
+import { Pair, TradingPairs } from '../../../types/exchanges'
+import { WsEvent } from '../../../utils/ws/types'
+import { CandlesStreamData, SubscribeData, UpdateData } from '../types'
 
-let subscribedPairs: Record<number, Pair> = {};
+let subscribedPairs: Record<number, Pair> = {}
 
 /**
  * Formats event data. 
@@ -25,16 +25,16 @@ const processStreamEvent = (
   event: WsEvent,
   tradingPairs: TradingPairs
 ): CandlesStreamData | undefined => {
-  const msg: UpdateData & SubscribeData = JSON.parse(event.data);
+  const msg: UpdateData & SubscribeData = JSON.parse(event.data)
 
   if (msg.event === 'unsubscribed') {
-    subscribedPairs = _omit(subscribedPairs, msg.chanId);
+    subscribedPairs = _omit(subscribedPairs, msg.chanId)
 
-    return undefined;
+    return undefined
   }
 
   if (Array.isArray(msg) && msg[1] !== 'hb') {
-    const [chanId, data] = msg;
+    const [chanId, data] = msg
 
     if (!subscribedPairs[chanId]) {
       const key = _findKey(
@@ -42,19 +42,19 @@ const processStreamEvent = (
         (item) =>
           // eslint-disable-next-line operator-linebreak
           item.ws?.meta?.chanId === chanId
-      );
+      )
 
       if (key) {
-        subscribedPairs[chanId] = { ...tradingPairs[key] };
+        subscribedPairs[chanId] = { ...tradingPairs[key] }
       }
     }
 
-    const { intervalApi, symbols } = subscribedPairs[chanId];
+    const { intervalApi, symbols } = subscribedPairs[chanId]
 
-    return [symbols, data, intervalApi];
+    return [symbols, data, intervalApi]
   }
 
-  return undefined;
-};
+  return undefined
+}
 
-export default processStreamEvent;
+export default processStreamEvent

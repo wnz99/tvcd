@@ -1,30 +1,30 @@
-import { CandlesData, Candle, StreamData } from '../types';
+import { Candle, CandlesData, StreamData } from '../types'
 
 export const isLastNthDataPoint = (
   points: number,
   candles: Candle[],
   entry: Candle
 ): [number, boolean] => {
-  let isNew = true;
+  let isNew = true
 
-  let i = 0;
+  let i = 0
 
   for (i; i <= points - 1; i += 1) {
     if (candles[i] && entry.time === candles[i].time) {
-      isNew = false;
-      break;
+      isNew = false
+      break
     }
   }
 
-  return [isNew ? 0 : i, isNew];
-};
+  return [isNew ? 0 : i, isNew]
+}
 
 function updateCandles<D, F>(
   update: StreamData<D>,
   candlesData: CandlesData,
   formatFn: (data: F) => Candle,
   debug: boolean
-): CandlesData;
+): CandlesData
 
 function updateCandles(
   update: [[string, string], unknown[], string],
@@ -33,15 +33,15 @@ function updateCandles(
   debug = false
 ): CandlesData {
   try {
-    const [pair, data, interval] = update;
+    const [pair, data, interval] = update
 
-    const channel = `${interval}:${pair.join(':')}`;
+    const channel = `${interval}:${pair.join(':')}`
 
     // INITIAL SHAPSHOT
     if (Array.isArray(data[0])) {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      const candles = data.map((point) => formatFn(point)).slice(0, 10);
+      const candles = data.map((point) => formatFn(point)).slice(0, 10)
 
       return {
         ...candlesData,
@@ -57,7 +57,7 @@ function updateCandles(
             isUpdateCandle: false,
           },
         },
-      };
+      }
     }
 
     // UPDATE
@@ -65,38 +65,38 @@ function updateCandles(
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
 
-      const entry = formatFn(data);
+      const entry = formatFn(data)
 
-      let meta;
+      let meta
 
-      const candles = [...candlesData[channel].candles];
+      const candles = [...candlesData[channel].candles]
 
-      const [i, isNew] = isLastNthDataPoint(2, candles, entry);
+      const [i, isNew] = isLastNthDataPoint(2, candles, entry)
 
       if (isNew) {
         if (debug) {
-          console.log(`tvcd => ${channel} => NEW candle => `, entry);
+          console.log(`tvcd => ${channel} => NEW candle => `, entry)
         }
 
-        candles.unshift(entry);
+        candles.unshift(entry)
         meta = {
           isSnapshot: false,
           isNewCandle: true,
           updateIndex: 0,
           isUpdateCandle: false,
-        };
+        }
       } else {
         if (debug) {
-          console.log(`tvcd => ${channel} => UPDATE candle ${i} => `, entry);
+          console.log(`tvcd => ${channel} => UPDATE candle ${i} => `, entry)
         }
 
-        candles[i] = entry;
+        candles[i] = entry
         meta = {
           isSnapshot: false,
           isNewCandle: false,
           updateIndex: i,
           isUpdateCandle: true,
-        };
+        }
       }
 
       return {
@@ -108,14 +108,14 @@ function updateCandles(
           seq: (candlesData[channel].seq || 0) + 1,
           meta,
         },
-      };
+      }
     }
 
-    return candlesData;
+    return candlesData
   } catch (e) {
-    console.warn(e);
-    throw e;
+    console.warn(e)
+    throw e
   }
 }
 
-export default updateCandles;
+export default updateCandles

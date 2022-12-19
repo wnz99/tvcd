@@ -1,9 +1,9 @@
-import { REAL_TIME } from '../../const';
-import { Intervals } from '../../types';
+import { REAL_TIME } from '../../const'
+import { Intervals } from '../../types'
 
-export const WS_ROOT_URL = 'wss://api.valr.com/ws/v4/';
-export const REST_ROOT_URL = `https://api.valr.com`;
-export const makeCustomApiUrl = (rootUrl: string): string => `${rootUrl}/valr`;
+export const WS_ROOT_URL = 'wss://api.valr.com/ws/v4/'
+export const REST_ROOT_URL = `https://api.valr.com`
+export const makeCustomApiUrl = (rootUrl: string): string => `${rootUrl}/valr`
 
 // Maps TVCD standard resolutions to exchange API resolutions
 // https://www.gate.io/docs/apiv4/ws/index.html#client-subscription-3
@@ -17,7 +17,7 @@ export const API_RESOLUTIONS_MAP: Intervals = {
   '6h': '21600',
   '1D': '86400',
   [REAL_TIME]: ['1m', '60'], // Format: [tvcd_resolution, api_resolution]
-};
+}
 
 export const ERROR = {
   INTERVAL_NOT_SUPPORTED: 'Interval is not supported',
@@ -28,4 +28,4 @@ export const ERROR = {
   PAIR_IS_NOT_ARRAY: 'Pair must be an array with base ccy and quote ccy.',
   PAIR_NOT_DEFINED: 'Pair not defined.',
   SERVICE_IS_RUNNING: 'tdcv is already running.',
-};
+}

@@ -1,7 +1,5 @@
-import _omitBy from 'lodash/omitBy';
-
-import { WsEvent } from '../../../utils/ws/types';
-import { UpdateData, CandlesStreamData } from '../types';
+import { WsEvent } from '../../../utils/ws/types'
+import { CandlesStreamData, UpdateData } from '../types'
 
 /**
  * Formats event data and tracks subscribed pairs.
@@ -36,19 +34,19 @@ import { UpdateData, CandlesStreamData } from '../types';
  * @return (null | CandlesStreamData)
  */
 const processStreamEvent = (event: WsEvent): undefined | CandlesStreamData => {
-  const msg: UpdateData = JSON.parse(event.data);
+  const msg: UpdateData = JSON.parse(event.data)
 
   if (msg.subject === 'trade.candles.update') {
     const [pair, interval] = msg.topic
       .replace('/market/candles:', '')
-      .split('_');
+      .split('_')
 
-    const ticker = pair.split('-') as [string, string];
+    const ticker = pair.split('-') as [string, string]
 
-    return [ticker, msg.data.candles, interval];
+    return [ticker, msg.data.candles, interval]
   }
 
-  return undefined;
-};
+  return undefined
+}
 
-export default processStreamEvent;
+export default processStreamEvent
