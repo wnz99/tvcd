@@ -112,7 +112,7 @@ describe('connectWs function', () => {
         symbol: 'tNECETH',
       })
     );
-    jest.runTimersToTime(100);
+    jest.advanceTimersByTime(100);
     expect(Object.keys(ws.subs).length).toBe(2);
     ws.send(
       JSON.stringify({
@@ -120,16 +120,16 @@ describe('connectWs function', () => {
         chanId: Object.keys(ws.subs)[0],
       })
     );
-    jest.runTimersToTime(100);
+    jest.advanceTimersByTime(100);
     expect(Object.keys(ws.subs).length).toBe(1);
-    jest.runTimersToTime(100);
+    jest.advanceTimersByTime(100);
     ws.send(
       JSON.stringify({
         event: 'unsubscribe',
         chanId: Object.keys(ws.subs)[0],
       })
     );
-    jest.runTimersToTime(100);
+    jest.advanceTimersByTime(100);
     expect(Object.keys(ws.subs).length).toBe(0);
     done();
   });
@@ -155,7 +155,7 @@ describe('connectWs function', () => {
       });
     });
     ws = connectWs(wsUrl, connOpts);
-    jest.runTimersToTime(2500);
+    jest.advanceTimersByTime(2500);
     expect(spyCbFn.onPongCb).toHaveBeenCalled();
     done();
   });
@@ -208,9 +208,9 @@ describe('open event', () => {
       });
     });
     connectWs(wsUrl, connOpts);
-    jest.runTimersToTime(100);
+    jest.advanceTimersByTime(100);
     expect(connOpts.onOpenCb).toHaveBeenCalledTimes(1);
-    jest.runTimersToTime(2000);
+    jest.advanceTimersByTime(2000);
     expect(receivedMsg).toEqual(expectedMsg);
     done();
   });
@@ -255,9 +255,9 @@ describe('open event', () => {
       });
     });
     connectWs(wsUrl, connOpts);
-    jest.runTimersToTime(100);
+    jest.advanceTimersByTime(100);
     expect(connOpts.onOpenCb).toHaveBeenCalledTimes(1);
-    jest.runTimersToTime(2000);
+    jest.advanceTimersByTime(2000);
     expect(receivedMsg).toEqual(expectedMsg);
     done();
   });
@@ -282,7 +282,7 @@ describe('open event', () => {
       });
     });
     connectWs(wsUrl, connOpts);
-    jest.runTimersToTime(10000);
+    jest.advanceTimersByTime(10000);
     expect(receivedMsg).toEqual(expectedMsg);
     done();
   });
@@ -310,9 +310,9 @@ describe('close event', () => {
       keepAlive: { msg: { event: 'ping' } },
     };
     ws = connectWs(wsUrl, connOpts);
-    jest.runTimersToTime(100);
+    jest.advanceTimersByTime(100);
     mockServer.close();
-    jest.runTimersToTime(100);
+    jest.advanceTimersByTime(100);
     expect(connOpts.onCloseCb).not.toHaveBeenCalled();
     expect(reconnectWs).not.toHaveBeenCalled();
     done();
@@ -323,14 +323,14 @@ describe('close event', () => {
       ...spyCbFn,
     };
     ws = connectWs(wsUrl, connOpts);
-    jest.runTimersToTime(100);
+    jest.advanceTimersByTime(100);
     mockServer.close({
       code: 3000,
       reason: 'Error',
       wasClean: false,
     });
     // mockServer.close(3000, 'error');
-    jest.runTimersToTime(100);
+    jest.advanceTimersByTime(100);
     expect(connOpts.onCloseCb).toHaveBeenCalledTimes(1);
     expect(reconnectWs).toHaveBeenCalled();
     done();
@@ -358,15 +358,15 @@ describe('error event', () => {
     };
     connectWs(wsUrl, connOpts);
     mockServer.simulate('error');
-    jest.runTimersToTime(100);
+    jest.advanceTimersByTime(100);
     expect(connOpts.onErrorCb).toHaveBeenCalledTimes(1);
     mockServer.close();
 
     mockServer = new Server(wsUrl);
     connectWs(wsUrl);
-    jest.runTimersToTime(100);
+    jest.advanceTimersByTime(100);
     mockServer.close();
-    jest.runTimersToTime(100);
+    jest.advanceTimersByTime(100);
     done();
   });
 
@@ -375,15 +375,15 @@ describe('error event', () => {
       ...spyCbFn,
     };
     mockServer.close();
-    jest.runTimersToTime(100);
+    jest.advanceTimersByTime(100);
     connectWs(wsUrl, connOpts);
-    jest.runTimersToTime(100);
+    jest.advanceTimersByTime(100);
     expect(connOpts.onErrorCb).toHaveBeenCalledTimes(1);
 
     connectWs(wsUrl);
-    jest.runTimersToTime(100);
+    jest.advanceTimersByTime(100);
     mockServer.close();
-    jest.runTimersToTime(100);
+    jest.advanceTimersByTime(100);
     done();
   });
 });
