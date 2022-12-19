@@ -5,9 +5,9 @@ const pingWs = (
   pingTime: number
 ): NodeJS.Timeout =>
   setInterval(() => {
-    sendFn(pingMsg);
+    sendFn(pingMsg)
 
-    cbFn(new Date().getTime());
-  }, pingTime);
+    cbFn(new Date().getTime())
+  }, pingTime)
 
-export default pingWs;
+export default pingWs

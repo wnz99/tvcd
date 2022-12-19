@@ -1,4 +1,4 @@
-import { WsEvent } from '../../../utils/ws/types';
+import { WsEvent } from '../../../utils/ws/types'
 
 /**
  * Receives the ping reply and returns a new timestamp
@@ -8,9 +8,9 @@ import { WsEvent } from '../../../utils/ws/types';
  */
 const onPongMsg = (event: WsEvent): number | null => {
   if (event.data === 'pong') {
-    return new Date().getTime();
+    return new Date().getTime()
   }
-  return null;
-};
+  return null
+}
 
-export default onPongMsg;
+export default onPongMsg

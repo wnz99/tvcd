@@ -1,12 +1,12 @@
 export type RestApiCandle = {
-  date: number;
-  close: number;
-  high: number;
-  low: number;
-  open: number;
-  startTime: string;
-  volume: number;
-  time: number;
-};
+  date: number
+  close: number
+  high: number
+  low: number
+  open: number
+  startTime: string
+  volume: number
+  time: number
+}
 
-export type PoloniexCandle = RestApiCandle;
+export type PoloniexCandle = RestApiCandle

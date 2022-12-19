@@ -1,5 +1,5 @@
-import { Formatter, Candle } from '../../../types';
-import { GateIoCandle } from '../types';
+import { Candle, Formatter } from '../../../types'
+import { GateIoCandle } from '../types'
 
 const formatter: Formatter<GateIoCandle> = {
   /**
@@ -10,7 +10,7 @@ const formatter: Formatter<GateIoCandle> = {
    */
   tradingview: (data: GateIoCandle): Candle => {
     if (Array.isArray(data)) {
-      const [time, volume, close, high, low, open] = data;
+      const [time, volume, close, high, low, open] = data
 
       return {
         time: Number(time) * 1000,
@@ -19,10 +19,10 @@ const formatter: Formatter<GateIoCandle> = {
         high: Number(high),
         low: Number(low),
         volume: Number(volume),
-      };
+      }
     }
 
-    const { t, o, c, h, l, v } = data;
+    const { t, o, c, h, l, v } = data
 
     return {
       time: Number(t) * 1000,
@@ -31,8 +31,8 @@ const formatter: Formatter<GateIoCandle> = {
       high: Number(h),
       low: Number(l),
       volume: Number(v),
-    };
+    }
   },
-};
+}
 
-export default formatter;
+export default formatter

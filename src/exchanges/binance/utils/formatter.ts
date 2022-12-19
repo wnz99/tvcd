@@ -1,5 +1,5 @@
-import { Formatter, Candle } from '../../../types';
-import { BinanceCandle } from '../types';
+import { Candle, Formatter } from '../../../types'
+import { BinanceCandle } from '../types'
 
 const formatter: Formatter<BinanceCandle> = {
   /**
@@ -11,7 +11,7 @@ const formatter: Formatter<BinanceCandle> = {
   tradingview: (data: BinanceCandle): Candle => {
     if (Array.isArray(data)) {
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      const [time, open, high, low, close, volume] = data;
+      const [time, open, high, low, close, volume] = data
 
       return {
         time: Number(time),
@@ -20,10 +20,10 @@ const formatter: Formatter<BinanceCandle> = {
         high: Number(high),
         low: Number(low),
         volume: Number(volume),
-      };
+      }
     }
 
-    const { t, o, c, h, l, v } = data;
+    const { t, o, c, h, l, v } = data
 
     return {
       time: Number(t),
@@ -32,8 +32,8 @@ const formatter: Formatter<BinanceCandle> = {
       high: Number(h),
       low: Number(l),
       volume: Number(v),
-    };
+    }
   },
-};
+}
 
-export default formatter;
+export default formatter

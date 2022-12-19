@@ -1,8 +1,8 @@
-import _pickBy from 'lodash/pickBy';
+import _pickBy from 'lodash/pickBy'
 
-import { WsEvent } from '../../../utils/ws/types';
-import { TradingPairs } from '../../../types/exchanges';
-import { UpdateData, CandlesStreamData } from '../types';
+import { TradingPairs } from '../../../types/exchanges'
+import { WsEvent } from '../../../utils/ws/types'
+import { CandlesStreamData, UpdateData } from '../types'
 
 /**
  * Formats event data and tracks subscribed pairs. 
@@ -44,23 +44,23 @@ const processStreamEvent = (
   event: WsEvent,
   tradingPairs: TradingPairs
 ): CandlesStreamData | undefined => {
-  const msg: UpdateData = JSON.parse(event.data);
+  const msg: UpdateData = JSON.parse(event.data)
 
   if (msg && msg.data && msg.data.k) {
-    const ticker = msg.data.s;
+    const ticker = msg.data.s
 
-    const interval = msg.data.k.i;
+    const interval = msg.data.k.i
 
     const pair = _pickBy(
       tradingPairs,
       (item) =>
         item.symbols.join('') === ticker && item.intervalApi === interval
-    );
+    )
 
-    return [Object.values(pair)[0].symbols, msg.data.k, interval];
+    return [Object.values(pair)[0].symbols, msg.data.k, interval]
   }
 
-  return undefined;
-};
+  return undefined
+}
 
-export default processStreamEvent;
+export default processStreamEvent

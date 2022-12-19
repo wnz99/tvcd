@@ -1,4 +1,4 @@
-import { Options, Formatter, Candle } from '../types/exchanges';
+import { Candle, Formatter, Options } from '../types/exchanges'
 
 const makeOptions = <T>(
   opts: Options,
@@ -6,9 +6,9 @@ const makeOptions = <T>(
 ): { format: (data: T) => Candle } => {
   const format = formatter[opts.format]
     ? formatter[opts.format]
-    : formatter.default;
+    : formatter.default
 
-  return { ...opts, format };
-};
+  return { ...opts, format }
+}
 
-export default makeOptions;
+export default makeOptions

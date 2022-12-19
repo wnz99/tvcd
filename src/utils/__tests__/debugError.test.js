@@ -1,20 +1,20 @@
-import debugError from '../debugError';
+import debugError from '../debugError'
 
-let spyFn;
+let spyFn
 
 beforeEach(() => {
-  spyFn = jest.spyOn(global.console, 'log').mockImplementation(() => jest.fn());
-});
+  spyFn = jest.spyOn(global.console, 'log').mockImplementation(() => jest.fn())
+})
 
 afterEach(() => {
-  spyFn.mockRestore();
-});
+  spyFn.mockRestore()
+})
 
 describe('debugError function', () => {
   it('returns error succes', () => {
-    jest.spyOn(global.console, 'log');
-    const debugMessage = debugError('test message', true);
-    expect(spyFn).toHaveBeenCalled();
-    expect(debugMessage).toEqual('test message');
-  });
-});
+    jest.spyOn(global.console, 'log')
+    const debugMessage = debugError('test message', true)
+    expect(spyFn).toHaveBeenCalled()
+    expect(debugMessage).toEqual('test message')
+  })
+})

@@ -1,5 +1,5 @@
-import { Formatter, Candle } from '../../../types';
-import { KucoinCandle } from '../types';
+import { Candle, Formatter } from '../../../types'
+import { KucoinCandle } from '../types'
 
 const formatter: Formatter<KucoinCandle> = {
   /**
@@ -24,7 +24,7 @@ const formatter: Formatter<KucoinCandle> = {
    */
   tradingview: (data: KucoinCandle): Candle => {
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    const [time, open, close, high, low, _, volume] = data;
+    const [time, open, close, high, low, , volume] = data
 
     return {
       time: Number(time) * 1000,
@@ -33,8 +33,8 @@ const formatter: Formatter<KucoinCandle> = {
       high: Number(high),
       low: Number(low),
       volume: Number(volume),
-    };
+    }
   },
-};
+}
 
-export default formatter;
+export default formatter

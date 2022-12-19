@@ -1,19 +1,19 @@
-import { StreamData } from '../../types';
+import { StreamData } from '../../types'
 
 export type CandlesSubscription = {
-  method: 'SUBSCRIBE' | 'UNSUBSCRIBE';
-  params: string[];
-  id?: number;
-};
+  method: 'SUBSCRIBE' | 'UNSUBSCRIBE'
+  params: string[]
+  id?: number
+}
 
 export type WsSubscription = {
-  [key: string]: CandlesSubscription;
-};
+  [key: string]: CandlesSubscription
+}
 
 export type PongData = {
-  id: string;
-  type: 'pong';
-};
+  id: string
+  type: 'pong'
+}
 
 export type WsApiCandle = [
   number, // time
@@ -22,7 +22,7 @@ export type WsApiCandle = [
   number, // High
   number, // Low
   number // Volume
-];
+]
 
 export type RestApiCandle = [
   number, // time
@@ -31,22 +31,22 @@ export type RestApiCandle = [
   number, // High
   number, // Low
   number // Volume
-];
+]
 
 export type SubscribeData = {
-  event: 'subscribed' | 'unsubscribed';
-  channel: string;
-  chanId: number;
-  key: string;
-  status?: 'OK';
-};
+  event: 'subscribed' | 'unsubscribed'
+  channel: string
+  chanId: number
+  key: string
+  status?: 'OK'
+}
 
-export type UpdateData = [number, WsApiCandle | WsApiCandle[] | 'hb'];
+export type UpdateData = [number, WsApiCandle | WsApiCandle[] | 'hb']
 
-export type CandlesStreamData = StreamData<UpdateData[1]>;
+export type CandlesStreamData = StreamData<UpdateData[1]>
 
 export type DataStream = {
-  data: string;
-};
+  data: string
+}
 
-export type BitfinexCandle = WsApiCandle | RestApiCandle;
+export type BitfinexCandle = WsApiCandle | RestApiCandle

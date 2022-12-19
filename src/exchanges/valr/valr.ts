@@ -1,39 +1,38 @@
-import _omit from 'lodash/omit';
-import { Subject, merge, from, timer } from 'rxjs';
-import { map, multicast, takeUntil, filter, switchMap } from 'rxjs/operators';
-import moment from 'moment';
+import moment from 'moment'
+import { from, merge, Subject, timer } from 'rxjs'
+import { filter, map, multicast, switchMap, takeUntil } from 'rxjs/operators'
 
-import { VALR } from '../../const';
+import { VALR } from '../../const'
+import { filterNullish } from '../../observables'
 import {
+  Candle,
+  ClientError,
+  ClientOptions,
+  IExchange,
+  Options,
+  PairConf,
+  StreamData,
+  TokensSymbols,
+} from '../../types'
+import {
+  addChannelToCandlesData,
   debugError,
   fetchCandles,
-  updateCandles,
-  makeOptions,
   makeCandlesRestApiUrl,
-  addChannelToCandlesData,
   makeChannelFromDataStream,
+  makeOptions,
   mapToStandardInterval,
-} from '../../utils';
-import { formatter, makePair } from './utils';
+  updateCandles,
+} from '../../utils'
+import BaseExchange from '../base/baseExchange'
 import {
-  IExchange,
-  ClientError,
-  Options,
-  ClientOptions,
-  PairConf,
-  TokensSymbols,
-  StreamData,
-  Candle,
-} from '../../types';
-import {
-  WS_ROOT_URL,
-  REST_ROOT_URL,
   API_RESOLUTIONS_MAP,
   makeCustomApiUrl,
-} from './const';
-import { ValrCandle } from './types';
-import BaseExchange from '../base/baseExchange';
-import { filterNullish } from '../../observables';
+  REST_ROOT_URL,
+  WS_ROOT_URL,
+} from './const'
+import { ValrCandle } from './types'
+import { formatter, makePair } from './utils'
 
 class Valr extends BaseExchange implements IExchange<ValrCandle> {
   constructor() {
@@ -43,40 +42,40 @@ class Valr extends BaseExchange implements IExchange<ValrCandle> {
       exchangeName: VALR,
       apiResolutionsMap: API_RESOLUTIONS_MAP,
       makeCustomApiUrl,
-    });
+    })
 
-    this._options = { format: formatter.tradingview };
+    this._options = { format: formatter.tradingview }
   }
 
-  _options!: ClientOptions<ValrCandle>;
+  _options!: ClientOptions<ValrCandle>
 
   start = (opts: Options = { format: 'tradingview' }): undefined | string => {
     if (this._status.isRunning) {
-      return debugError(ClientError.SERVICE_IS_RUNNING, this._status.isDebug);
+      return debugError(ClientError.SERVICE_IS_RUNNING, this._status.isDebug)
     }
 
-    this._options = makeOptions<ValrCandle>(opts, formatter);
+    this._options = makeOptions<ValrCandle>(opts, formatter)
 
     timer(0, 5000)
       .pipe(
         switchMap(() => {
           const fecthFn = Object.keys(this._tradingPairs).map((channel) => {
-            const { symbols, interval } = this._tradingPairs[channel];
-            const start = moment().subtract(5, 'minute').valueOf();
-            const end = moment().valueOf();
+            const { symbols, interval } = this._tradingPairs[channel]
+            const start = moment().subtract(5, 'minute').valueOf()
+            const end = moment().valueOf()
 
             const candlesApiCall = this.fetchCandles(
               symbols,
               interval,
               start,
               end
-            );
+            )
 
             return from(candlesApiCall).pipe<Candle[], StreamData<Candle>>(
               filter((data) => !!data),
               map((streamData) => [symbols, streamData[0], interval])
-            );
-          });
+            )
+          })
 
           return merge(...fecthFn).pipe(
             map((streamData) =>
@@ -87,46 +86,46 @@ class Valr extends BaseExchange implements IExchange<ValrCandle> {
               this._candlesData = addChannelToCandlesData<Candle>(
                 this._candlesData,
                 streamData
-              );
+              )
 
-              return streamData;
+              return streamData
             }),
             filterNullish(),
             map((ticker) => {
-              const channel = makeChannelFromDataStream(ticker);
+              const channel = makeChannelFromDataStream(ticker)
 
               this._candlesData = updateCandles<Candle, ValrCandle>(
                 ticker,
                 this._candlesData,
                 this._options.format,
                 this._status.isDebug
-              );
+              )
 
               if (this._candlesData[channel].meta.isNewCandle) {
-                this._dataStream$.next(this._candlesData);
+                this._dataStream$.next(this._candlesData)
               }
 
-              return this._candlesData;
+              return this._candlesData
             })
-          );
+          )
         }),
         takeUntil(this._closeStream$),
         multicast(() => new Subject())
       )
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      .connect();
+      .connect()
 
-    this._status.isRunning = true;
+    this._status.isRunning = true
 
-    return undefined;
-  };
+    return undefined
+  }
 
   stop = (): void => {
-    this._resetInstance();
+    this._resetInstance()
 
-    this._status.isRunning = false;
-  };
+    this._status.isRunning = false
+  }
 
   fetchCandles = async (
     pair: TokensSymbols,
@@ -149,7 +148,7 @@ class Valr extends BaseExchange implements IExchange<ValrCandle> {
           startTime: Math.ceil(startTime / 1000),
           endTime: Math.ceil(endTime / 1000),
         }
-      );
+      )
 
     return fetchCandles<ValrCandle>(pair, interval, start, end, {
       formatFn: this._options.format,
@@ -160,38 +159,38 @@ class Valr extends BaseExchange implements IExchange<ValrCandle> {
         isDebug: this._status.isDebug,
       },
       makeCandlesUrlFn,
-    });
-  };
+    })
+  }
 
   addTradingPair = (
     pair: TokensSymbols,
     pairConf: PairConf
   ): string | undefined => {
     try {
-      this._addTradingPair(pair, pairConf);
+      this._addTradingPair(pair, pairConf)
 
-      return undefined;
+      return undefined
     } catch (err) {
       if (err instanceof Error) {
-        return err.message;
+        return err.message
       }
     }
-  };
+  }
 
   removeTradingPair = (
     pair: TokensSymbols,
     intervalApi: string
   ): string | undefined => {
     try {
-      this._removeTradingPair(pair, intervalApi);
+      this._removeTradingPair(pair, intervalApi)
     } catch (err) {
       if (err instanceof Error) {
-        return err.message;
+        return err.message
       }
     }
 
-    return undefined;
-  };
+    return undefined
+  }
 }
 
-export default Valr;
+export default Valr

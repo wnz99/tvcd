@@ -1,5 +1,5 @@
-import { Formatter, Candle } from '../../../types';
-import { BitfinexCandle } from '../types';
+import { Candle, Formatter } from '../../../types'
+import { BitfinexCandle } from '../types'
 
 const formatter: Formatter<BitfinexCandle> = {
   /**
@@ -9,7 +9,7 @@ const formatter: Formatter<BitfinexCandle> = {
    * @return
    */
   tradingview: (data: BitfinexCandle): Candle => {
-    const [time, open, close, high, low, volume] = data;
+    const [time, open, close, high, low, volume] = data
 
     return {
       time: Number(time),
@@ -18,8 +18,8 @@ const formatter: Formatter<BitfinexCandle> = {
       high: Number(high),
       low: Number(low),
       volume: Number(volume),
-    };
+    }
   },
-};
+}
 
-export default formatter;
+export default formatter

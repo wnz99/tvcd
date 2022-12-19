@@ -1,5 +1,5 @@
-import { WsEvent } from '../../../utils/ws/types';
-import { PongData } from '../types';
+import { WsEvent } from '../../../utils/ws/types'
+import { PongData } from '../types'
 /**
  * Receives the ping reply and returns a new timestamp
  *
@@ -7,19 +7,19 @@ import { PongData } from '../types';
  * @return (number | null)
  */
 const onPongMsg = (event: WsEvent): number | null => {
-  let data: PongData;
+  let data: PongData
 
   try {
-    data = JSON.parse(event.data);
+    data = JSON.parse(event.data)
   } catch (_e) {
-    return null;
+    return null
   }
 
   if (data.type === 'pong') {
-    return new Date().valueOf();
+    return new Date().valueOf()
   }
 
-  return null;
-};
+  return null
+}
 
-export default onPongMsg;
+export default onPongMsg

@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
-import { Pair } from '../../../types';
-import { WsSubscriptions } from '../types';
-import makeSubs from './makeSubs';
-import { WSInstance } from '../../../utils/ws/types';
+import { Pair } from '../../../types'
+import { WSInstance } from '../../../utils/ws/types'
+import { WsSubscriptions } from '../types'
+import makeSubs from './makeSubs'
 
 /**
  * Subscribe pair to API ws
@@ -16,20 +16,20 @@ const addTradingPair = (
   pair: Pair
 ): WsSubscriptions | undefined => {
   try {
-    const msgs = makeSubs({ channel: pair });
+    const msgs = makeSubs({ channel: pair })
 
     Object.values(msgs).forEach((msg) => {
-      ws.send(JSON.stringify(msg));
-    });
+      ws.send(JSON.stringify(msg))
+    })
 
-    ws.addSubscription(msgs);
+    ws.addSubscription(msgs)
 
-    return msgs;
+    return msgs
   } catch (e) {
-    console.warn(e);
+    console.warn(e)
 
-    return undefined;
+    return undefined
   }
-};
+}
 
-export default addTradingPair;
+export default addTradingPair

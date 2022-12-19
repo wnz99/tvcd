@@ -1,57 +1,55 @@
-import _omit from 'lodash/omit';
-import { Subject, Observable, interval as rxInterval, of, defer } from 'rxjs';
+import axios from 'axios'
+import { defer, interval as rxInterval, Observable, of, Subject } from 'rxjs'
 import {
+  catchError,
+  filter,
   map,
   multicast,
-  takeUntil,
-  filter,
   skipUntil,
-  take,
-  catchError,
   switchMap,
-} from 'rxjs/operators';
-import axios from 'axios';
+  take,
+  takeUntil,
+} from 'rxjs/operators'
 
-import { KUCOIN } from '../../const';
-import { Options } from '../../types/exchanges';
+import { KUCOIN } from '../../const'
+import { filterNullish } from '../../observables'
 import {
+  Candle,
+  CandlesData,
+  ClientError,
+  ClientOptions,
+  IExchange,
+  Pair,
+  PairConf,
+  TokensSymbols,
+} from '../../types'
+import { Options } from '../../types/exchanges'
+import {
+  addChannelToCandlesData,
   debugError,
   fetchCandles,
+  makeCandlesRestApiUrl,
+  makeOptions,
   mapToStandardInterval,
   updateCandles,
-  makeOptions,
-  makeCandlesRestApiUrl,
-  addChannelToCandlesData,
-} from '../../utils';
+} from '../../utils'
+import { WsEvent } from '../../utils/ws/types'
+import BaseExchange from '../base/baseExchange'
 import {
-  formatter,
-  makeDataStream,
-  processStreamEvent,
-  addTradingPair,
-  removeTradingPair,
-  makePair,
-} from './utils';
-import { WsEvent } from '../../utils/ws/types';
-import {
-  IExchange,
-  ClientError,
-  CandlesData,
-  ClientOptions,
-  PairConf,
-  Pair,
-  TokensSymbols,
-  Candle,
-} from '../../types';
-
-import {
-  WS_ROOT_URL,
-  REST_ROOT_URL,
   API_RESOLUTIONS_MAP,
   makeCustomApiUrl,
-} from './const';
-import { UpdateData, KucoinCandle } from './types';
-import BaseExchange from '../base/baseExchange';
-import { filterNullish } from '../../observables';
+  REST_ROOT_URL,
+  WS_ROOT_URL,
+} from './const'
+import { KucoinCandle, UpdateData } from './types'
+import {
+  addTradingPair,
+  formatter,
+  makeDataStream,
+  makePair,
+  processStreamEvent,
+  removeTradingPair,
+} from './utils'
 
 class Kucoin extends BaseExchange implements IExchange<KucoinCandle> {
   constructor() {
@@ -61,43 +59,43 @@ class Kucoin extends BaseExchange implements IExchange<KucoinCandle> {
       exchangeName: KUCOIN,
       apiResolutionsMap: API_RESOLUTIONS_MAP,
       makeCustomApiUrl,
-    });
+    })
 
-    this._options = { format: formatter.tradingview };
+    this._options = { format: formatter.tradingview }
   }
 
-  _options!: ClientOptions<KucoinCandle>;
+  _options!: ClientOptions<KucoinCandle>
 
-  _dataSource$: Observable<WsEvent> | undefined = undefined;
+  _dataSource$: Observable<WsEvent> | undefined = undefined
 
   start = (opts: Options = { format: 'tradingview' }): undefined | string => {
     if (this._status.isRunning) {
-      return debugError(ClientError.SERVICE_IS_RUNNING, this._status.isDebug);
+      return debugError(ClientError.SERVICE_IS_RUNNING, this._status.isDebug)
     }
 
-    this._options = makeOptions<KucoinCandle>(opts, formatter);
+    this._options = makeOptions<KucoinCandle>(opts, formatter)
 
     this._dataSource$ = defer(() =>
       axios.post(`${this._exchangeConf.restRootUrl}/bullet-public`)
     ).pipe(
       switchMap((result) => {
-        const connectId = new Date().valueOf();
+        const connectId = new Date().valueOf()
 
-        const { endpoint } = result.data.data.instanceServers[0];
+        const { endpoint } = result.data.data.instanceServers[0]
 
-        const wsUrl = `${endpoint}?token=${result.data.data.token}&[connectId=${connectId}]`;
+        const wsUrl = `${endpoint}?token=${result.data.data.token}&[connectId=${connectId}]`
 
         return makeDataStream(wsUrl, {
           wsInstance$: this._wsInstance$,
           debug: this._status.isDebug,
           connectId,
-        });
+        })
       })
-    );
+    )
 
     this._wsInstance$.subscribe((instance) => {
-      this._ws = instance;
-    });
+      this._ws = instance
+    })
 
     this._dataSource$
       .pipe(
@@ -113,8 +111,8 @@ class Kucoin extends BaseExchange implements IExchange<KucoinCandle> {
         map((streamData) => {
           this._candlesData = addChannelToCandlesData<
             UpdateData['data']['candles']
-          >(this._candlesData, streamData);
-          return streamData;
+          >(this._candlesData, streamData)
+          return streamData
         }),
         map((streamData) => {
           this._candlesData = updateCandles<
@@ -125,38 +123,38 @@ class Kucoin extends BaseExchange implements IExchange<KucoinCandle> {
             this._candlesData,
             this._options.format,
             this._status.isDebug
-          );
-          this._dataStream$.next(this._candlesData);
+          )
+          this._dataStream$.next(this._candlesData)
 
-          return this._candlesData;
+          return this._candlesData
         }),
         takeUntil(this._closeStream$),
         catchError((error) => {
-          console.warn(error);
+          console.warn(error)
 
-          return of(error);
+          return of(error)
         }),
         multicast(() => new Subject<CandlesData>())
       )
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      .connect();
+      .connect()
 
-    this._status.isRunning = true;
+    this._status.isRunning = true
 
-    return undefined;
-  };
+    return undefined
+  }
 
   stop = (): void => {
     if (this._ws) {
-      this._closeStream$.next(true);
-      this._closeStream$.complete();
+      this._closeStream$.next(true)
+      this._closeStream$.complete()
     }
 
-    this._dataSource$ = undefined;
-    this._resetInstance();
-    this._status.isRunning = false;
-  };
+    this._dataSource$ = undefined
+    this._resetInstance()
+    this._status.isRunning = false
+  }
 
   fetchCandles = async (
     pair: TokensSymbols,
@@ -179,7 +177,7 @@ class Kucoin extends BaseExchange implements IExchange<KucoinCandle> {
           startAt: Math.ceil(startTime / 1000),
           endAt: Math.ceil(endTime / 1000),
         }
-      );
+      )
 
     return fetchCandles<KucoinCandle>(pair, interval, start, end, {
       formatFn: this._options.format,
@@ -190,31 +188,31 @@ class Kucoin extends BaseExchange implements IExchange<KucoinCandle> {
         isDebug: this._status.isDebug,
       },
       makeCandlesUrlFn,
-    });
-  };
+    })
+  }
 
   addTradingPair = (
     pair: TokensSymbols,
     pairConf: PairConf
   ): string | undefined => {
-    let newPair: Pair | undefined = undefined;
+    let newPair: Pair | undefined = undefined
 
     try {
-      newPair = this._addTradingPair(pair, pairConf);
+      newPair = this._addTradingPair(pair, pairConf)
     } catch (err) {
       if (err instanceof Error) {
-        return err.message;
+        return err.message
       }
     }
 
     if (!newPair) {
-      return;
+      return
     }
 
     if (this._ws && this._ws.readyState === 1) {
-      addTradingPair(this._ws, newPair);
+      addTradingPair(this._ws, newPair)
 
-      return undefined;
+      return undefined
     }
 
     rxInterval(200)
@@ -228,45 +226,45 @@ class Kucoin extends BaseExchange implements IExchange<KucoinCandle> {
       )
       .subscribe(() => {
         if (!this._ws || !newPair) {
-          return;
+          return
         }
 
-        addTradingPair(this._ws, newPair);
-      });
+        addTradingPair(this._ws, newPair)
+      })
 
-    return undefined;
-  };
+    return undefined
+  }
 
   removeTradingPair = (
     pair: TokensSymbols,
     interval: string
   ): string | undefined => {
-    let removedPair;
+    let removedPair
 
     try {
-      removedPair = this._removeTradingPair(pair, interval);
+      removedPair = this._removeTradingPair(pair, interval)
     } catch (err) {
       if (err instanceof Error) {
-        return err.message;
+        return err.message
       }
     }
 
     if (!this._ws) {
-      return undefined;
+      return undefined
     }
 
     if (!this._ws.subs) {
-      return undefined;
+      return undefined
     }
 
     if (!removedPair) {
-      return undefined;
+      return undefined
     }
 
-    removeTradingPair(this._ws, removedPair);
+    removeTradingPair(this._ws, removedPair)
 
-    return undefined;
-  };
+    return undefined
+  }
 }
 
-export default Kucoin;
+export default Kucoin

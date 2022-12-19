@@ -1,7 +1,7 @@
-import updateCandles, { isLastNthDataPoint } from '../updateCandles';
+import updateCandles, { isLastNthDataPoint } from '../updateCandles'
 
 const formatFn = (data) => {
-  const [time, open, high, low, close, volume] = data;
+  const [time, open, high, low, close, volume] = data
   return {
     time,
     open,
@@ -9,29 +9,29 @@ const formatFn = (data) => {
     high,
     low,
     volume,
-  };
-};
+  }
+}
 beforeEach(() => {
   // spyFn = jest
   //   .spyOn(global.console, 'warn')
   //   .mockImplementation(() => jest.fn());
-});
+})
 
 afterEach(() => {
   // spyFn.mockRestore();
-});
+})
 
 describe('updateCandles function', () => {
   it('should process initial snapshot', () => {
     const candlesData = {
       testChanl: {},
-    };
+    }
     const data = [
       [1565969280000, 10279, 10267, 10279, 10250.71360198, 24.40366912],
       [1565969220000, 10295, 10283.99769106, 10299, 10270, 14.83202867],
-    ];
+    ]
 
-    const expectedCandles = data.map((point) => formatFn(point));
+    const expectedCandles = data.map((point) => formatFn(point))
 
     const expectedResult = {
       ...candlesData,
@@ -47,13 +47,13 @@ describe('updateCandles function', () => {
         },
         seq: 0,
       },
-    };
+    }
 
-    const update = [['ETH', 'USD'], data, '1m'];
-    const result = updateCandles(update, candlesData, formatFn);
+    const update = [['ETH', 'USD'], data, '1m']
+    const result = updateCandles(update, candlesData, formatFn)
 
-    expect(result).toEqual(expectedResult);
-  });
+    expect(result).toEqual(expectedResult)
+  })
 
   it('should process an update', () => {
     const candlesData = {
@@ -85,8 +85,8 @@ describe('updateCandles function', () => {
         },
         seq: 0,
       },
-    };
-    const data = [50, 2, 2, 2, 2, 2];
+    }
+    const data = [50, 2, 2, 2, 2, 2]
 
     const expectedCandles = [
       {
@@ -105,7 +105,7 @@ describe('updateCandles function', () => {
         low: 1,
         volume: 1,
       },
-    ];
+    ]
 
     const expectedResult = {
       '1m:ETH:USD': {
@@ -120,13 +120,13 @@ describe('updateCandles function', () => {
         },
         seq: 1,
       },
-    };
+    }
 
-    const update = [['ETH', 'USD'], data, '1m'];
-    const result = updateCandles(update, candlesData, formatFn);
+    const update = [['ETH', 'USD'], data, '1m']
+    const result = updateCandles(update, candlesData, formatFn)
 
-    expect(result).toEqual(expectedResult);
-  });
+    expect(result).toEqual(expectedResult)
+  })
 
   it('should process a new candle', () => {
     const candlesData = {
@@ -158,8 +158,8 @@ describe('updateCandles function', () => {
         },
         seq: 0,
       },
-    };
-    const data = [60, 2, 2, 2, 2, 2];
+    }
+    const data = [60, 2, 2, 2, 2, 2]
 
     const expectedCandles = [
       {
@@ -186,7 +186,7 @@ describe('updateCandles function', () => {
         low: 1,
         volume: 1,
       },
-    ];
+    ]
 
     const expectedResult = {
       '1m:ETH:USD': {
@@ -201,33 +201,33 @@ describe('updateCandles function', () => {
         },
         seq: 1,
       },
-    };
+    }
 
-    const update = [['ETH', 'USD'], data, '1m'];
-    const result = updateCandles(update, candlesData, formatFn);
+    const update = [['ETH', 'USD'], data, '1m']
+    const result = updateCandles(update, candlesData, formatFn)
 
-    expect(result).toEqual(expectedResult);
-  });
-});
+    expect(result).toEqual(expectedResult)
+  })
+})
 
 describe('isLastNthDataPoint function', () => {
   it('should detect new candle', () => {
-    const candles = [{ time: 30 }, { time: 20 }, { time: 10 }, { time: 5 }];
-    const entry = { time: 40 };
-    const expectedResult = [0, true];
+    const candles = [{ time: 30 }, { time: 20 }, { time: 10 }, { time: 5 }]
+    const entry = { time: 40 }
+    const expectedResult = [0, true]
 
-    const result = isLastNthDataPoint(2, candles, entry);
+    const result = isLastNthDataPoint(2, candles, entry)
 
-    expect(result).toEqual(expectedResult);
-  });
+    expect(result).toEqual(expectedResult)
+  })
 
   it('should detect update candle', () => {
-    const candles = [{ time: 30 }, { time: 20 }, { time: 10 }, { time: 5 }];
-    const entry = { time: 20 };
-    const expectedResult = [1, false];
+    const candles = [{ time: 30 }, { time: 20 }, { time: 10 }, { time: 5 }]
+    const entry = { time: 20 }
+    const expectedResult = [1, false]
 
-    const result = isLastNthDataPoint(2, candles, entry);
+    const result = isLastNthDataPoint(2, candles, entry)
 
-    expect(result).toEqual(expectedResult);
-  });
-});
+    expect(result).toEqual(expectedResult)
+  })
+})

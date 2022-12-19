@@ -16,6 +16,6 @@ const timePeriods: { [key: string]: string } = {
   w: 'weeks',
   W: 'weeks',
   M: 'months',
-};
+}
 
-export default timePeriods;
+export default timePeriods

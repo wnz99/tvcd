@@ -1,11 +1,11 @@
-import { REAL_TIME } from '../../const';
-import { Intervals } from '../../types';
+import { REAL_TIME } from '../../const'
+import { Intervals } from '../../types'
 
-export const WS_ROOT_URL = '';
-export const REST_ROOT_URL = `https://poloniex.com/public`;
+export const WS_ROOT_URL = ''
+export const REST_ROOT_URL = `https://poloniex.com/public`
 // Maps TVCD standard resolutions to exchange API resolutions
 
-const LIVE = '300';
+const LIVE = '300'
 
 export const API_RESOLUTIONS_MAP: Intervals = {
   '5m': LIVE,
@@ -16,7 +16,7 @@ export const API_RESOLUTIONS_MAP: Intervals = {
   '24h': '86400',
   '1D': '86400',
   [REAL_TIME]: ['5m', LIVE], // Format: [tvcd_resolution, api_resolution]
-};
+}
 
 // Maps exchange API resolutions to TVCD standard resolutions
 
@@ -29,4 +29,4 @@ export const ERROR = {
   PAIR_IS_NOT_ARRAY: 'Pair must be an array with base ccy and quote ccy.',
   PAIR_NOT_DEFINED: 'Pair not defined.',
   SERVICE_IS_RUNNING: 'tdcv is already running.',
-};
+}

@@ -1,8 +1,8 @@
-import _findKey from 'lodash/findKey';
+import _findKey from 'lodash/findKey'
 
-import { WsEvent } from '../../../utils/ws/types';
-import { TradingPairs } from '../../../types/exchanges';
-import { SubscribeData } from '../types';
+import { TradingPairs } from '../../../types/exchanges'
+import { WsEvent } from '../../../utils/ws/types'
+import { SubscribeData } from '../types'
 
 /**
  * Tracks trading pair subscriptions. 
@@ -26,11 +26,10 @@ const processSubMsg = (
   event: WsEvent,
   tradingPairs: TradingPairs
 ): TradingPairs => {
-  const msg: SubscribeData = JSON.parse(event.data);
+  const msg: SubscribeData = JSON.parse(event.data)
 
   if (msg.event === 'subscribed') {
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    const [_, interval, ...rest] = msg.key.split(':');
+    const [, interval, ...rest] = msg.key.split(':')
 
     const key = _findKey(
       tradingPairs,
@@ -38,7 +37,7 @@ const processSubMsg = (
         // eslint-disable-next-line operator-linebreak
         item.symbols.join('') === rest.join('').substr(1) &&
         item.intervalApi === interval
-    );
+    )
 
     if (key) {
       return {
@@ -47,11 +46,11 @@ const processSubMsg = (
           ...tradingPairs[key],
           ws: { ...tradingPairs[key].ws, meta: { chanId: msg.chanId } },
         },
-      };
+      }
     }
   }
 
-  return tradingPairs;
-};
+  return tradingPairs
+}
 
-export default processSubMsg;
+export default processSubMsg

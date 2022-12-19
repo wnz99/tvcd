@@ -3,18 +3,18 @@ const shouldReturnCandles = (
   availableDataForThePeriod: { start: number; end: number }
 ): boolean => {
   if (!availableDataForThePeriod) {
-    return true;
+    return true
   }
 
   if (end >= availableDataForThePeriod.end) {
-    return true;
+    return true
   }
 
   if (end <= availableDataForThePeriod.start) {
-    return false;
+    return false
   }
 
-  return false;
-};
+  return false
+}
 
-export default shouldReturnCandles;
+export default shouldReturnCandles

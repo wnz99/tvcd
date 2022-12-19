@@ -1,5 +1,5 @@
-import { Formatter, Candle } from '../../../types';
-import { PoloniexCandle } from '../types';
+import { Candle, Formatter } from '../../../types'
+import { PoloniexCandle } from '../types'
 
 const formatter: Formatter<PoloniexCandle> = {
   /**
@@ -9,10 +9,10 @@ const formatter: Formatter<PoloniexCandle> = {
    * @return
    */
   tradingview: (data: PoloniexCandle): Candle => {
-    const { date, open, close, high, low, volume, time } = data;
+    const { date, open, close, high, low, volume, time } = data
 
     if (time) {
-      return data;
+      return data
     }
 
     return {
@@ -22,8 +22,8 @@ const formatter: Formatter<PoloniexCandle> = {
       high: Number(high),
       low: Number(low),
       volume: Number(volume),
-    };
+    }
   },
-};
+}
 
-export default formatter;
+export default formatter

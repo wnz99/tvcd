@@ -5,6 +5,6 @@
  * @return string
  */
 const makePair = (baseSymbol: string, quoteSymbol: string): string =>
-  `${baseSymbol}${quoteSymbol}`;
+  `${baseSymbol}${quoteSymbol}`
 
-export default makePair;
+export default makePair

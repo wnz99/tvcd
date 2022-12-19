@@ -1,19 +1,20 @@
-import { TestScheduler } from 'rxjs/testing';
-import { data$ } from '../';
+import { TestScheduler } from 'rxjs/testing'
 
-let testScheduler;
+import { data$ } from '../'
+
+let testScheduler
 
 describe('data$ observable', () => {
   beforeEach(() => {
     testScheduler = new TestScheduler((actual, expected) => {
-      expect(actual).toEqual(expected);
-    });
-  });
+      expect(actual).toEqual(expected)
+    })
+  })
 
   it('should emit a message', () => {
-    const channels = ['chan1', 'chan2'];
+    const channels = ['chan1', 'chan2']
     testScheduler.run((helpers) => {
-      const { cold, expectObservable } = helpers;
+      const { cold, expectObservable } = helpers
       const stream$ = cold('a', {
         a: {
           chan1: {
@@ -25,8 +26,8 @@ describe('data$ observable', () => {
             seq: 0,
           },
         },
-      });
-      const expectedMarble = 'a';
+      })
+      const expectedMarble = 'a'
       const expectedValues = {
         a: {
           chan1: {
@@ -38,18 +39,18 @@ describe('data$ observable', () => {
             seq: 0,
           },
         },
-      };
+      }
       expectObservable(data$(channels, stream$)).toBe(
         expectedMarble,
         expectedValues
-      );
-    });
-  });
+      )
+    })
+  })
 
   it('should emit a message only if data contains an update', () => {
-    const channels = ['chan1', 'chan2'];
+    const channels = ['chan1', 'chan2']
     testScheduler.run((helpers) => {
-      const { cold, expectObservable } = helpers;
+      const { cold, expectObservable } = helpers
       const stream$ = cold('abc', {
         a: {
           chan1: {
@@ -81,8 +82,8 @@ describe('data$ observable', () => {
             seq: 1,
           },
         },
-      });
-      const expectedMarble = 'a-b';
+      })
+      const expectedMarble = 'a-b'
       const expectedValues = {
         a: {
           chan1: {
@@ -104,11 +105,11 @@ describe('data$ observable', () => {
             seq: 1,
           },
         },
-      };
+      }
       expectObservable(data$(channels, stream$)).toBe(
         expectedMarble,
         expectedValues
-      );
-    });
-  });
-});
+      )
+    })
+  })
+})

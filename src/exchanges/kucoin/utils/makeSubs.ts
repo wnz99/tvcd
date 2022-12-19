@@ -1,8 +1,8 @@
 /* eslint-disable guard-for-in */
 /* eslint-disable no-restricted-syntax */
-import { TradingPairs } from '../../../types';
-import { WsSubscriptions } from '../types';
-import makePair from './makePair';
+import { TradingPairs } from '../../../types'
+import { WsSubscriptions } from '../types'
+import makePair from './makePair'
 
 /**
  * Creates the initial candles subscriptions
@@ -22,12 +22,12 @@ import makePair from './makePair';
  * @return WsSubscriptions
  * */
 const makeSubs = (pairs: TradingPairs): WsSubscriptions => {
-  let subscriptions: WsSubscriptions = {};
+  let subscriptions: WsSubscriptions = {}
 
   for (const channel in pairs) {
-    const { intervalApi, symbols } = pairs[channel];
+    const { intervalApi, symbols } = pairs[channel]
 
-    const key = `${intervalApi}:${symbols[0]}:${symbols[1]}`;
+    const key = `${intervalApi}:${symbols[0]}:${symbols[1]}`
 
     subscriptions = {
       ...subscriptions,
@@ -38,10 +38,10 @@ const makeSubs = (pairs: TradingPairs): WsSubscriptions => {
         privateChannel: false,
         response: true,
       },
-    };
+    }
   }
 
-  return subscriptions;
-};
+  return subscriptions
+}
 
-export default makeSubs;
+export default makeSubs

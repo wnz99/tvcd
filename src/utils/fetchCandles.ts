@@ -1,16 +1,16 @@
-import { concat } from 'rxjs';
-import { map, reduce, filter } from 'rxjs/operators';
+import { concat } from 'rxjs'
+import { filter, map, reduce } from 'rxjs/operators'
 
-import makeChunkCalls, { FetchCandlesOptions } from './makeChunkCalls';
-import processUdfData, { UdfData } from './processUdfData';
-import { Candle, TokensSymbols } from '../types';
+import { Candle, TokensSymbols } from '../types'
+import makeChunkCalls, { FetchCandlesOptions } from './makeChunkCalls'
+import processUdfData, { UdfData } from './processUdfData'
 
 const sortByTime = <T>(candles: T[]) =>
   candles.sort(
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     (a, b) => new Date(a.time) - new Date(b.time)
-  );
+  )
 
 const fetchCandles = async <T>(
   pair: TokensSymbols,
@@ -19,7 +19,7 @@ const fetchCandles = async <T>(
   end: number,
   opts: FetchCandlesOptions<T>
 ): Promise<Candle[]> => {
-  const { debug, isUdf, formatFn, apiLimit } = opts;
+  const { debug, isUdf, formatFn, apiLimit } = opts
 
   if (debug?.isDebug) {
     console.log(
@@ -28,10 +28,10 @@ const fetchCandles = async <T>(
       } fetchCandles(${pair}, ${interval}, ${start}, ${end}, ${
         apiLimit ?? 1000
       })`
-    );
+    )
   }
 
-  const limit = apiLimit ?? 1000;
+  const limit = apiLimit ?? 1000
 
   const fetchCallsArray = makeChunkCalls<T>(
     pair,
@@ -40,7 +40,7 @@ const fetchCandles = async <T>(
     end,
     limit,
     opts
-  );
+  )
 
   return concat(...fetchCallsArray)
     .pipe(
@@ -52,12 +52,12 @@ const fetchCandles = async <T>(
       // @ts-ignore
       reduce((acc, val) => [...acc, ...val], []),
       map((data) => {
-        const candles = data.map((candle) => formatFn(candle));
+        const candles = data.map((candle) => formatFn(candle))
 
-        return sortByTime(candles);
+        return sortByTime(candles)
       })
     )
-    .toPromise();
-};
+    .toPromise()
+}
 
-export default fetchCandles;
+export default fetchCandles

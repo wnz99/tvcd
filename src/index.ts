@@ -1,2 +1,2 @@
-export { default } from './tvcd';
-export * from './types';
+export { default } from './tvcd'
+export * from './types'

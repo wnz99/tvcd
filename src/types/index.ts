@@ -1,1 +1,1 @@
-export * from './exchanges';
+export * from './exchanges'

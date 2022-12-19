@@ -1,13 +1,13 @@
-import { BITMEX } from '../../../const';
-import { ExchangeConf } from '../../../types';
+import { BITMEX } from '../../../const'
+import { ExchangeConf } from '../../../types'
 import {
-  API_RESOLUTIONS_MAP,
-  WS_ROOT_URL,
-  REST_ROOT_URL,
-  API_RESOLUTIONS_MAP_UDF,
   API_OPTIONS,
-} from '../const';
-import makeCustomApiUrl from './makeCustomApiUrl';
+  API_RESOLUTIONS_MAP,
+  API_RESOLUTIONS_MAP_UDF,
+  REST_ROOT_URL,
+  WS_ROOT_URL,
+} from '../const'
+import makeCustomApiUrl from './makeCustomApiUrl'
 
 const getExchangeConf = (): ExchangeConf => ({
   wsRootUrl: WS_ROOT_URL,
@@ -17,6 +17,6 @@ const getExchangeConf = (): ExchangeConf => ({
   apiResolutionsUdfMap: API_RESOLUTIONS_MAP_UDF,
   makeCustomApiUrl,
   apiLimit: API_OPTIONS.apiLimit,
-});
+})
 
-export default getExchangeConf;
+export default getExchangeConf

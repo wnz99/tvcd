@@ -1,19 +1,19 @@
 import {
   BINANCE,
-  BINANCE_FUTURES_USD,
   BINANCE_FUTURES_COIN,
-} from '../../../const';
-import { ExchangeConf } from '../../../types';
+  BINANCE_FUTURES_USD,
+} from '../../../const'
+import { ExchangeConf } from '../../../types'
 import {
-  WS_ROOT_FUTURES_USD_URL,
-  REST_ROOT_FUTURES_USD_URL,
   API_RESOLUTIONS_MAP,
-  WS_ROOT_FUTURES_COIN_URL,
   REST_ROOT_FUTURES_COIN_URL,
-  WS_ROOT_SPOT_URL,
+  REST_ROOT_FUTURES_USD_URL,
   REST_ROOT_SPOT_URL,
-} from '../const';
-import makeCustomApiUrl from './makeCustomApiUrl';
+  WS_ROOT_FUTURES_COIN_URL,
+  WS_ROOT_FUTURES_USD_URL,
+  WS_ROOT_SPOT_URL,
+} from '../const'
+import makeCustomApiUrl from './makeCustomApiUrl'
 
 const getExchangeConf = (
   dataSet: 'spot' | 'usdFutures' | 'coinFutures'
@@ -26,7 +26,7 @@ const getExchangeConf = (
         exchangeName: BINANCE_FUTURES_USD,
         apiResolutionsMap: API_RESOLUTIONS_MAP,
         makeCustomApiUrl,
-      };
+      }
     }
 
     case 'coinFutures': {
@@ -36,7 +36,7 @@ const getExchangeConf = (
         exchangeName: BINANCE_FUTURES_COIN,
         apiResolutionsMap: API_RESOLUTIONS_MAP,
         makeCustomApiUrl,
-      };
+      }
     }
 
     default: {
@@ -46,9 +46,9 @@ const getExchangeConf = (
         exchangeName: BINANCE,
         apiResolutionsMap: API_RESOLUTIONS_MAP,
         makeCustomApiUrl,
-      };
+      }
     }
   }
-};
+}
 
-export default getExchangeConf;
+export default getExchangeConf
