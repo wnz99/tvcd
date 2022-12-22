@@ -9,7 +9,13 @@ import { debugError, makeTimeChunks } from '.'
 import timePeriods from './timePeriods'
 
 export type FetchCandlesOptions<T> = {
-  makeCandlesUrlFn: (...args: any) => string
+  makeCandlesUrlFn: (
+    // Temporary any type to avoid TS error
+    pair: any,
+    interval: string,
+    start: number,
+    end: number
+  ) => string
   makeChunks?: boolean
   apiLimit?: number
   debug?: {

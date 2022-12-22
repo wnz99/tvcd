@@ -2,6 +2,7 @@ import Binance from './binance'
 import Bitfinex from './bitfinex'
 import Bitmex from './bitmex'
 import Bittrex from './bittrex'
+import Deribit from './deribit'
 import Deversifi from './deversifi'
 import Ftx from './ftx'
 import GateIo from './gateIo'
@@ -13,6 +14,7 @@ export type IBinance = Binance
 export type IBitfinex = Bitfinex
 export type IBitmex = Bitmex
 export type IBittrex = Bittrex
+export type IDeribit = Deribit
 export type IDeversifi = Deversifi
 export type IGateIo = GateIo
 export type IKucoin = Kucoin
@@ -23,6 +25,7 @@ export type BinanceCandle = import('./binance/types').BinanceCandle
 export type BitfinexCandle = import('./bitfinex/types').BitfinexCandle
 export type BitmexCandle = import('./bitmex/types').BitmexCandle
 export type BittrexCandle = import('./bittrex/types').BittrexCandle
+export type DeribitCandle = import('./deribit/types').DeribitCandle
 export type DeversifiCandle = import('./deversifi/types').DeversifiCandle
 export type FtxCandle = import('./ftx/types').FtxCandle
 export type GateIoCandle = import('./gateIo/types').GateIoCandle
@@ -36,6 +39,7 @@ export const binancefuturesusd = new Binance({ dataSet: 'usdFutures' })
 export const bitfinex = new Bitfinex()
 export const bitmex = new Bitmex()
 export const bittrex = new Bittrex()
+export const deribit = new Deribit()
 export const deversifi = new Deversifi()
 export const ftx = new Ftx()
 export const gateio = new GateIo()

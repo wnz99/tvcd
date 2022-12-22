@@ -302,7 +302,7 @@ describe('close event', () => {
 
   afterEach(() => {
     mockServer.close()
-    ;``
+
     ws.closeConnection()
     jest.clearAllTimers()
   })

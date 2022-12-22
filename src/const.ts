@@ -1,18 +1,19 @@
-export const BINANCE = 'binance'
-export const BINANCE_FUTURES_COIN = 'binancefuturecoin'
-export const BINANCE_FUTURES_USD = 'binancefutureusd'
-export const BITFINEX = 'bitfinex'
-export const BITMEX = 'bitmex'
-export const BITTREX = 'bittrex'
-export const DEVERSIFI = 'deversifi'
-export const EXCHANGE_NOT_SUPPORTED = 'Exchange not supported'
-export const FTX = 'ftx'
-export const GATEIO = 'gateio'
-export const KAIKO = 'kaiko'
-export const KRAKEN = 'kraken'
-export const KUCOIN = 'kucoin'
-export const POLONIEX = 'poloniex'
-export const VALR = 'valr'
+export const BINANCE = 'binance' as const
+export const BINANCE_FUTURES_COIN = 'binancefuturescoin' as const
+export const BINANCE_FUTURES_USD = 'binancefuturesusd' as const
+export const BITFINEX = 'bitfinex' as const
+export const BITMEX = 'bitmex' as const
+export const BITTREX = 'bittrex' as const
+export const DEVERSIFI = 'deversifi' as const
+export const EXCHANGE_NOT_SUPPORTED = 'Exchange not supported' as const
+export const FTX = 'ftx' as const
+export const GATEIO = 'gateio' as const
+export const KAIKO = 'kaiko' as const
+export const KRAKEN = 'kraken' as const
+export const KUCOIN = 'kucoin' as const
+export const POLONIEX = 'poloniex' as const
+export const VALR = 'valr' as const
+export const DERIBIT = 'deribit' as const
 
 export const EXCHANGE_NAME = {
   BINANCE,
@@ -21,6 +22,7 @@ export const EXCHANGE_NAME = {
   BITFINEX,
   BITMEX,
   BITTREX,
+  DERIBIT,
   DEVERSIFI,
   FTX,
   GATEIO,

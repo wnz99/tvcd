@@ -1,6 +1,9 @@
-import updateCandles, { isLastNthDataPoint } from '../updateCandles'
+import { CandlesData, StreamData } from '../types'
+import updateCandles, { isLastNthDataPoint } from './updateCandles'
 
-const formatFn = (data) => {
+type DataPoint = [number, number, number, number, number, number]
+
+const formatFn = (data: DataPoint) => {
   const [time, open, high, low, close, volume] = data
   return {
     time,
@@ -25,8 +28,9 @@ describe('updateCandles function', () => {
   it('should process initial snapshot', () => {
     const candlesData = {
       testChanl: {},
-    }
-    const data = [
+    } as unknown as CandlesData
+
+    const data: DataPoint[] = [
       [1565969280000, 10279, 10267, 10279, 10250.71360198, 24.40366912],
       [1565969220000, 10295, 10283.99769106, 10299, 10270, 14.83202867],
     ]
@@ -49,7 +53,8 @@ describe('updateCandles function', () => {
       },
     }
 
-    const update = [['ETH', 'USD'], data, '1m']
+    const update = [['ETH', 'USD'], data, '1m'] as StreamData<DataPoint[]>
+
     const result = updateCandles(update, candlesData, formatFn)
 
     expect(result).toEqual(expectedResult)
@@ -85,7 +90,8 @@ describe('updateCandles function', () => {
         },
         seq: 0,
       },
-    }
+    } as unknown as CandlesData
+
     const data = [50, 2, 2, 2, 2, 2]
 
     const expectedCandles = [
@@ -122,7 +128,10 @@ describe('updateCandles function', () => {
       },
     }
 
-    const update = [['ETH', 'USD'], data, '1m']
+    const update = [['ETH', 'USD'], data, '1m'] as unknown as StreamData<
+      DataPoint[]
+    >
+
     const result = updateCandles(update, candlesData, formatFn)
 
     expect(result).toEqual(expectedResult)
@@ -158,7 +167,8 @@ describe('updateCandles function', () => {
         },
         seq: 0,
       },
-    }
+    } as unknown as CandlesData
+
     const data = [60, 2, 2, 2, 2, 2]
 
     const expectedCandles = [
@@ -203,7 +213,10 @@ describe('updateCandles function', () => {
       },
     }
 
-    const update = [['ETH', 'USD'], data, '1m']
+    const update = [['ETH', 'USD'], data, '1m'] as unknown as StreamData<
+      DataPoint[]
+    >
+
     const result = updateCandles(update, candlesData, formatFn)
 
     expect(result).toEqual(expectedResult)
@@ -212,8 +225,15 @@ describe('updateCandles function', () => {
 
 describe('isLastNthDataPoint function', () => {
   it('should detect new candle', () => {
-    const candles = [{ time: 30 }, { time: 20 }, { time: 10 }, { time: 5 }]
-    const entry = { time: 40 }
+    const candles = [
+      { time: 30 },
+      { time: 20 },
+      { time: 10 },
+      { time: 5 },
+    ] as any
+
+    const entry = { time: 40 } as any
+
     const expectedResult = [0, true]
 
     const result = isLastNthDataPoint(2, candles, entry)
@@ -222,8 +242,15 @@ describe('isLastNthDataPoint function', () => {
   })
 
   it('should detect update candle', () => {
-    const candles = [{ time: 30 }, { time: 20 }, { time: 10 }, { time: 5 }]
-    const entry = { time: 20 }
+    const candles = [
+      { time: 30 },
+      { time: 20 },
+      { time: 10 },
+      { time: 5 },
+    ] as any
+
+    const entry = { time: 20 } as any
+
     const expectedResult = [1, false]
 
     const result = isLastNthDataPoint(2, candles, entry)

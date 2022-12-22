@@ -1,5 +1,4 @@
-import { BITMEX } from '../../../const'
-import { ExchangeConf } from '../../../types'
+import { ExchangeConf, Exchanges } from '../../../types'
 import {
   API_OPTIONS,
   API_RESOLUTIONS_MAP,
@@ -12,7 +11,7 @@ import makeCustomApiUrl from './makeCustomApiUrl'
 const getExchangeConf = (): ExchangeConf => ({
   wsRootUrl: WS_ROOT_URL,
   restRootUrl: REST_ROOT_URL,
-  exchangeName: BITMEX,
+  exchangeName: Exchanges.bitmex,
   apiResolutionsMap: API_RESOLUTIONS_MAP,
   apiResolutionsUdfMap: API_RESOLUTIONS_MAP_UDF,
   makeCustomApiUrl,
