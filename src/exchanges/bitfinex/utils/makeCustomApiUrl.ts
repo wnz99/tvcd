@@ -1,3 +1,3 @@
-const makeCustomApiUrl = (rootUrl: string): string => `${rootUrl}/bitfinex/v2`
+const makeCustomApiUrl = (rootUrl: string): string => `${rootUrl}/v2`
 
 export default makeCustomApiUrl
