@@ -1,4 +1,4 @@
-import tvcd from '../src'
+import tvcd from '../dist'
 
 // const symbols = [
 //   ['BTC', 'USD'],

@@ -15,7 +15,7 @@
     "paths": {
       "*": ["types/*"]
     },
-    "outDir": "./dist",
+    "outDir": "dist",
     "types": ["node", "jest"],
     "moduleResolution": "node",
     "skipLibCheck": true,
@@ -30,8 +30,9 @@
     "allowSyntheticDefaultImports": true,
     "allowJs": false,
     "noImplicitAny": true,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "declarationDir": "dist"
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "examples/**/*"],
   "exclude": ["node_modules"]
 }

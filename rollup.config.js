@@ -25,6 +25,7 @@ export default {
     typescript({
       objectHashIgnoreUnknownHack: true,
       abortOnError: false,
+      tsconfig: './tsconfig.build.json',
     }),
   ],
   external: Object.keys(globals),
