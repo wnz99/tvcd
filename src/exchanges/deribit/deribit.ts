@@ -155,8 +155,6 @@ class Deribit extends BaseExchange implements IExchange<DeribitCandle> {
         end_timestamp: endTime,
       })
 
-    console.log(this._exchangeConf)
-
     return fetchCandles<DeribitCandle>(pair, interval, start, end, {
       formatFn: this._options.format,
       isUdf: this._exchangeConf.isUdf,
