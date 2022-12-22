@@ -7,7 +7,7 @@ const makeWsMsg = (
 ): { [key: string]: unknown } | string | undefined => {
   const { intervalApi, symbols } = pair
 
-  const key = `trade:${intervalApi}:${makeInstrument(symbols[0])}`
+  const key = `trade:${intervalApi}:${makeInstrument(symbols)}`
 
   switch (messageType) {
     case 'subscribe': {
