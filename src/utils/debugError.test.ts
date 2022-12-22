@@ -1,6 +1,6 @@
-import debugError from '../debugError'
+import debugError from './debugError'
 
-let spyFn
+let spyFn: ReturnType<typeof jest.spyOn>
 
 beforeEach(() => {
   spyFn = jest.spyOn(global.console, 'log').mockImplementation(() => jest.fn())

@@ -25,7 +25,7 @@ import {
 } from '../../utils'
 import { WsEvent } from '../../utils/ws/types'
 import BaseExchange from '../base/baseExchange'
-import { BitmexCandle, WsApiCandle } from './types'
+import { BitmexCandle, RestApiCandle, WsApiCandle } from './types'
 import {
   formatter,
   getExchangeConf,
@@ -33,6 +33,7 @@ import {
   makePair,
   makeWsMsg,
   processStreamEvent,
+  processUdfData,
 } from './utils'
 
 class Bitmex extends BaseExchange implements IExchange<BitmexCandle> {
@@ -173,7 +174,7 @@ class Bitmex extends BaseExchange implements IExchange<BitmexCandle> {
       )
     }
 
-    return fetchCandles<BitmexCandle>(
+    return fetchCandles<RestApiCandle>(
       pair,
       interval,
       limitDateToApiMinimun(start),
@@ -187,6 +188,7 @@ class Bitmex extends BaseExchange implements IExchange<BitmexCandle> {
           isDebug: this._status.isDebug,
         },
         apiLimit: this._exchangeConf.apiLimit,
+        processUdfDataFn: processUdfData,
         makeCandlesUrlFn,
       }
     )

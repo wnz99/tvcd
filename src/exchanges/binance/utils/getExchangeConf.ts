@@ -1,9 +1,4 @@
-import {
-  BINANCE,
-  BINANCE_FUTURES_COIN,
-  BINANCE_FUTURES_USD,
-} from '../../../const'
-import { ExchangeConf } from '../../../types'
+import { ExchangeConf, Exchanges } from '../../../types'
 import {
   API_RESOLUTIONS_MAP,
   REST_ROOT_FUTURES_COIN_URL,
@@ -23,7 +18,7 @@ const getExchangeConf = (
       return {
         wsRootUrl: WS_ROOT_FUTURES_USD_URL,
         restRootUrl: REST_ROOT_FUTURES_USD_URL,
-        exchangeName: BINANCE_FUTURES_USD,
+        exchangeName: Exchanges.binancefuturesusd,
         apiResolutionsMap: API_RESOLUTIONS_MAP,
         makeCustomApiUrl,
       }
@@ -33,7 +28,7 @@ const getExchangeConf = (
       return {
         wsRootUrl: WS_ROOT_FUTURES_COIN_URL,
         restRootUrl: REST_ROOT_FUTURES_COIN_URL,
-        exchangeName: BINANCE_FUTURES_COIN,
+        exchangeName: Exchanges.binancefuturescoin,
         apiResolutionsMap: API_RESOLUTIONS_MAP,
         makeCustomApiUrl,
       }
@@ -43,7 +38,7 @@ const getExchangeConf = (
       return {
         wsRootUrl: WS_ROOT_SPOT_URL,
         restRootUrl: REST_ROOT_SPOT_URL,
-        exchangeName: BINANCE,
+        exchangeName: Exchanges.binance,
         apiResolutionsMap: API_RESOLUTIONS_MAP,
         makeCustomApiUrl,
       }

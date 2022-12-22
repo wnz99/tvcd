@@ -9,13 +9,13 @@ import {
   takeUntil,
 } from 'rxjs/operators'
 
-import { GATEIO } from '../../const'
 import { filterNullish } from '../../observables'
 import {
   Candle,
   CandlesData,
   ClientError,
   ClientOptions,
+  Exchanges,
   IExchange,
   Options,
   Pair,
@@ -54,7 +54,7 @@ class GateIo extends BaseExchange implements IExchange<GateIoCandle> {
     super({
       wsRootUrl: WS_ROOT_URL,
       restRootUrl: REST_ROOT_URL,
-      exchangeName: GATEIO,
+      exchangeName: Exchanges.gateio,
       apiResolutionsMap: API_RESOLUTIONS_MAP,
       makeCustomApiUrl,
     })

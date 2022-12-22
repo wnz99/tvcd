@@ -15,11 +15,11 @@ module.exports = {
     'no-console': 'warn',
     'prettier/prettier': 'error',
     'simple-import-sort/imports': 'error',
-    'simple-import-sort/exports': 'error',
     'import/first': 'error',
     'import/newline-after-import': 'error',
     'import/no-duplicates': 'error',
-    '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
   },
   overrides: [
     {

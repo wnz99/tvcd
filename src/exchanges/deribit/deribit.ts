@@ -10,49 +10,52 @@ import {
   IExchange,
   Options,
   PairConf,
-  TokensSymbols,
 } from '../../types'
 import {
   addChannelToCandlesData,
   debugError,
   fetchCandles,
-  makeCandlesRestApiUrl,
   makeOptions,
   mapToStandardInterval,
   updateCandles,
 } from '../../utils'
 import { WsEvent } from '../../utils/ws/types'
 import BaseExchange from '../base/baseExchange'
-import { BitfinexCandle, UpdateData } from './types'
+import { TokensSymbols } from './../../types/exchanges'
+import { DeribitCandle, DeribitInstrument, UpdateData } from './types'
 import {
   formatter,
   getExchangeConf,
+  makeCandlesRestApiUrl,
   makeDataStream,
-  makePair,
+  makeInstrument,
   makeWsMsg,
   processStreamEvent,
   processSubMsg,
+  processUdfData,
 } from './utils'
 
-class Bitfinex extends BaseExchange implements IExchange<BitfinexCandle> {
+class Deribit extends BaseExchange implements IExchange<DeribitCandle> {
   constructor() {
-    const conf = getExchangeConf()
+    const exchangeConf = getExchangeConf()
 
-    super({ ...conf, wsConf: { makeWsMsg } })
+    super({ ...exchangeConf, wsConf: { makeWsMsg } })
 
     this._options = { format: formatter.tradingview }
+
+    console.log(this._exchangeConf)
   }
 
-  _options!: ClientOptions<BitfinexCandle>
+  _options!: ClientOptions<DeribitCandle>
 
-  _dataSource$: Observable<WsEvent> = new Observable()
+  _dataSource$: Observable<WsEvent> | undefined = undefined
 
   start = (opts: Options = { format: 'tradingview' }): undefined | string => {
     if (this._status.isRunning) {
       return debugError(ClientError.SERVICE_IS_RUNNING, this._status.isDebug)
     }
 
-    this._options = makeOptions<BitfinexCandle>(opts, formatter)
+    this._options = makeOptions<DeribitCandle>(opts, formatter)
 
     if (Object.keys(this._tradingPairs).length === 0) {
       return debugError(ClientError.NO_INIT_PAIRS_DEFINED, this._status.isDebug)
@@ -90,12 +93,14 @@ class Bitfinex extends BaseExchange implements IExchange<BitfinexCandle> {
           return streamData
         }),
         map((streamData) => {
-          this._candlesData = updateCandles<UpdateData[1], BitfinexCandle>(
-            streamData,
-            this._candlesData,
-            this._options.format,
-            this._status.isDebug
-          )
+          if (streamData[1].length) {
+            this._candlesData = updateCandles<UpdateData[1], DeribitCandle>(
+              streamData,
+              this._candlesData,
+              this._options.format,
+              this._status.isDebug
+            )
+          }
 
           this._dataStream$.next(this._candlesData)
 
@@ -103,7 +108,10 @@ class Bitfinex extends BaseExchange implements IExchange<BitfinexCandle> {
         }),
         takeUntil(this._closeStream$),
         catchError((error) => {
-          console.warn(error)
+          if (this._status.isDebug) {
+            debugError(error.message)
+          }
+
           return of(error)
         }),
         multicast(() => new Subject<CandlesData>())
@@ -123,7 +131,7 @@ class Bitfinex extends BaseExchange implements IExchange<BitfinexCandle> {
       this._closeStream$.complete()
     }
 
-    this._dataSource$ = new Observable()
+    this._dataSource$ = undefined
     this._resetInstance()
     this._status.isRunning = false
   }
@@ -135,40 +143,44 @@ class Bitfinex extends BaseExchange implements IExchange<BitfinexCandle> {
     end: number
   ): Promise<Candle[]> => {
     const makeCandlesUrlFn = (
-      symbols: TokensSymbols,
+      pair: TokensSymbols,
       timeInterval: string,
       startTime: number,
       endTime: number
     ) =>
-      makeCandlesRestApiUrl(
-        this._exchangeConf.exchangeName,
-        this._exchangeConf.restRootUrl,
-        {
-          symbol: makePair(symbols[0], symbols[1]),
-          interval: this.options.intervals[timeInterval] as string,
-          start: startTime,
-          end: endTime,
-        }
-      )
+      makeCandlesRestApiUrl(this._exchangeConf.restRootUrl, {
+        instrument_name: makeInstrument(pair),
+        resolution: this.options.intervals[timeInterval] as string,
+        start_timestamp: startTime,
+        end_timestamp: endTime,
+      })
 
-    return fetchCandles<BitfinexCandle>(pair, interval, start, end, {
+    console.log(this._exchangeConf)
+
+    return fetchCandles<DeribitCandle>(pair, interval, start, end, {
       formatFn: this._options.format,
+      isUdf: this._exchangeConf.isUdf,
       makeChunks: true,
       debug: {
         exchangeName: this._exchangeConf.exchangeName,
         isDebug: this._status.isDebug,
       },
-      apiLimit: 5000,
+      apiLimit: 1000,
+      processUdfDataFn: processUdfData,
       makeCandlesUrlFn,
     })
   }
 
   addTradingPair = (
-    pair: TokensSymbols,
+    pair: DeribitInstrument,
     pairConf: PairConf
   ): string | undefined => {
+    const tradingPair = (
+      typeof pair === 'string' ? [pair, ''] : pair
+    ) as TokensSymbols
+
     try {
-      this._addTradingPair(pair, pairConf)
+      this._addTradingPair(tradingPair, pairConf)
     } catch (err) {
       if (err instanceof Error) {
         return err.message
@@ -179,11 +191,15 @@ class Bitfinex extends BaseExchange implements IExchange<BitfinexCandle> {
   }
 
   removeTradingPair = (
-    pair: TokensSymbols,
+    pair: DeribitInstrument,
     interval: string
   ): string | undefined => {
+    const tradingPair = (
+      typeof pair === 'string' ? [pair, ''] : pair
+    ) as TokensSymbols
+
     try {
-      this._removeTradingPair(pair, interval)
+      this._removeTradingPair(tradingPair, interval)
     } catch (err) {
       if (err instanceof Error) {
         return err.message
@@ -194,4 +210,4 @@ class Bitfinex extends BaseExchange implements IExchange<BitfinexCandle> {
   }
 }
 
-export default Bitfinex
+export default Deribit

@@ -1,4 +1,4 @@
-export type UdfData = {
+type UdfData = {
   s: string
   c: number[]
   h: number[]
@@ -8,7 +8,7 @@ export type UdfData = {
   t: number[]
 }
 
-type Data = {
+type UdfCandles = {
   close: number
   high: number
   low: number
@@ -17,7 +17,7 @@ type Data = {
   volume: number
 }
 
-const processUdfData = (data: UdfData): Data[] => {
+export const processUdfData = (data: UdfData): UdfCandles[] => {
   if (data.s === 'no_data') {
     return []
   }
@@ -31,7 +31,5 @@ const processUdfData = (data: UdfData): Data[] => {
     volume: data.v[index],
   }))
 }
-
-export default processUdfData
 
 export type ProcessUfdDataReturn = ReturnType<typeof processUdfData>

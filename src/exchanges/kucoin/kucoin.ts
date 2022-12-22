@@ -11,7 +11,6 @@ import {
   takeUntil,
 } from 'rxjs/operators'
 
-import { KUCOIN } from '../../const'
 import { filterNullish } from '../../observables'
 import {
   Candle,
@@ -23,7 +22,7 @@ import {
   PairConf,
   TokensSymbols,
 } from '../../types'
-import { Options } from '../../types/exchanges'
+import { Exchanges, Options } from '../../types/exchanges'
 import {
   addChannelToCandlesData,
   debugError,
@@ -56,7 +55,7 @@ class Kucoin extends BaseExchange implements IExchange<KucoinCandle> {
     super({
       wsRootUrl: WS_ROOT_URL,
       restRootUrl: REST_ROOT_URL,
-      exchangeName: KUCOIN,
+      exchangeName: Exchanges.kucoin,
       apiResolutionsMap: API_RESOLUTIONS_MAP,
       makeCustomApiUrl,
     })

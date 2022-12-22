@@ -12,6 +12,7 @@ let instance:
   | exchanges.IKucoin
   | exchanges.IPoloniex
   | exchanges.IValr
+  | exchanges.IDeribit
 
 let selectedExchange: Exchanges
 

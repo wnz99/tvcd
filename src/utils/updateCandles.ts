@@ -23,7 +23,7 @@ function updateCandles<D, F>(
   update: StreamData<D>,
   candlesData: CandlesData,
   formatFn: (data: F) => Candle,
-  debug: boolean
+  debug?: boolean
 ): CandlesData
 
 function updateCandles(

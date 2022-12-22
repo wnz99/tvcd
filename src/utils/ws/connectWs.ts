@@ -20,8 +20,9 @@ function connectWs(url: string, opts: Partial<Options> = {}): WSInstance {
     onErrorCb: undefined,
     onMessageCb: undefined,
     onOpenCb: undefined,
-    onPongCb: (event: WsEvent) =>
-      event.data === 'pong' ? new Date().getTime() : null,
+    onPongCb: (event: WsEvent) => {
+      return event.data === 'pong' ? new Date().getTime() : null
+    },
     onReconnectCb: undefined,
     onSubscriptionCb: undefined,
     retryDelay: conf.wsRetryDelay,

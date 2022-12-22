@@ -1,13 +1,15 @@
-import isChannelChanged from '../isChannelChanged'
+import { CandlesData } from '../types'
+import isChannelChanged from './isChannelChanged'
 
 describe('isChannelChanged function', () => {
   it('should return TRUE if channels have changed', () => {
-    let prevChans = {}
+    let prevChans = {} as unknown as CandlesData
+
     let currChans = {
       chan1: {
         seq: 1,
       },
-    }
+    } as unknown as CandlesData
 
     expect(isChannelChanged(prevChans, currChans)).toBe(true)
 
@@ -15,12 +17,13 @@ describe('isChannelChanged function', () => {
       chan1: {
         seq: 0,
       },
-    }
+    } as unknown as CandlesData
+
     currChans = {
       chan1: {
         seq: 1,
       },
-    }
+    } as unknown as CandlesData
 
     expect(isChannelChanged(prevChans, currChans)).toBe(true)
 
@@ -31,7 +34,8 @@ describe('isChannelChanged function', () => {
       chan2: {
         seq: 0,
       },
-    }
+    } as unknown as CandlesData
+
     currChans = {
       chan1: {
         seq: 0,
@@ -39,7 +43,7 @@ describe('isChannelChanged function', () => {
       chan2: {
         seq: 1,
       },
-    }
+    } as unknown as CandlesData
 
     expect(isChannelChanged(prevChans, currChans)).toBe(true)
   })
@@ -49,12 +53,13 @@ describe('isChannelChanged function', () => {
       chan1: {
         seq: 0,
       },
-    }
+    } as unknown as CandlesData
+
     let currChans = {
       chan1: {
         seq: 0,
       },
-    }
+    } as unknown as CandlesData
 
     expect(isChannelChanged(prevChans, currChans)).toBe(false)
 
@@ -65,7 +70,8 @@ describe('isChannelChanged function', () => {
       chan2: {
         seq: 0,
       },
-    }
+    } as unknown as CandlesData
+
     currChans = {
       chan1: {
         seq: 0,
@@ -73,7 +79,7 @@ describe('isChannelChanged function', () => {
       chan2: {
         seq: 0,
       },
-    }
+    } as unknown as CandlesData
 
     expect(isChannelChanged(prevChans, currChans)).toBe(false)
   })

@@ -14,6 +14,9 @@ export enum Exchanges {
   'kucoin' = 'kucoin',
   'poloniex' = 'poloniex',
   'valr' = 'valr',
+  'ftx' = 'ftx',
+  'kaiko' = 'kaiko',
+  'deribit' = 'deribit',
 }
 
 export type Intervals = {
@@ -48,7 +51,7 @@ export type MakeCustomApiUrl = (rootUrl: string, isUdf?: boolean) => string
 
 export type ExchangeConf = {
   isDebug?: boolean
-  exchangeName: string
+  exchangeName: Exchanges
   wsRootUrl: string
   restRootUrl: string
   apiResolutionsMap: Intervals
@@ -115,6 +118,8 @@ export type PairConf = {
 }
 
 export type FormatFn<T> = (data: T) => Candle
+
+export type ProcessUdfDataFn<T> = (data: any) => T[]
 
 export interface Formatter<T> {
   [key: string]: FormatFn<T>

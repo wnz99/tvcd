@@ -2,12 +2,12 @@ import moment from 'moment'
 import { from, merge, Subject, timer } from 'rxjs'
 import { filter, map, multicast, switchMap, takeUntil } from 'rxjs/operators'
 
-import { VALR } from '../../const'
 import { filterNullish } from '../../observables'
 import {
   Candle,
   ClientError,
   ClientOptions,
+  Exchanges,
   IExchange,
   Options,
   PairConf,
@@ -39,7 +39,7 @@ class Valr extends BaseExchange implements IExchange<ValrCandle> {
     super({
       wsRootUrl: WS_ROOT_URL,
       restRootUrl: REST_ROOT_URL,
-      exchangeName: VALR,
+      exchangeName: Exchanges.valr,
       apiResolutionsMap: API_RESOLUTIONS_MAP,
       makeCustomApiUrl,
     })
