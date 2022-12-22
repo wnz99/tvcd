@@ -42,8 +42,6 @@ class Deribit extends BaseExchange implements IExchange<DeribitCandle> {
     super({ ...exchangeConf, wsConf: { makeWsMsg } })
 
     this._options = { format: formatter.tradingview }
-
-    console.log(this._exchangeConf)
   }
 
   _options!: ClientOptions<DeribitCandle>
