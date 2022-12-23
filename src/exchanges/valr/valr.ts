@@ -133,6 +133,8 @@ class Valr extends BaseExchange implements IExchange<ValrCandle> {
     start: number,
     end: number
   ): Promise<Candle[]> => {
+    this._isIntervalSupported(interval)
+
     const makeCandlesUrlFn = (
       symbols: TokensSymbols,
       timeInterval: string,

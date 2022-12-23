@@ -140,6 +140,8 @@ class Deribit extends BaseExchange implements IExchange<DeribitCandle> {
     start: number,
     end: number
   ): Promise<Candle[]> => {
+    this._isIntervalSupported(interval)
+
     const makeCandlesUrlFn = (
       pair: TokensSymbols,
       timeInterval: string,

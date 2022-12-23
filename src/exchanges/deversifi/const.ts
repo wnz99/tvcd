@@ -1,8 +1,8 @@
 import { REAL_TIME } from '../../const'
 import { Intervals } from '../../types'
 
-export const WS_ROOT_URL = 'wss://api.stg.deversifi.com/market-data/ws'
-export const REST_ROOT_URL = `https://api.stg.deversifi.com`
+export const WS_ROOT_URL = 'wss://api.deversifi.com/market-data/ws'
+export const REST_ROOT_URL = `https://api.deversifi.com`
 // Maps TVCD standard resolutions to exchange API resolutions
 
 export const API_RESOLUTIONS_MAP: Intervals = {

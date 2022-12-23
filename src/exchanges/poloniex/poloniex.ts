@@ -146,6 +146,8 @@ class Poloniex extends BaseExchange implements IExchange<PoloniexCandle> {
     start: number,
     end: number
   ): Promise<Candle[]> => {
+    this._isIntervalSupported(interval)
+
     const makeCandlesUrlFn = (
       symbols: TokensSymbols,
       timeInterval: string,

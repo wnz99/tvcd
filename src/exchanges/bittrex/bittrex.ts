@@ -155,6 +155,8 @@ class Bittrex extends BaseExchange implements IExchange<BittrexCandle> {
     end: number,
     opt?: { [key: string]: string | number | undefined | boolean }
   ): Promise<Candle[]> => {
+    this._isIntervalSupported(interval)
+
     const channel = `${interval}:${pair[0]}:${pair[1]}`
 
     if (shouldReturnCandles(end, this._availableDataForThePeriod[channel])) {
