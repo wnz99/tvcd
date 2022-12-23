@@ -23,9 +23,8 @@ import {
 } from '../../utils'
 import { WsEvent } from '../../utils/ws/types'
 import BaseExchange from '../base/baseExchange'
-import { BitfinexCandle, TvcdIntervarls, UpdateData } from './types'
+import { BitfinexCandle, BitfinexIntervals, UpdateData } from './types'
 import {
-  aggregateCandlesForward,
   formatter,
   getExchangeConf,
   makeDataStream,
@@ -35,7 +34,10 @@ import {
   processSubMsg,
 } from './utils'
 
-class Bitfinex extends BaseExchange implements IExchange<BitfinexCandle> {
+class Bitfinex
+  extends BaseExchange
+  implements IExchange<BitfinexCandle, BitfinexIntervals>
+{
   constructor() {
     const conf = getExchangeConf()
 
@@ -105,6 +107,7 @@ class Bitfinex extends BaseExchange implements IExchange<BitfinexCandle> {
         takeUntil(this._closeStream$),
         catchError((error) => {
           console.warn(error)
+
           return of(error)
         }),
         multicast(() => new Subject<CandlesData>())
@@ -131,7 +134,7 @@ class Bitfinex extends BaseExchange implements IExchange<BitfinexCandle> {
 
   fetchCandles = async (
     pair: TokensSymbols,
-    interval: TvcdIntervarls,
+    interval: BitfinexIntervals,
     start: number,
     end: number
   ): Promise<Candle[]> => {
@@ -152,9 +155,6 @@ class Bitfinex extends BaseExchange implements IExchange<BitfinexCandle> {
         }
       )
 
-    const aggregateCandles =
-      interval === '4h' ? aggregateCandlesForward : (value: Candle[]) => value
-
     return fetchRestCandles<BitfinexCandle>(
       pair,
       interval as string,
@@ -171,9 +171,7 @@ class Bitfinex extends BaseExchange implements IExchange<BitfinexCandle> {
         makeCandlesUrlFn,
       },
       false
-    )
-      .pipe(map(aggregateCandles))
-      .toPromise()
+    ).toPromise()
   }
 
   addTradingPair = (

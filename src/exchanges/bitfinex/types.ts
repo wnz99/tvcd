@@ -1,7 +1,7 @@
 import { StreamData } from '../../types'
 import { API_RESOLUTIONS_MAP } from './const'
 
-export type TvcdIntervarls = keyof typeof API_RESOLUTIONS_MAP
+export type BitfinexIntervals = keyof typeof API_RESOLUTIONS_MAP
 
 export type CandlesSubscription = {
   method: 'SUBSCRIBE' | 'UNSUBSCRIBE'
