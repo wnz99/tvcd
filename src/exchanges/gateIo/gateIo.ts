@@ -141,6 +141,8 @@ class GateIo extends BaseExchange implements IExchange<GateIoCandle> {
     start: number,
     end: number
   ): Promise<Candle[]> => {
+    this._isIntervalSupported(interval)
+
     const makeCandlesUrlFn = (
       symbols: TokensSymbols,
       timeInterval: string,

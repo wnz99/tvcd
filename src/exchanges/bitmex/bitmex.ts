@@ -131,6 +131,8 @@ class Bitmex extends BaseExchange implements IExchange<BitmexCandle> {
     start: number,
     end: number
   ): Promise<Candle[]> => {
+    this._isIntervalSupported(interval)
+
     const limitDateToApiMinimun = (date: number) => {
       if (moment(date).isBefore('2010-01-01')) {
         return moment('2010-01-01').valueOf()

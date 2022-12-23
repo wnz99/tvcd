@@ -132,6 +132,8 @@ class Ftx extends BaseExchange implements IExchange<FtxCandle> {
     start: number,
     end: number
   ): Promise<Candle[]> => {
+    this._isIntervalSupported(interval)
+
     const makeCandlesUrlFn = (
       symbols: TokensSymbols,
       timeInterval: string,

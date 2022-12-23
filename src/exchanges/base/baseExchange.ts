@@ -61,6 +61,14 @@ class BaseExchange {
 
   protected _isWsActive = this._ws && this._wsConf
 
+  protected _isIntervalSupported = (interval: string) => {
+    if (!this.options.intervals[interval]) {
+      throw Error(
+        debugError(ClientError.INTERVAL_NOT_SUPPORTED, this._status.isDebug)
+      )
+    }
+  }
+
   protected _stop = (): void => {
     if (this._ws) {
       this._closeStream$.next(true)
