@@ -14,17 +14,15 @@ let instance:
   | exchanges.IValr
   | exchanges.IDeribit
 
-let selectedExchange: Exchanges
+let selectedExchange: `${Exchanges}`
 
-const tvcd = (exchange: Exchanges) =>
+const tvcd = (exchange: `${Exchanges}`) =>
   (() => {
-    // @ts-ignore
     if (!exchanges[exchange]) {
       throw new Error(`${exchange} not supported`)
     }
 
     if (!instance || selectedExchange !== exchange) {
-      // @ts-ignore
       instance = exchanges[exchange]
 
       selectedExchange = exchange
