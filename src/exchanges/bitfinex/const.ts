@@ -1,18 +1,19 @@
 import { REAL_TIME } from '../../const'
-import { Intervals } from '../../types'
 
 export const WS_ROOT_URL = 'wss://api-pub.bitfinex.com/ws/2'
 export const REST_ROOT_URL = `https://api-pub.bitfinex.com/v2`
+
 // Maps TVCD standard resolutions to exchange API resolutions
 
-const LIVE = '1m'
+const LIVE = '1m' as const
 
-export const API_RESOLUTIONS_MAP: Intervals = {
+export const API_RESOLUTIONS_MAP = {
   '1m': LIVE,
   '5m': '5m',
   '15m': '15m',
   '30m': '30m',
   '1h': '1h',
+  '4h': '4h',
   '3h': '3h',
   '6h': '6h',
   '12h': '12h',
@@ -22,7 +23,7 @@ export const API_RESOLUTIONS_MAP: Intervals = {
   '14D': '14D',
   '1M': '1M',
   [REAL_TIME]: ['1m', LIVE], // Format: [tvcd_resolution, api_resolution]
-}
+} as const
 
 // Maps exchange API resolutions to TVCD standard resolutions
 

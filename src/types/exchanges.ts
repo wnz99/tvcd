@@ -132,7 +132,7 @@ export type CandleSubscription = Subscription
 
 export type CandlesStream = Observable<CandlesData>
 
-export interface IExchange<T = any> {
+export interface IExchange<T = any, Q extends string = string> {
   options: {
     intervals: Intervals
     intervalsUdf?: Intervals
@@ -143,7 +143,7 @@ export interface IExchange<T = any> {
   stop: () => void
   fetchCandles: (
     pair: TokensSymbols,
-    interval: string,
+    interval: Q,
     start: number,
     end: number,
     opt?: { [key: string]: string | number | undefined | boolean }
