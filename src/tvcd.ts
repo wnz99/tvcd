@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import * as exchanges from './exchanges'
-import { Exchanges } from './types'
+import { SupportedExchanges } from './types'
 
 let instance:
   | exchanges.IBinance
@@ -14,9 +14,9 @@ let instance:
   | exchanges.IValr
   | exchanges.IDeribit
 
-let selectedExchange: `${Exchanges}`
+let selectedExchange: SupportedExchanges
 
-const tvcd = (exchange: `${Exchanges}`) =>
+const tvcd = (exchange: SupportedExchanges) =>
   (() => {
     if (!exchanges[exchange]) {
       throw new Error(`${exchange} not supported`)

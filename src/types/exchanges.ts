@@ -18,6 +18,8 @@ export enum Exchanges {
   'deribit' = 'deribit',
 }
 
+export type SupportedExchanges = `${Exchanges}`
+
 export type Intervals = {
   [key: string]: string | [string, string]
   realtime: [string, string]
