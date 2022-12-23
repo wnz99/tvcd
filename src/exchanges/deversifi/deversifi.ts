@@ -15,7 +15,7 @@ import {
 import {
   addChannelToCandlesData,
   debugError,
-  fetchCandles,
+  fetchRestCandles,
   makeCandlesRestApiUrl,
   makeOptions,
   mapToStandardInterval,
@@ -154,7 +154,7 @@ class Deverifi extends BaseExchange implements IExchange<DeversifiCandle> {
         }
       )
 
-    return fetchCandles<DeversifiCandle>(pair, interval, start, end, {
+    return fetchRestCandles<DeversifiCandle>(pair, interval, start, end, {
       formatFn: this._options.format,
       makeChunks: true,
       debug: {

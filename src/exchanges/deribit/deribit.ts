@@ -14,7 +14,7 @@ import {
 import {
   addChannelToCandlesData,
   debugError,
-  fetchCandles,
+  fetchRestCandles,
   makeOptions,
   mapToStandardInterval,
   updateCandles,
@@ -153,7 +153,7 @@ class Deribit extends BaseExchange implements IExchange<DeribitCandle> {
         end_timestamp: endTime,
       })
 
-    return fetchCandles<DeribitCandle>(pair, interval, start, end, {
+    return fetchRestCandles<DeribitCandle>(pair, interval, start, end, {
       formatFn: this._options.format,
       isUdf: this._exchangeConf.isUdf,
       makeChunks: true,

@@ -23,7 +23,7 @@ import {
 import {
   addChannelToCandlesData,
   debugError,
-  fetchCandles,
+  fetchRestCandles,
   makeCandlesRestApiUrl,
   makeChannelFromDataStream,
   makeOptions,
@@ -164,7 +164,7 @@ class Poloniex extends BaseExchange implements IExchange<PoloniexCandle> {
         }
       )
 
-    return fetchCandles<PoloniexCandle>(pair, interval, start, end, {
+    return fetchRestCandles<PoloniexCandle>(pair, interval, start, end, {
       formatFn: this._options.format,
       debug: {
         exchangeName: this._exchangeConf.exchangeName,
