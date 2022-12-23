@@ -151,16 +151,23 @@ class Bitfinex extends BaseExchange implements IExchange<BitfinexCandle> {
         }
       )
 
-    return fetchCandles<BitfinexCandle>(pair, interval, start, end, {
-      formatFn: this._options.format,
-      makeChunks: true,
-      debug: {
-        exchangeName: this._exchangeConf.exchangeName,
-        isDebug: this._status.isDebug,
+    return fetchCandles<BitfinexCandle>(
+      pair,
+      interval,
+      start,
+      end,
+      {
+        formatFn: this._options.format,
+        makeChunks: true,
+        debug: {
+          exchangeName: this._exchangeConf.exchangeName,
+          isDebug: this._status.isDebug,
+        },
+        apiLimit: 5000,
+        makeCandlesUrlFn,
       },
-      apiLimit: 5000,
-      makeCandlesUrlFn,
-    })
+      false
+    ).toPromise()
   }
 
   addTradingPair = (

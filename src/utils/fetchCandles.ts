@@ -1,4 +1,4 @@
-import { concat } from 'rxjs'
+import { concat, Observable } from 'rxjs'
 import { filter, map, reduce } from 'rxjs/operators'
 
 import { Candle, TokensSymbols } from '../types'
@@ -16,13 +16,29 @@ type FetchCandleOptions<T> = FetchCandlesOptions<T> & {
   processUdfDataFn?: ProcessUdfDataFn<T>
 }
 
-const fetchCandles = async <T>(
+function fetchCandles<T>(
   pair: TokensSymbols,
   interval: string,
   start: number,
   end: number,
   opts: FetchCandleOptions<T>
-): Promise<Candle[]> => {
+): Promise<Candle[]>
+function fetchCandles<T>(
+  pair: TokensSymbols,
+  interval: string,
+  start: number,
+  end: number,
+  opts: FetchCandleOptions<T>,
+  flatten: false
+): Observable<Candle[]>
+function fetchCandles<T>(
+  pair: TokensSymbols,
+  interval: string,
+  start: number,
+  end: number,
+  opts: FetchCandleOptions<T>,
+  flatten = true
+) {
   const { debug, isUdf, formatFn, apiLimit, processUdfDataFn } = opts
 
   if (debug?.isDebug) {
@@ -46,22 +62,20 @@ const fetchCandles = async <T>(
     opts
   )
 
-  return concat(...fetchCallsArray)
-    .pipe(
-      map((data) =>
-        isUdf && processUdfDataFn ? processUdfDataFn(data) : data
-      ),
-      filter((data: any) => data[0] && data[0].date !== 0),
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      reduce<T[]>((acc, val) => [...acc, ...val], []),
-      map((data) => {
-        const candles = data.map((candle) => formatFn(candle))
+  const candles = concat(...fetchCallsArray).pipe(
+    map((data) => (isUdf && processUdfDataFn ? processUdfDataFn(data) : data)),
+    filter((data: any) => data[0] && data[0].date !== 0),
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    reduce<T[]>((acc, val) => [...acc, ...val], []),
+    map((data) => {
+      const candles = data.map((candle) => formatFn(candle))
 
-        return sortByTime(candles)
-      })
-    )
-    .toPromise()
+      return sortByTime(candles)
+    })
+  )
+
+  return flatten ? candles.toPromise() : candles
 }
 
 export default fetchCandles
