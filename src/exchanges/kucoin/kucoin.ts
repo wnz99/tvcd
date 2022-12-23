@@ -26,7 +26,7 @@ import { Exchanges, Options } from '../../types/exchanges'
 import {
   addChannelToCandlesData,
   debugError,
-  fetchCandles,
+  fetchRestCandles,
   makeCandlesRestApiUrl,
   makeOptions,
   mapToStandardInterval,
@@ -178,7 +178,7 @@ class Kucoin extends BaseExchange implements IExchange<KucoinCandle> {
         }
       )
 
-    return fetchCandles<KucoinCandle>(pair, interval, start, end, {
+    return fetchRestCandles<KucoinCandle>(pair, interval, start, end, {
       formatFn: this._options.format,
       makeChunks: true,
       apiLimit: 1500,

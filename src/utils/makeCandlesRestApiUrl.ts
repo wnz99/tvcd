@@ -76,15 +76,6 @@ const makeCandlesRestApiUrl = (
       return `${restRootUrl}/markets/${market_name}/candles?${makeQuery(rest)}`
     }
 
-    case EXCHANGE_NAME.KAIKO: {
-      const { symbol, ...rest } = params
-
-      // https://<eu|us>.market-api.kaiko.io/v1/data/trades.v1/exchanges/cbse/spot/btc-usd/aggregations/ohlcv
-      return `${restRootUrl}/cbse/spot/${symbol}/aggregations/ohlcv?${makeQuery(
-        rest as unknown as { [key: string]: string | number | undefined }
-      )}`
-    }
-
     // https://api.valr.com/BTCZAR/buckets?periodSeconds=900&startTime=1620891180&endTime=1621082040
 
     case EXCHANGE_NAME.VALR: {

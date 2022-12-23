@@ -25,7 +25,7 @@ import {
 import {
   addChannelToCandlesData,
   debugError,
-  fetchCandles,
+  fetchRestCandles,
   makeCandlesRestApiUrl,
   makeOptions,
   mapToStandardInterval,
@@ -158,7 +158,7 @@ class GateIo extends BaseExchange implements IExchange<GateIoCandle> {
         }
       )
 
-    return fetchCandles<GateIoCandle>(pair, interval, start, end, {
+    return fetchRestCandles<GateIoCandle>(pair, interval, start, end, {
       formatFn: this._options.format,
       makeChunks: true,
       apiLimit: 999,

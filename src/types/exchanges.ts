@@ -15,7 +15,6 @@ export enum Exchanges {
   'poloniex' = 'poloniex',
   'valr' = 'valr',
   'ftx' = 'ftx',
-  'kaiko' = 'kaiko',
   'deribit' = 'deribit',
 }
 

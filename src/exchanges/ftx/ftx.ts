@@ -16,7 +16,7 @@ import {
 import {
   addChannelToCandlesData,
   debugError,
-  fetchCandles,
+  fetchRestCandles,
   makeCandlesRestApiUrl,
   makeChannelFromDataStream,
   makeOptions,
@@ -149,7 +149,7 @@ class Ftx extends BaseExchange implements IExchange<FtxCandle> {
         }
       )
 
-    return fetchCandles<FtxCandle>(pair, interval, start, end, {
+    return fetchRestCandles<FtxCandle>(pair, interval, start, end, {
       formatFn: this._options.format,
       makeChunks: true,
       debug: {

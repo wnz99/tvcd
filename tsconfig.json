@@ -33,6 +33,6 @@
     "strictNullChecks": true,
     "declarationDir": "dist"
   },
-  "include": ["src/**/*", "examples/**/*"],
-  "exclude": ["node_modules"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "examples/**/*"]
 }

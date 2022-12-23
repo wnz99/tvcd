@@ -8,7 +8,6 @@ export const DEVERSIFI = 'deversifi' as const
 export const EXCHANGE_NOT_SUPPORTED = 'Exchange not supported' as const
 export const FTX = 'ftx' as const
 export const GATEIO = 'gateio' as const
-export const KAIKO = 'kaiko' as const
 export const KRAKEN = 'kraken' as const
 export const KUCOIN = 'kucoin' as const
 export const POLONIEX = 'poloniex' as const
@@ -26,7 +25,6 @@ export const EXCHANGE_NAME = {
   DEVERSIFI,
   FTX,
   GATEIO,
-  KAIKO,
   KRAKEN,
   KUCOIN,
   POLONIEX,

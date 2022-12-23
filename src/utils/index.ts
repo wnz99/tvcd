@@ -1,7 +1,7 @@
 /* eslint-disable import/no-cycle */
 export { default as addChannelToCandlesData } from './addChannelToCandlesData'
 export { default as debugError } from './debugError'
-export { default as fetchCandles } from './fetchCandles'
+export * from './fetchRestCandles'
 export { default as isChannelChanged } from './isChannelChanged'
 export { default as makeCandlesRestApiUrl } from './makeCandlesRestApiUrl'
 export { default as makeChannelFromDataStream } from './makeChannelFromDataStream'
