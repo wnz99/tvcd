@@ -13,6 +13,7 @@ export const API_RESOLUTIONS_MAP: Intervals = {
   '15m': '15m',
   '30m': '30m',
   '1h': '1h',
+  '4h': '4h',
   '3h': '3h',
   '6h': '6h',
   '12h': '12h',

@@ -1,42 +1,26 @@
-import { BigNumber } from 'bignumber.js'
 import _chunk from 'lodash/chunk'
 
-import { RestApiCandle } from '../types'
-
-// A function to calculate the maximum value in an array
-export const max = (arr: number[]) => Math.max(...arr)
-
-// A function to calculate the minimum value in an array
-export const min = (arr: number[]) => Math.min(...arr)
-
-// A function to sum the values in an array
-export const sum = (arr: number[]) =>
-  arr.reduce((a, b) => new BigNumber(a).plus(b), new BigNumber(0)).toNumber()
-
-// A function to return last value in an array
-export const last = (arr: number[]) => arr[arr.length - 1]
-
-// A function to return first value in an array
-export const first = (arr: number[]) => arr[0]
+import { Candle } from '../../../types/exchanges'
+import { first, last, max, min, sum } from './arrayUtils'
 
 export const aggregateCandlesBackward = (
-  candles: RestApiCandle[],
+  candles: Candle[],
   chunkSize = 4
-) => {
+): Candle[] => {
   const chunkedCandles = _chunk(candles, chunkSize)
 
   const aggregatedCandles = chunkedCandles.map((candles) => {
     const verticalChunkedCandles = candles.reduce(
       (curr, candle) => {
-        const [t, o, c, h, l, v] = candle
+        const { time, open, close, high, low, volume } = candle
 
         return {
-          time: [...curr.time, t],
-          open: [...curr.open, o],
-          close: [...curr.close, c],
-          high: [...curr.high, h],
-          low: [...curr.low, l],
-          volume: [...curr.volume, v],
+          time: [...curr.time, time],
+          open: [...curr.open, open],
+          close: [...curr.close, close],
+          high: [...curr.high, high],
+          low: [...curr.low, low],
+          volume: [...curr.volume, volume],
         }
       },
       {
@@ -56,14 +40,14 @@ export const aggregateCandlesBackward = (
       }
     )
 
-    const time = last(verticalChunkedCandles.time)
-    const open = last(verticalChunkedCandles.open)
-    const close = first(verticalChunkedCandles.close)
-    const high = max(verticalChunkedCandles.high)
-    const low = min(verticalChunkedCandles.low)
-    const volume = sum(verticalChunkedCandles.volume)
-
-    return [time, open, close, high, low, volume]
+    return {
+      time: last(verticalChunkedCandles.time),
+      open: last(verticalChunkedCandles.open),
+      close: first(verticalChunkedCandles.close),
+      high: max(verticalChunkedCandles.high),
+      low: min(verticalChunkedCandles.low),
+      volume: sum(verticalChunkedCandles.volume),
+    }
   })
 
   return aggregatedCandles
