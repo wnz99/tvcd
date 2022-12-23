@@ -17,7 +17,7 @@ import {
 import {
   addChannelToCandlesData,
   debugError,
-  fetchCandles,
+  fetchRestCandles,
   makeCandlesRestApiUrl,
   makeChannelFromDataStream,
   makeOptions,
@@ -150,7 +150,7 @@ class Valr extends BaseExchange implements IExchange<ValrCandle> {
         }
       )
 
-    return fetchCandles<ValrCandle>(pair, interval, start, end, {
+    return fetchRestCandles<ValrCandle>(pair, interval, start, end, {
       formatFn: this._options.format,
       makeChunks: true,
       apiLimit: 300,

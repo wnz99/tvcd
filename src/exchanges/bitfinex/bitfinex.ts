@@ -15,7 +15,7 @@ import {
 import {
   addChannelToCandlesData,
   debugError,
-  fetchCandles,
+  fetchRestCandles,
   makeCandlesRestApiUrl,
   makeOptions,
   mapToStandardInterval,
@@ -151,7 +151,7 @@ class Bitfinex extends BaseExchange implements IExchange<BitfinexCandle> {
         }
       )
 
-    return fetchCandles<BitfinexCandle>(
+    return fetchRestCandles<BitfinexCandle>(
       pair,
       interval,
       start,

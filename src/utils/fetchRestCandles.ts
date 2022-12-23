@@ -16,14 +16,14 @@ type FetchCandleOptions<T> = FetchCandlesOptions<T> & {
   processUdfDataFn?: ProcessUdfDataFn<T>
 }
 
-function fetchCandles<T>(
+export function fetchRestCandles<T>(
   pair: TokensSymbols,
   interval: string,
   start: number,
   end: number,
   opts: FetchCandleOptions<T>
 ): Promise<Candle[]>
-function fetchCandles<T>(
+export function fetchRestCandles<T>(
   pair: TokensSymbols,
   interval: string,
   start: number,
@@ -31,7 +31,7 @@ function fetchCandles<T>(
   opts: FetchCandleOptions<T>,
   flatten: false
 ): Observable<Candle[]>
-function fetchCandles<T>(
+export function fetchRestCandles<T>(
   pair: TokensSymbols,
   interval: string,
   start: number,
@@ -77,5 +77,3 @@ function fetchCandles<T>(
 
   return flatten ? candles.toPromise() : candles
 }
-
-export default fetchCandles

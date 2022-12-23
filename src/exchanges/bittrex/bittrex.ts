@@ -23,7 +23,7 @@ import {
 import {
   addChannelToCandlesData,
   debugError,
-  fetchCandles,
+  fetchRestCandles,
   makeCandlesRestApiUrl,
   makeChannelFromDataStream,
   makeOptions,
@@ -179,7 +179,7 @@ class Bittrex extends BaseExchange implements IExchange<BittrexCandle> {
           }
         )
 
-      return fetchCandles<BittrexCandle>(pair, interval, start, end, {
+      return fetchRestCandles<BittrexCandle>(pair, interval, start, end, {
         formatFn: this._options.format,
         makeChunks: false,
         debug: {

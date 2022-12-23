@@ -15,7 +15,7 @@ import {
 import {
   addChannelToCandlesData,
   debugError,
-  fetchCandles,
+  fetchRestCandles,
   makeCandlesRestApiUrl,
   makeOptions,
   mapToStandardInterval,
@@ -144,7 +144,7 @@ class Binance extends BaseExchange implements IExchange<BinanceCandle> {
         }
       )
 
-    return fetchCandles<BinanceCandle>(pair, interval, start, end, {
+    return fetchRestCandles<BinanceCandle>(pair, interval, start, end, {
       formatFn: this._options.format,
       makeChunks: true,
       debug: {

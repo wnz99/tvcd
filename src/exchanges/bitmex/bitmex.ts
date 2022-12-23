@@ -17,7 +17,7 @@ import {
 import {
   addChannelToCandlesData,
   debugError,
-  fetchCandles,
+  fetchRestCandles,
   makeCandlesRestApiUrl,
   makeOptions,
   mapToStandardInterval,
@@ -174,7 +174,7 @@ class Bitmex extends BaseExchange implements IExchange<BitmexCandle> {
       )
     }
 
-    return fetchCandles<RestApiCandle>(
+    return fetchRestCandles<RestApiCandle>(
       pair,
       interval,
       limitDateToApiMinimun(start),
