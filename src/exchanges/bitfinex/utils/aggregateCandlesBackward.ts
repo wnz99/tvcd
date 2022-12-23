@@ -1,7 +1,7 @@
 import { BigNumber } from 'bignumber.js'
 import _chunk from 'lodash/chunk'
 
-import { RestApiCandle } from './../types'
+import { RestApiCandle } from '../types'
 
 // A function to calculate the maximum value in an array
 export const max = (arr: number[]) => Math.max(...arr)
@@ -19,7 +19,10 @@ export const last = (arr: number[]) => arr[arr.length - 1]
 // A function to return first value in an array
 export const first = (arr: number[]) => arr[0]
 
-export const aggregateCandles = (candles: RestApiCandle[], chunkSize = 4) => {
+export const aggregateCandlesBackward = (
+  candles: RestApiCandle[],
+  chunkSize = 4
+) => {
   const chunkedCandles = _chunk(candles, chunkSize)
 
   const aggregatedCandles = chunkedCandles.map((candles) => {

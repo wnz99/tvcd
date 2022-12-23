@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { BitfinexCandle } from '../types'
-import { aggregateCandles } from './aggregateCandles'
+import { aggregateCandlesBackward } from './aggregateCandlesBackward'
 
 const oneHourCandlesV2: BitfinexCandle[] = [
   [1671735600000, 16616, 16616, 16616, 16616, 0.0054611799999999995],
@@ -28,7 +28,7 @@ const expected4HourCandles: BitfinexCandle[] = [
 
 describe('aggregateCandles', () => {
   it('should build 4H candles from 1H candles', () => {
-    const candles = aggregateCandles(oneHourCandlesV2)
+    const candles = aggregateCandlesBackward(oneHourCandlesV2)
 
     expect(candles).toEqual(expected4HourCandles)
   })
